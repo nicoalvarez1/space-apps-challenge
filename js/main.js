@@ -1,8 +1,8 @@
-import { BODIES, OBJECTIVES, DURATIONS, METRICS, TRAIT_LABELS } from './data.js';
+import { BODIES, OBJECTIVES, DURATIONS, METRICS, TRAIT_LABELS, SITES, ANALOGS } from './data.js';
 import { fetchSites, fetchTraining } from './api.js';
 import { Viewer } from './scene.js';
 import { earthSiteData } from './cmr.js';
-import { CAPAS_GLOBO, RAMPAS, RADIO_KM, RADIO_ZONA, capa, pintarCapa } from './capas.js';
+import { CAPAS_GLOBO, RAMPAS, RADIO_KM, RADIO_ZONA, capa, pintarCapa, catalogo } from './capas.js';
 
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -17,27 +17,32 @@ viewer.onProgress = (p) => {
 };
 viewer.worldsReady.then(() => {
   const nasa = viewer.manifest ? `texturas NASA · calidad ${viewer.quality === 'hi' ? '8K' : '4K'}` : 'texturas procedurales (ejecuta tools/build_textures.py)';
-  $('#load-bar').style.width = '100%'; $('#load-text').textContent = `✔ Tierra, Luna y Marte listos · ${nasa}`;
+  $('#load-bar').style.width = '100%'; $('#load-text').textContent = `Tierra, Luna y Marte listos · ${nasa}`;
   $('#load-status').classList.add('done');
   if (viewer.credits) $('#credits').innerHTML = `<b>Datos e imágenes:</b> ${Object.values(viewer.credits).join(' · ')}`;
 }).catch((e) => { console.error(e); $('#load-text').textContent = 'No se pudieron cargar algunos modelos'; });
 const mission = { body: null, objective: null, crew: 6, duration: 'long' };
-let step = 1, sites = [], current = null, runId = 0;
+let step = 1, maxStep = 1, sites = [], current = null, runId = 0;
 
 // ============================ ASISTENTE ====================================
 function renderSetup() {
   $('#g-body').innerHTML = Object.values(BODIES).map((b) => `
-    <button class="opt big ${mission.body === b.id ? 'sel' : ''}" data-body="${b.id}">
-      <span class="ico">${b.id === 'moon' ? '🌕' : '🔴'}</span><b>${b.name}</b>
-      <small>${b.tagline}<br>Gravedad ${b.gravity} · ${b.temp}</small><small style="margin-top:.4rem">${b.blurb}</small>
+    <button class="opt dest ${mission.body === b.id ? 'sel' : ''}" data-body="${b.id}" aria-pressed="${mission.body === b.id}">
+      <span class="planet ${b.id}" aria-hidden="true"></span>
+      <span class="dest-txt"><b>${b.name}</b><small>${b.tagline}</small></span>
+      <span class="dest-facts"><span><small>Gravedad</small>${b.gravity}</span><span><small>Temperatura</small>${b.temp}</span></span>
+      <small class="dest-data">${CAPAS_GLOBO[b.id].length} capas de datos · ${b.layers.map((l) => l.split(' (')[0].split(' · ').pop()).join(', ')}</small>
     </button>`).join('');
   $('#g-obj').innerHTML = Object.values(OBJECTIVES).map((o) => `
-    <button class="opt ${mission.objective === o.id ? 'sel' : ''}" data-obj="${o.id}">
-      <span class="ico">${o.icon}</span><b>${o.name}</b><small>${o.desc}</small></button>`).join('');
+    <button class="opt ${mission.objective === o.id ? 'sel' : ''}" data-obj="${o.id}" aria-pressed="${mission.objective === o.id}">
+      <span class="ico">${o.icon}</span><b>${o.name}</b><small>${o.desc}</small>
+      <span class="keys">${Object.entries(o.weights).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([k, w]) => `<i>${METRICS[k].short} ${Math.round(w * 100)}%</i>`).join('')}</span></button>`).join('');
   $('#g-dur').innerHTML = Object.values(DURATIONS).map((d) => `<button data-dur="${d.id}" class="${mission.duration === d.id ? 'sel' : ''}">${d.name}</button>`).join('');
   $('#crew-val').textContent = mission.crew;
   document.querySelectorAll('[data-step]').forEach((el) => (el.hidden = +el.dataset.step !== step));
-  document.querySelectorAll('#steps i').forEach((el, i) => el.classList.toggle('on', i < step));
+  maxStep = Math.max(step, mission.objective ? 3 : mission.body ? 2 : 1);
+  $('#wizard').dataset.at = step;
+  document.querySelectorAll('#steps button').forEach((el, i) => { el.classList.toggle('on', i < step); el.classList.toggle('cur', i + 1 === step); el.disabled = i + 1 > maxStep; });
   $('#btn-back').disabled = step === 1;
   const ok = step === 1 ? mission.body : step === 2 ? mission.objective : true;
   $('#btn-next').disabled = !ok;
@@ -60,6 +65,17 @@ $('#crew').addEventListener('input', (e) => { mission.crew = +e.target.value; re
 $('#btn-back').onclick = () => { step = Math.max(1, step - 1); renderSetup(); };
 $('#btn-next').onclick = () => { if (step < 3) { step++; renderSetup(); } else launch(); };
 $('#btn-new').onclick = resetMission;
+$('#steps').addEventListener('click', (e) => { const b = e.target.closest('[data-go]'); if (b && !b.disabled) { step = +b.dataset.go; renderSetup(); } });
+addEventListener('keydown', (e) => { if (e.key === 'Enter' && !$('#setup').hidden && !$('#btn-next').disabled && !e.target.closest('button')) $('#btn-next').click(); });
+
+// Cifras de la portada: salen del catálogo real de capas y de los datos de la app
+function renderStats(capas) {
+  const n = capas ? Object.keys(capas).length : null, inst = capas ? new Set(Object.values(capas).map((c) => c.fuente.mision)).size : null;
+  const tiles = [[n ?? '—', 'capas de datos reales'], [inst ?? '—', 'instrumentos en órbita'], [SITES.moon.length + SITES.mars.length, 'emplazamientos candidatos'], [ANALOGS.length, 'análogos en la Tierra']];
+  $('#stats').innerHTML = tiles.map(([v, l]) => `<div><b>${v}</b><small>${l}</small></div>`).join('');
+}
+renderStats(null);
+catalogo().then(renderStats).catch((e) => console.warn('Catálogo de capas no disponible', e));
 $('#btn-skip').onclick = () => { if (viewer.tween && viewer.mode === 'flight') viewer.tween.t0 = performance.now() - viewer.tween.dur; };
 
 // ============================ SIMULACIÓN ===================================
@@ -77,11 +93,11 @@ async function launch() {
   await viewer.ready;
 
   await viewer.flyToBody(mission.body, {
-    duration: mission.body === 'mars' ? 9 : 7,
+    duration: mission.body === 'mars' ? 16 : 14,   // más largo para que se vean las separaciones de etapas
     onProgress: (t, remaining) => {
       $('#f-bar').style.width = `${t * 70}%`;
       $('#f-dist').textContent = fmtKm(b.distanceKm * remaining);
-      $('#f-state').textContent = t < 0.2 ? 'Inyección translunar'.replace('translunar', mission.body === 'mars' ? 'transmarciana' : 'translunar') : t < 0.8 ? 'Crucero' : 'Inserción orbital';
+      $('#f-state').textContent = viewer.rocketPhase || 'Crucero';   // fase real del Saturno V (js/saturno5.js)
     },
   });
   if (id !== runId) return;
@@ -107,7 +123,7 @@ function showResults() {
   $('#res-list').innerHTML = sites.map((s, i) => `
     <li data-id="${s.id}" style="--d:${i * 90}ms">
       <span class="rk">${s.rank}</span>
-      <div class="nm"><b>${esc(s.name)}</b><small>${esc(s.region)}</small><div class="mini"><i style="width:${s.score}%"></i></div></div>
+      <div class="nm"><b>${esc(s.name)}</b><small>${esc(s.region)}<span class="lv"></span></small><div class="mini"><i style="width:${s.score}%"></i></div></div>
       <span class="sc">${s.score}</span></li>`).join('');
   $('#res-layers').innerHTML = `<b>Capas:</b> ${b.layers.join(' · ')}`;
   $('#results').hidden = false;
@@ -115,8 +131,8 @@ function showResults() {
   $('#data-badge').textContent = real ? 'PDS + ESTIMACIONES' : 'DATOS DEMO';
   $('#data-badge').title = real ? 'Terreno, hielo, térmica y recursos se calculan con datos medidos (NASA PDS). Solar, radiación, enlace y ciencia son estimaciones de demostración.'
     : 'No se pudieron cargar las capas del PDS: todas las puntuaciones son estimaciones de demostración.';
-  $('#layers').hidden = !viewer.bodies[mission.body]?.surfaceMat; renderLayers();
   viewer.setSites(sites, selectSite);
+  $('#layers').hidden = !viewer.bodies[mission.body]?.surfaceMat; renderLayers();
   viewer.controls.autoRotate = true;
   toast(`Mejor emplazamiento: ${sites[0].name}`);
 }
@@ -174,7 +190,7 @@ async function closeDetail() {
 
 // ============================ ENTRENAMIENTO ================================
 async function openTraining(site, pick = 0) {
-  $('#detail').hidden = true; $('#training').hidden = false; $('#layers').hidden = true;
+  $('#detail').hidden = true; $('#training').hidden = false; $('#layers').hidden = true; hideTip();
   $('#training-body').innerHTML = `<p class="muted">Buscando el análogo terrestre más parecido a ${esc(site.name)}…</p>`;
   const list = await fetchTraining(site, mission);
   const a = list[pick];
@@ -247,23 +263,33 @@ async function closeTraining() {
 }
 
 // ============================ CAPAS DE DATOS ===============================
-// Proyecta sobre el globo una capa real del PDS y muestra su leyenda; el cursor lee el valor de la celda.
-let layer = null, layerRun = 0, probeRaf = 0;
+// Proyecta sobre el globo una capa real del PDS, con leyenda; el cursor lee el valor de la celda y cada
+// emplazamiento muestra su valor medio en la capa activa.
+let layer = null, layerRun = 0, probeRaf = 0, layerOpacity = 0.9;
 const zonaKm = () => Math.round(RADIO_ZONA * (Math.PI / 180) * RADIO_KM[mission.body]);
 const coord = (lat, lon) => `${Math.abs(lat).toFixed(1)}°${lat >= 0 ? 'N' : 'S'} ${Math.abs(lon).toFixed(1)}°${lon >= 0 ? 'E' : 'O'}`;
-const PROBE_HINT = 'Pasa el cursor por el globo para leer el valor';
+const siteValue = (s) => { const z = layer?.capa.zona(s.lat, s.lon); return z ? layer.def.breve(z.media) : layer ? 'sin dato' : ''; };
 
 function renderLayers() {
-  $('#layer-list').innerHTML = (CAPAS_GLOBO[mission.body] ?? []).map((d) =>
-    `<button data-layer="${d.id}" class="${layer?.def.id === d.id ? 'sel' : ''}" aria-pressed="${layer?.def.id === d.id}">${d.corto}</button>`).join('');
-  $('#legend').hidden = !layer;
+  const defs = CAPAS_GLOBO[mission.body] ?? [], grupos = [...new Set(defs.map((d) => d.grupo))];
+  $('#layer-list').innerHTML = grupos.map((g) => `<div class="lgroup"><small>${esc(g)}</small><div class="lchips">${defs.filter((d) => d.grupo === g).map((d) =>
+    `<button data-layer="${d.id}" class="${layer?.def.id === d.id ? 'sel' : ''}" aria-pressed="${layer?.def.id === d.id}">${d.corto}</button>`).join('')}</div></div>`).join('');
+  $('#layers').classList.toggle('on', !!layer);
+  $('#legend').hidden = !layer; $('#layer-hint').hidden = !!layer; $('#tip').hidden = true;
+  // valor de la capa en cada emplazamiento (lista y marcadores)
+  document.querySelectorAll('#res-list li').forEach((li) => { const s = sites.find((x) => x.id === li.dataset.id); li.querySelector('.lv').textContent = s && layer ? ` · ${siteValue(s)}` : ''; });
+  viewer.setMarkerValues(layer ? (m) => siteValue(m) : null);
   if (!layer) return;
-  const { def, capa: c, min, max } = layer, m = c.meta;
-  $('#legend').innerHTML = `<b>${esc(m.nombre)}</b>
-    <div class="lg-bar" style="background:linear-gradient(90deg, ${RAMPAS[def.rampa].join(', ')})"></div>
-    <div class="lg-ends"><span>≤ ${esc(def.fmt(min))}</span><span>≥ ${esc(def.fmt(max))}</span></div>
-    <div class="lg-probe" id="lg-probe">${PROBE_HINT}</div>
-    <small>${esc(m.fuente.mision)} · ${esc(m.resolucion)}. Escala entre los percentiles 2 y 98; sin dato = sin color.</small>`;
+  const { def, capa: c } = layer, m = c.meta;
+  $('#legend').innerHTML = `<div class="lg-head"><b>${esc(m.nombre)}</b><button class="lg-x" id="lg-x" aria-label="Quitar capa" title="Quitar capa">✕</button></div>
+    <p class="lg-why">${esc(def.por)}</p>
+    <div class="lg-bar" style="background:linear-gradient(90deg, ${RAMPAS[def.rampa].join(', ')})"><i id="lg-mark" hidden></i></div>
+    <div class="lg-ticks">${c.anclas().map((v, i, a) => `<span>${i === 0 ? '≤ ' : i === a.length - 1 ? '≥ ' : ''}${esc(def.tick(v))}</span>`).join('')}</div>
+    <div class="lg-unit">Escala en ${esc(def.unidad === '°' ? 'grados' : def.unidad)} · <span class="nodata"></span> sin dato</div>
+    <label class="lg-op">Opacidad <input id="lg-op" type="range" min="30" max="100" value="${Math.round(layerOpacity * 100)}" aria-label="Opacidad de la capa"></label>
+    <small>${esc(m.fuente.mision)} · ${esc(m.resolucion)}. Las marcas de la escala son los percentiles 2, 25, 50, 75 y 98 de la superficie.</small>`;
+  $('#lg-x').onclick = () => setLayer(def.id);
+  $('#lg-op').oninput = (e) => { layerOpacity = e.target.value / 100; viewer.setOverlayOpacity(mission.body, layerOpacity); };
 }
 
 async function setLayer(id) {
@@ -274,21 +300,26 @@ async function setLayer(id) {
   try {
     const c = await capa(id);
     if (run !== layerRun || mission.body !== body) return;
-    const p = pintarCapa(c, def.rampa);
-    if (viewer.setOverlay(body, p.canvas)) layer = { def, capa: c, min: p.min, max: p.max };
+    if (viewer.setOverlay(body, pintarCapa(c, def.rampa), layerOpacity)) layer = { def, capa: c };
   } catch (e) { console.warn('Capa no disponible', e); toast('No se pudo cargar la capa de datos'); }
   if (run === layerRun) renderLayers();
 }
 
+function hideTip() { $('#tip').hidden = true; const mk = document.getElementById('lg-mark'); if (mk) mk.hidden = true; }
+
 $('#layer-list').addEventListener('click', (e) => { const b = e.target.closest('[data-layer]'); if (b) setLayer(b.dataset.layer); });
+$('#stage').addEventListener('pointerleave', hideTip);
 $('#stage').addEventListener('pointermove', (e) => {
   if (!layer || probeRaf) return;
   probeRaf = requestAnimationFrame(() => {
-    probeRaf = 0; const el = document.getElementById('lg-probe'); if (!el || !layer) return;
-    const p = viewer.probe(e.clientX, e.clientY);
-    if (!p) { el.textContent = PROBE_HINT; return; }
-    const v = layer.capa.en(p.lat, p.lon);
-    el.innerHTML = `${coord(p.lat, p.lon)} · <b>${v === v ? esc(layer.def.fmt(v)) : 'sin dato'}</b>`;
+    probeRaf = 0; if (!layer) return;
+    const p = e.buttons ? null : viewer.probe(e.clientX, e.clientY);       // al arrastrar el globo no se sondea
+    if (!p) { hideTip(); return; }
+    const v = layer.capa.en(p.lat, p.lon), tip = $('#tip'), mk = document.getElementById('lg-mark');
+    tip.innerHTML = `<small>${coord(p.lat, p.lon)}</small><b>${v === v ? esc(layer.def.fmt(v)) : 'Sin dato'}</b>`;
+    tip.hidden = false;
+    tip.style.transform = `translate(${Math.min(e.clientX + 16, innerWidth - tip.offsetWidth - 8)}px, ${Math.min(e.clientY + 18, innerHeight - tip.offsetHeight - 8)}px)`;
+    if (mk) { mk.hidden = v !== v; mk.style.left = `${layer.capa.pos(v) * 100}%`; }
   });
 });
 
@@ -299,9 +330,9 @@ function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = fal
 function resetMission() {
   runId++; viewer.tween = null;
   viewer.clearSites(); viewer.clearAnalogs(); viewer.setIntro();
-  if (layer) { viewer.setOverlay(mission.body, null); layer = null; } layerRun++;
+  if (layer) { viewer.setOverlay(mission.body, null); layer = null; } layerRun++; hideTip();
   ['#hud', '#flight', '#results', '#detail', '#training', '#layers'].forEach((s) => ($(s).hidden = true));
-  $('#setup').hidden = false; step = 1; mission.body = mission.objective = null; current = null; renderSetup();
+  $('#setup').hidden = false; step = 1; maxStep = 1; mission.body = mission.objective = null; current = null; renderSetup();
 }
 
 addEventListener('keydown', (e) => {

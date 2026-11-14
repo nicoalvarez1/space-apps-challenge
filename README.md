@@ -33,7 +33,8 @@ Abre http://localhost:8080
 
   En los sitios con tubos de lava la térmica sigue siendo la estimación (la temperatura de superficie no describe el interior). **Solar, radiación, enlace y ciencia siguen siendo estimaciones de demostración.**
 - **Ficha del sitio:** sección «Mediciones NASA PDS» con media y rango de cada capa.
-- **Capas sobre el globo:** panel «Capas de datos» (elevación, pendiente, temperatura, hidrógeno/agua, elementos…). Escala de color entre los percentiles 2 y 98; el cursor lee el valor de la celda. Sin interpolar: cada píxel toma la celda que lo contiene.
+- **Capas sobre el globo:** panel «Capas de datos», agrupado por instrumento (relieve, temperatura, composición). La capa tiñe la superficie conservando el relieve y la iluminación; sin dato = gris. La escala de color es lineal a tramos entre los percentiles 2, 25, 50, 75 y 98 de la superficie (ponderados por área), que son las marcas de la leyenda. El cursor lee el valor de la celda, y cada emplazamiento muestra su valor medio en la capa activa (marcadores y lista). Sin interpolar: cada píxel toma la celda que lo contiene.
+- **Portada:** las cifras (capas, instrumentos) salen de `capas.json`; los planetas de las tarjetas usan `assets/textures/{moon,mars}_thumb.jpg` (los genera `tools/build_textures.py`).
 
 Si las capas no se pueden cargar, la web vuelve a las estimaciones y lo indica en la barra superior (`DATOS DEMO`).
 

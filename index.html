@@ -23,25 +23,33 @@
 
   <!-- Configuración de la misión -->
   <main id="setup">
-    <div class="card wizard">
-      <div class="brand big"><span class="logo">◐</span> LANDFALL</div>
-      <h1>¿Dónde construimos la primera base?</h1>
-      <p class="lead">Elige el destino y el objetivo de la misión. Simularemos el viaje, analizaremos el terreno y marcaremos los mejores emplazamientos.</p>
+    <div class="card wizard" id="wizard" data-at="1">
+      <div class="wz-top">
+        <div class="brand big"><span class="logo">◐</span> LANDFALL</div>
+        <span class="eyebrow">Mediciones reales · NASA PDS</span>
+      </div>
+      <h1>¿Dónde construimos la <em>primera base</em>?</h1>
+      <div class="hero">
+        <p class="lead">Elige destino y objetivo. Volamos hasta allí, cruzamos las mediciones de los orbitadores de la NASA y te decimos dónde aterrizar… y dónde entrenar antes en la Tierra.</p>
+        <div class="stats" id="stats"></div>
+      </div>
 
-      <div class="load" id="load-status"><i id="load-bar"></i><span id="load-text">Cargando modelos de la NASA…</span></div>
-
-      <div class="steps" id="steps"><i class="on"></i><i></i><i></i></div>
+      <nav class="steps" id="steps" aria-label="Pasos de la misión">
+        <button data-go="1"><i></i><span>1 · Destino</span></button>
+        <button data-go="2"><i></i><span>2 · Objetivo</span></button>
+        <button data-go="3"><i></i><span>3 · Tripulación</span></button>
+      </nav>
 
       <section data-step="1">
-        <h2>1 · Destino</h2>
+        <h2>¿A dónde vamos?</h2>
         <div class="grid two" id="g-body"></div>
       </section>
       <section data-step="2" hidden>
-        <h2>2 · Objetivo de la misión</h2>
+        <h2>¿Para qué es la base?</h2>
         <div class="grid" id="g-obj"></div>
       </section>
       <section data-step="3" hidden>
-        <h2>3 · Parámetros</h2>
+        <h2>¿Cuántos y cuánto tiempo?</h2>
         <label class="field">Tripulación <b id="crew-val">6</b> personas
           <input id="crew" type="range" min="2" max="20" value="6">
         </label>
@@ -55,6 +63,7 @@
         <button id="btn-back" class="btn ghost" disabled>← Atrás</button>
         <button id="btn-next" class="btn primary" disabled>Siguiente →</button>
       </div>
+      <div class="load" id="load-status"><i id="load-bar"></i><span id="load-text">Cargando modelos de la NASA…</span></div>
     </div>
   </main>
 
@@ -73,7 +82,8 @@
   <!-- Capas de datos reales sobre el globo -->
   <aside id="layers" hidden>
     <h3>Capas de datos <small>NASA PDS</small></h3>
-    <div id="layer-list" class="lchips" role="group" aria-label="Capa de datos sobre el globo"></div>
+    <div id="layer-list" role="group" aria-label="Capa de datos sobre el globo"></div>
+    <p id="layer-hint">Elige una capa para pintar sus mediciones sobre el globo.</p>
     <div id="legend" hidden></div>
   </aside>
 
@@ -101,6 +111,7 @@
 
   <footer id="credits"></footer>
   <div id="toast" hidden></div>
+  <div id="tip" hidden></div>
 
   <script type="module" src="js/main.js"></script>
 </body>

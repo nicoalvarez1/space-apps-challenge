@@ -8,6 +8,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { moonTextures, marsTextures, earthTextures } from './textures.js';
+import { crearSaturnoV } from './saturno5.js';
 
 export const CONFIG = {
   assets: {
@@ -66,6 +67,7 @@ export class Viewer {
     this.manager.onProgress = (_u, done, total) => this.onProgress?.(Math.min(1, done / total));
     this.texLoader = new THREE.TextureLoader(this.manager);
     this.onProgress = null; this.manifest = null; this.credits = null;
+    this.rocket = this._makeRocket(); this.scene.add(this.rocket);   // cohete del viaje Tierra → Luna/Marte
     this.ready = this._init();
     this.worldsReady = this.ready.then(() => this.allReady);      // Tierra + Luna + Marte listos
     addEventListener('resize', () => this._resize()); this._resize();
@@ -207,7 +209,7 @@ export class Viewer {
       displacementMap: hmap, displacementScale: (m.hmax - m.hmin) * k, displacementBias: m.hmin * k,
     });
     pivot.add(new THREE.Mesh(new THREE.SphereGeometry(R, 512, 256), mat));
-    body.surfaceMat = mat;
+    this._overlayHook(body, mat);
     // radio local de la superficie (para colocar marcadores justo sobre el terreno)
     body.surfaceR = (lat, lon) => R + (m.hmin + sample(lat, lon) * (m.hmax - m.hmin)) * k;
     this._upload(color, normal, hmap);
@@ -219,7 +221,7 @@ export class Viewer {
     const mat = new THREE.MeshStandardMaterial({ map: t.map, roughness: id === 'earth' ? 0.7 : 0.95, metalness: 0 });
     if (t.bump) { mat.bumpMap = t.bump; mat.bumpScale = t.bumpScale * R; }
     pivot.add(new THREE.Mesh(new THREE.SphereGeometry(R, 96, 64), mat));
-    if (id !== 'earth') body.surfaceMat = mat;
+    if (id !== 'earth') this._overlayHook(body, mat);
     if (t.clouds) {
       body.clouds = new THREE.Mesh(new THREE.SphereGeometry(R * 1.012, 64, 48),
         new THREE.MeshStandardMaterial({ map: t.clouds, transparent: true, opacity: 0.55, depthWrite: false }));
@@ -279,6 +281,7 @@ export class Viewer {
     const p = this._earthPose(); this.camera.position.copy(p.pos); this.controls.target.copy(p.target);
     this.controls.enabled = false; this.controls.autoRotate = true; this.controls.autoRotateSpeed = 0.35; this.mode = 'intro';
     this.focusId = 'earth'; this._showOnly('earth');
+    if (this.rocket) this.rocket.visible = false;
   }
 
   _showOnly(...ids) {
@@ -307,9 +310,39 @@ export class Viewer {
       ps.copy(a.pos).multiplyScalar((1 - k) * (1 - k)).add(tmp.copy(ctrl).multiplyScalar(2 * (1 - k) * k)).add(tmp.copy(b.pos).multiplyScalar(k * k));
       this.camera.position.copy(ps);
       ts.lerpVectors(a.target, b.target, kt); this.camera.lookAt(ts); this.controls.target.copy(ts);
+      this._poseRocket(t, b.target);
       onProgress?.(t, Math.max(0, 1 - k));
     });
+    this.rocket.visible = false;
     this._endOrbit(id, b);
+  }
+
+  // ---------- cohete del viaje ----------
+  // Saturno V a escala con sus etapas y separaciones (js/saturno5.js)
+  _makeRocket() { return crearSaturnoV(); }
+
+  // Coloca el cohete delante de la cámara (vista 3/4 trasera) durante el viaje. t = 0..1
+  //   0–0,16  sube desde abajo (lanzamiento)   ·   crucero   ·   0,78–1  se adelanta hacia el destino y se pierde de vista
+  _poseRocket(t, dest) {
+    const r = this.rocket, cam = this.camera, q = cam.quaternion, now = performance.now() / 1000;
+    const sm = (a, b, x) => { const u = Math.min(1, Math.max(0, (x - a) / (b - a))); return u * u * (3 - 2 * u); };
+    const enter = sm(0, 0.07, t), leave = sm(0.78, 1, t);
+    const wide = Math.min(1, cam.aspect / 1.6);                     // en pantallas estrechas se acerca al centro
+    const off = new THREE.Vector3(
+      0.7 * wide * (1 - leave),
+      -0.1 - (1 - enter) * 1.5 + Math.sin(now * 1.3) * 0.02 + leave * 0.1,
+      -(2.5 + leave * leave * 4.5));
+    r.position.copy(off).applyQuaternion(q).add(cam.position);
+    // proa hacia donde se ve el destino en pantalla (vista casi lateral, para que se vean las etapas)
+    const d = new THREE.Vector3().copy(dest).project(cam), s = new THREE.Vector3().copy(r.position).project(cam);
+    let nx = (d.x - s.x) * cam.aspect, ny = d.y - s.y; const nl = Math.hypot(nx, ny);
+    if (d.z > 1 || nl < 1e-4) { nx = -0.8; ny = 1.0; } else { nx *= 1.3 / nl; ny *= 1.3 / nl; }   // destino detrás de la cámara: rumbo por defecto
+    const nose = new THREE.Vector3(nx, ny, -1).normalize().applyQuaternion(q);
+    nose.lerp(new THREE.Vector3().copy(dest).sub(r.position).normalize(), leave).normalize();
+    r.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), nose);
+    const st = r.userData.actualizar(t, this.current === 'mars');    // etapas, separaciones y llamas según el instante
+    r.scale.setScalar(st.escala * (1 - 0.6 * leave)); this.rocketPhase = st.fase;
+    r.visible = t < 0.995;
   }
 
   _endOrbit(id, pose) {
@@ -388,19 +421,47 @@ export class Viewer {
   }
 
   // ---------- capas de datos sobre el globo ----------
-  // Proyecta un lienzo equirectangular (x=0 ↔ 180°O, arriba = norte) como color propio de la superficie;
-  // el albedo se atenúa para que el relieve siga leyéndose debajo. `null` restaura el aspecto normal.
-  setOverlay(id, canvas) {
-    const b = this.bodies[id], mat = b?.surfaceMat; if (!mat) return false;
+  // La capa (lienzo equirectangular: x=0 ↔ 180°O, arriba = norte) sustituye al color de la superficie, pero
+  // modulada por el brillo de la textura original y con la iluminación normal: los cráteres y el relieve
+  // siguen leyéndose debajo del dato. Sin dato (alfa 0) = gris. Un poco de emisión mantiene legible la cara nocturna.
+  _overlayHook(body, mat) {
+    if (!this._blank) { this._blank = new THREE.DataTexture(new Uint8Array(4), 1, 1); this._blank.needsUpdate = true; }
+    const u = { uOverlay: { value: this._blank }, uOverlayMix: { value: 0 } };
+    mat.onBeforeCompile = (sh) => {
+      Object.assign(sh.uniforms, u);
+      sh.fragmentShader = sh.fragmentShader
+        .replace('#include <common>', '#include <common>\nuniform sampler2D uOverlay; uniform float uOverlayMix;')
+        .replace('#include <map_fragment>', `#include <map_fragment>
+          vec4 ovl = texture2D( uOverlay, vMapUv );
+          float ovLum = dot( diffuseColor.rgb, vec3( 0.2126, 0.7152, 0.0722 ) );
+          vec3 ovCol = mix( vec3( ovLum * 0.45 ), ovl.rgb * mix( 1.0, clamp( ovLum * 5.0, 0.3, 1.6 ), 0.6 ), ovl.a );
+          diffuseColor.rgb = mix( diffuseColor.rgb, ovCol, uOverlayMix );`)
+        .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
+          totalEmissiveRadiance += ovl.rgb * ovl.a * 0.3 * uOverlayMix;`);
+    };
+    body.surfaceMat = mat; body.overlay = u;
+  }
+
+  setOverlay(id, canvas, opacity = 1) {
+    const b = this.bodies[id], u = b?.overlay; if (!u) return false;
     b.overlayTex?.dispose(); b.overlayTex = null;
     if (canvas) {
       const t = new THREE.CanvasTexture(canvas);
       t.colorSpace = THREE.SRGBColorSpace; t.wrapS = THREE.RepeatWrapping; t.wrapT = THREE.ClampToEdgeWrapping;
       t.anisotropy = Math.min(8, this.renderer.capabilities.getMaxAnisotropy());
-      b.overlayTex = t; mat.emissiveMap = t; mat.emissive.set(0xffffff); mat.emissiveIntensity = 0.85; mat.color.set(0x6a6a6a);
-    } else { mat.emissiveMap = null; mat.emissive.set(0x000000); mat.color.set(0xffffff); }
-    mat.needsUpdate = true;
+      b.overlayTex = t; u.uOverlay.value = t; u.uOverlayMix.value = opacity;
+    } else { u.uOverlay.value = this._blank; u.uOverlayMix.value = 0; }
     return true;
+  }
+
+  setOverlayOpacity(id, opacity) { const u = this.bodies[id]?.overlay; if (u && u.uOverlay.value !== this._blank) u.uOverlayMix.value = opacity; }
+
+  // Texto junto a cada marcador de emplazamiento (p. ej. el valor de la capa activa); fn(m) → texto o nada
+  setMarkerValues(fn) {
+    for (const m of this.markers) {
+      if (m.cls === 'analog') continue;
+      m.el.querySelector('.m-val').textContent = fn?.(m) ?? '';
+    }
   }
 
   // Latitud/longitud bajo el cursor en el cuerpo actual (esfera de referencia, sin relieve) o null
@@ -432,7 +493,7 @@ export class Viewer {
   _addMarker({ id, label, lat, lon, body, rank, text, cls = '', delay = 0, score }, beacon = false) {
     const el = document.createElement('button');
     el.className = `marker ${cls} ${rank === 1 ? 'top' : ''}`; el.style.setProperty('--d', `${delay}ms`);
-    el.innerHTML = `<span class="m-dot">${text}</span><span class="m-label">${label}${score != null ? ` <b>${score}</b>` : ''}</span>`;
+    el.innerHTML = `<span class="m-dot">${text}</span><span class="m-val"></span><span class="m-label">${label}${score != null ? ` <b>${score}</b>` : ''}</span>`;
     el.title = label;
     el.addEventListener('click', (e) => { e.stopPropagation(); if (cls !== 'analog') this.onSiteClick?.(id); });
     this.layer.appendChild(el);
@@ -481,6 +542,7 @@ export class Viewer {
     this.sunDir.copy(off);
     this.sun.position.copy(this.controls.target).addScaledVector(off, 80); this.sun.target.position.copy(this.controls.target);
     const e = this.bodies.earth; if (e?.clouds) e.clouds.rotation.y += dt * 0.012;
+    if (this.rocket.visible) this.rocket.userData.parpadeo(performance.now() / 1000);   // parpadeo de las llamas
     // En el asistente la tarjeta ocupa la izquierda: desplazamos el encuadre para que la Tierra quede a la derecha
     const w = this.canvas.clientWidth, h = this.canvas.clientHeight;
     const goal = this.mode === 'intro' && w > 1000 ? 0.2 : 0;

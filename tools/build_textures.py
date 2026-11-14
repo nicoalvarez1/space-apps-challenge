@@ -182,6 +182,7 @@ def build_moon(manifest):
     img = resize(img, 8192, 4096) if img.size != (8192, 4096) else img
     save_jpg(img, OUT / "moon_color_hi.jpg", 88)
     save_jpg(resize(img, 4096, 2048), OUT / "moon_color_lo.jpg", 88)
+    save_jpg(resize(img, 512, 256), OUT / "moon_thumb.jpg", 80)   # miniatura para la portada
 
     raw = np.fromfile(CACHE / "moon/ldem_16.img", dtype="<i2").reshape(2880, 5760)
     h = roll_half(raw.astype(np.float32) * 0.5)           # metros respecto a la esfera de 1737,4 km
@@ -206,6 +207,7 @@ def build_mars(manifest):
             mosaic.paste(Image.open(CACHE / f"mars/tiles/4_{r}_{c}.jpg").convert("RGB"), (c * 256, r * 256))
     save_jpg(mosaic, OUT / "mars_color_hi.jpg", 88)
     save_jpg(resize(mosaic, 4096, 2048), OUT / "mars_color_lo.jpg", 88)
+    save_jpg(resize(mosaic, 512, 256), OUT / "mars_thumb.jpg", 80)   # miniatura para la portada
 
     raw = np.fromfile(CACHE / "mars/megt90n000eb.img", dtype=">i2").reshape(2880, 5760)
     h = roll_half(raw.astype(np.float32))

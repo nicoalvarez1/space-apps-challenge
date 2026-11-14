@@ -43,7 +43,7 @@ export function capa(id) {
 }
 
 export class Capa {
-  constructor(id, meta, datos) { this.id = id; this.meta = meta; this.d = datos; this.n = meta.filas; this.w = meta.columnas; this._rango = null; }
+  constructor(id, meta, datos) { this.id = id; this.meta = meta; this.d = datos; this.n = meta.filas; this.w = meta.columnas; this._anclas = null; }
 
   lat(i) { return this.meta.lat_centro_0 + i * this.meta.dlat; }
   lon(j) { return this.meta.lon_centro_0 + j * this.meta.dlon; }
@@ -98,13 +98,31 @@ export class Capa {
     return n ? { media: sum / n, min: 0, max, n } : null;
   }
 
-  // percentiles 2 y 98 (muestreo regular) para la escala de color
-  rango() {
-    if (this._rango) return this._rango;
-    const paso = Math.max(1, Math.floor(this.w / 720)), xs = [];
-    for (let i = 0; i < this.n; i += paso) for (let j = 0; j < this.w; j += paso) { const v = this.celda(i, j); if (v === v) xs.push(v); }
-    const a = Float64Array.from(xs).sort();
-    return (this._rango = [a[Math.floor(a.length * 0.02)], a[Math.min(a.length - 1, Math.floor(a.length * 0.98))]]);
+  // Anclas de la escala de color: cuantiles 2, 25, 50, 75 y 98 de la superficie (cada celda pesa cos(lat),
+  // porque en una rejilla equirectangular las celdas polares cubren menos área). Muestreo regular.
+  anclas() {
+    if (this._anclas) return this._anclas;
+    const paso = Math.max(1, Math.floor(this.w / 720)), vs = [], ws = [];
+    for (let i = 0; i < this.n; i += paso) {
+      const w = Math.cos(this.lat(i) * DEG);
+      for (let j = 0; j < this.w; j += paso) { const v = this.celda(i, j); if (v === v) { vs.push(v); ws.push(w); } }
+    }
+    const idx = Uint32Array.from(vs, (_, k) => k).sort((a, b) => vs[a] - vs[b]);
+    let total = 0; for (const w of ws) total += w;
+    const qs = [0.02, 0.25, 0.5, 0.75, 0.98], out = [];
+    let acc = 0, q = 0;
+    for (const k of idx) { acc += ws[k]; while (q < qs.length && acc >= qs[q] * total) { out.push(vs[k]); q++; } }
+    while (out.length < qs.length) out.push(vs[idx[idx.length - 1]]);
+    return (this._anclas = out);
+  }
+
+  // posición 0..1 de un valor en la escala (lineal a tramos entre anclas: cada tramo ocupa 1/4 de la rampa)
+  pos(v) {
+    const a = this.anclas(), n = a.length - 1;
+    if (v <= a[0]) return 0; if (v >= a[n]) return 1;
+    let k = 0; while (k < n - 1 && v > a[k + 1]) k++;
+    const d = a[k + 1] - a[k];
+    return (k + (d > 0 ? (v - a[k]) / d : 0)) / n;
   }
 }
 
@@ -113,38 +131,43 @@ export class Capa {
 // ---------------------------------------------------------------------------
 const nf = (v, d = 0) => v.toLocaleString('es-ES', { minimumFractionDigits: d, maximumFractionDigits: d });
 const kelvin = (v) => `${nf(v, 0)} K (${nf(v - 273.15, 0)} °C)`;
-const U = (dec, unidad) => (v) => `${nf(v, dec)} ${unidad}`;
+const U = (dec, unidad) => (v) => `${nf(v, dec)}${unidad === '°' ? '' : ' '}${unidad}`;
 
 // ---------------------------------------------------------------------------
 //  Capas que se pueden proyectar sobre el globo (una rampa de un solo tono por tipo de magnitud)
 // ---------------------------------------------------------------------------
+// Luminosidad siempre creciente (oscuro = poco, claro = mucho) dentro de una familia de tonos vecinos.
 export const RAMPAS = {
-  relieve: ['#07201f', '#0f5a52', '#22a892', '#5dffd0', '#eafff8'],
-  calor:   ['#210d04', '#6e2a0a', '#c8611a', '#ffa64d', '#fff0cc'],
-  agua:    ['#06142e', '#12407f', '#2f7fd6', '#72b8ff', '#e8f5ff'],
-  mineral: ['#200a22', '#5c1d63', '#a53fae', '#e284e6', '#ffe9fd'],
+  relieve: ['#150b38', '#1d4a7a', '#17827f', '#4bbf6b', '#d8e84a'],
+  calor:   ['#120a2e', '#5c1a5e', '#b83452', '#f0803a', '#fbe36a'],
+  agua:    ['#0a0f2c', '#1b3f8f', '#2f86c9', '#5fd0d6', '#dcfbe9'],
+  mineral: ['#170b2b', '#522073', '#a13a8c', '#e8718a', '#fcd9b0'],
 };
+
+// fmt = valor completo (cursor); breve = valor compacto (marcadores y lista); tick = solo el número (escala)
+const L = (id, corto, grupo, rampa, dec, unidad, por, enKelvin = false) => ({ id, corto, grupo, rampa, unidad, por,
+  tick: (v) => nf(v, dec), fmt: enKelvin ? kelvin : U(dec, unidad), breve: U(dec, unidad.length > 9 ? '' : unidad.replace(' en peso', '')) });
 
 export const CAPAS_GLOBO = {
   moon: [
-    { id: 'moon_elev', corto: 'Elevación', rampa: 'relieve', fmt: U(0, 'm') },
-    { id: 'moon_pendiente', corto: 'Pendiente', rampa: 'relieve', fmt: U(1, '°') },
-    { id: 'moon_rugosidad', corto: 'Rugosidad', rampa: 'relieve', fmt: U(2, 'm') },
-    { id: 'moon_tmax', corto: 'Temp. máx.', rampa: 'calor', fmt: kelvin },
-    { id: 'moon_tmin', corto: 'Temp. mín.', rampa: 'calor', fmt: kelvin },
-    { id: 'moon_tmedia', corto: 'Temp. media', rampa: 'calor', fmt: kelvin },
-    { id: 'moon_h', corto: 'Hidrógeno', rampa: 'agua', fmt: U(0, 'ppm') },
-    { id: 'moon_feo', corto: 'FeO', rampa: 'mineral', fmt: U(1, '%') },
+    L('moon_elev', 'Elevación', 'Relieve · LOLA', 'relieve', 0, 'm', 'Altura del terreno respecto a una esfera de 1737,4 km. Cuencas profundas y bordes altos condicionan la luz, el enlace y los accesos.'),
+    L('moon_pendiente', 'Pendiente', 'Relieve · LOLA', 'relieve', 1, '°', 'Cuanto menor es la pendiente, más seguro es alunizar, rodar y construir.'),
+    L('moon_rugosidad', 'Rugosidad', 'Relieve · LOLA', 'relieve', 2, 'm', 'Irregularidad del suelo a escala de metros: afecta al alunizaje y a los rovers.'),
+    L('moon_tmax', 'Máxima', 'Temperatura · Diviner', 'calor', 0, 'K', 'Pico de calor del día lunar: marca el esfuerzo de refrigeración de la base.', true),
+    L('moon_tmin', 'Mínima', 'Temperatura · Diviner', 'calor', 0, 'K', 'Frío de la noche lunar. Donde nunca se superan ~110 K el hielo de agua puede conservarse.', true),
+    L('moon_tmedia', 'Media', 'Temperatura · Diviner', 'calor', 0, 'K', 'Temperatura media del ciclo día-noche: orienta sobre la del subsuelo somero.', true),
+    L('moon_h', 'Hidrógeno', 'Composición · Lunar Prospector', 'agua', 0, 'ppm', 'Hidrógeno en el primer metro de suelo: el mejor indicio orbital de hielo de agua (máximos en los polos).'),
+    L('moon_feo', 'FeO', 'Composición · Lunar Prospector', 'mineral', 1, '% en peso', 'Hierro en el regolito: los mares basálticos ricos en FeO son mejores para extraer oxígeno y metales.'),
   ],
   mars: [
-    { id: 'mars_elev', corto: 'Elevación', rampa: 'relieve', fmt: U(0, 'm') },
-    { id: 'mars_inercia', corto: 'Inercia térmica', rampa: 'calor', fmt: U(0, 'J m⁻² K⁻¹ s⁻½') },
-    { id: 'mars_h2o', corto: 'Agua (H₂O)', rampa: 'agua', fmt: U(1, '%') },
-    { id: 'mars_fe', corto: 'Hierro', rampa: 'mineral', fmt: U(1, '%') },
-    { id: 'mars_si', corto: 'Silicio', rampa: 'mineral', fmt: U(1, '%') },
-    { id: 'mars_cl', corto: 'Cloro', rampa: 'mineral', fmt: U(2, '%') },
-    { id: 'mars_k', corto: 'Potasio', rampa: 'mineral', fmt: U(2, '%') },
-    { id: 'mars_th', corto: 'Torio', rampa: 'mineral', fmt: U(2, 'ppm') },
+    L('mars_elev', 'Elevación', 'Relieve · MOLA', 'relieve', 0, 'm', 'Altura sobre el areoide. Cuanto más bajo, más atmósfera encima para frenar el aterrizaje y atenuar la radiación.'),
+    L('mars_inercia', 'Inercia térmica', 'Suelo · TES', 'calor', 0, 'J m⁻² K⁻¹ s⁻½', 'Baja = polvo suelto; alta = roca o suelo compacto, con menos oscilación de temperatura entre el día y la noche.'),
+    L('mars_h2o', 'Agua (H₂O)', 'Composición · Odyssey GRS', 'agua', 1, '% en peso', 'Agua equivalente en el primer metro (hielo o minerales hidratados). Sin dato cerca de los polos.'),
+    L('mars_fe', 'Hierro', 'Composición · Odyssey GRS', 'mineral', 1, '% en peso', 'Materia prima para acero y construcción in situ.'),
+    L('mars_si', 'Silicio', 'Composición · Odyssey GRS', 'mineral', 1, '% en peso', 'Base para fabricar vidrio y células solares in situ.'),
+    L('mars_cl', 'Cloro', 'Composición · Odyssey GRS', 'mineral', 2, '% en peso', 'Indica sales y percloratos: un recurso, pero también un riesgo tóxico para la tripulación.'),
+    L('mars_k', 'Potasio', 'Composición · Odyssey GRS', 'mineral', 2, '% en peso', 'Trazador de la historia geológica y nutriente potencial para cultivos.'),
+    L('mars_th', 'Torio', 'Composición · Odyssey GRS', 'mineral', 2, 'ppm', 'Elemento radiactivo que traza la composición de la corteza.'),
   ],
 };
 
@@ -159,7 +182,7 @@ function lut(stops) {
 
 // Lienzo equirectangular (x=0 ↔ 180°O, y=0 ↔ 90°N). Cada píxel toma la celda que lo contiene; sin dato = transparente.
 export function pintarCapa(c, rampa) {
-  const W = Math.min(1440, Math.max(720, c.w)), H = W / 2, [lo, hi] = c.rango(), L = lut(RAMPAS[rampa]);
+  const W = Math.min(2048, Math.max(720, c.w)), H = W / 2, L = lut(RAMPAS[rampa]);
   const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
   const ctx = cv.getContext('2d'), img = ctx.createImageData(W, H), px = img.data;
   const cols = new Int32Array(W); for (let x = 0; x < W; x++) cols[x] = c.col(-180 + ((x + 0.5) / W) * 360);
@@ -167,12 +190,12 @@ export function pintarCapa(c, rampa) {
     const i = c.fila(90 - ((y + 0.5) / H) * 180);
     for (let x = 0; x < W; x++, o += 4) {
       const v = c.celda(i, cols[x]); if (v !== v) continue;
-      const k = Math.max(0, Math.min(255, Math.round(((v - lo) / (hi - lo)) * 255))) * 3;
+      const k = Math.round(c.pos(v) * 255) * 3;
       px[o] = L[k]; px[o + 1] = L[k + 1]; px[o + 2] = L[k + 2]; px[o + 3] = 255;
     }
   }
   ctx.putImageData(img, 0, 0);
-  return { canvas: cv, min: lo, max: hi };
+  return cv;
 }
 
 // ---------------------------------------------------------------------------
