@@ -1,0 +1,1423 @@
+{
+ "esquema": 1,
+ "capas": {
+  "mars_elev": {
+   "cuerpo": "mars",
+   "variable": "elevacion",
+   "nombre": "Elevación sobre el areoide",
+   "unidades": "m",
+   "archivo": "mola_elev_8ppd.bin",
+   "escala": 1,
+   "desplazamiento": 0,
+   "sin_dato": null,
+   "lat_centro_0": 89.9375,
+   "dlat": -0.125,
+   "lon_centro_0": 0.0625,
+   "dlon": 0.125,
+   "lon_ciclica": true,
+   "resolucion": "0,125° (≈7,4 km en el ecuador)",
+   "procesado": "Elevación = radio medio (MEGR) − radio del areoide (MEGA), ambos a 1/16°. Media de cada bloque 2×2 → 1/8°, redondeada al metro (mitades al par). Fila 0 = 90°N, columna 0 = 0°E; lat = 90 − (i+0,5)/8; lon = (j+0,5)/8.",
+   "nota": "No es idéntica a MEGT (topografía MEDIANA oficial): MEGR es la MEDIA del radio en la celda. Comparación a 1/8°: |dif| mediana 1.5 m, p99 35.2 m, máx 535.0 m (en escarpes).",
+   "comparacion_megt": {
+    "celdas_16ppd_iguales_pct": 15.44,
+    "dif_16ppd_min_m": -1102,
+    "dif_16ppd_max_m": 1525,
+    "dif_8ppd_abs_p50_m": 1.5,
+    "dif_8ppd_abs_p99_m": 35.2,
+    "dif_8ppd_abs_max_m": 535.0
+   },
+   "fuente": {
+    "mision": "Mars Global Surveyor · MOLA",
+    "dataset": "MGS-M-MOLA-5-MEGDR-L3-V1.0",
+    "productos": [
+     "MEGR90N000EB.IMG (radio medio)",
+     "MEGA90N000EB.IMG (areoide)"
+    ],
+    "urls": [
+     "https://pds-geosciences.wustl.edu/mgs/urn-nasa-pds-mgs_mola_topography_derived/meg016/megr90n000eb.img",
+     "https://pds-geosciences.wustl.edu/mgs/urn-nasa-pds-mgs_mola_topography_derived/meg016/mega90n000eb.img",
+     "https://pds-geosciences.wustl.edu/mgs/urn-nasa-pds-mgs_mola_topography_derived/meg016/megr90n000eb.lbl",
+     "https://pds-geosciences.wustl.edu/mgs/urn-nasa-pds-mgs_mola_topography_derived/meg016/mega90n000eb.lbl"
+    ],
+    "md5_originales": {
+     "megr90n000eb.img": "938818829D62F6ADE15B844B62C2D0EC",
+     "mega90n000eb.img": "8A5F8DBD431E4EB1CA6017822971ADFC"
+    },
+    "cita": "Smith, D. E. et al., MGS MOLA Mission Experiment Gridded Data Record (MEGDR), NASA Planetary Data System, MGS-M-MOLA-5-MEGDR-L3-V1.0, 2003."
+   },
+   "tipo": "int16",
+   "filas": 1440,
+   "columnas": 2880,
+   "bytes": 8294400,
+   "sha256": "fb287860873d5106a17e8a9d847d25ddba6ac97cb7d2bd522116b6a770e2ad2d",
+   "estadisticas": {
+    "validos": 4147200,
+    "total": 4147200,
+    "min": -8136.0,
+    "max": 21160.0,
+    "media": -720.5861
+   },
+   "generado": "2026-11-14T11:33:19Z"
+  },
+  "mars_disparos": {
+   "cuerpo": "mars",
+   "variable": "disparos",
+   "nombre": "Disparos MOLA en la celda",
+   "unidades": "disparos (tope 255)",
+   "archivo": "mola_disparos_8ppd.bin",
+   "escala": 1,
+   "desplazamiento": 0,
+   "sin_dato": null,
+   "lat_centro_0": 89.9375,
+   "dlat": -0.125,
+   "lon_centro_0": 0.0625,
+   "dlon": 0.125,
+   "lon_ciclica": true,
+   "resolucion": "0,125° (≈7,4 km en el ecuador)",
+   "procesado": "Suma de MEGC (disparos por celda de 1/16°) en cada bloque 2×2; se guarda con tope 255. 0 = la elevación de la celda es interpolada (ningún disparo).",
+   "fuente": {
+    "mision": "Mars Global Surveyor · MOLA",
+    "dataset": "MGS-M-MOLA-5-MEGDR-L3-V1.0",
+    "productos": [
+     "MEGC90N000EB.IMG (nº de observaciones)"
+    ],
+    "urls": [
+     "https://pds-geosciences.wustl.edu/mgs/urn-nasa-pds-mgs_mola_topography_derived/meg016/megc90n000eb.img",
+     "https://pds-geosciences.wustl.edu/mgs/urn-nasa-pds-mgs_mola_topography_derived/meg016/megc90n000eb.lbl"
+    ],
+    "md5_originales": {
+     "megc90n000eb.img": "198EA0B1E0B7D14B911A85C5FFAB0648"
+    },
+    "cita": "Smith, D. E. et al., MGS MOLA Mission Experiment Gridded Data Record (MEGDR), NASA Planetary Data System, MGS-M-MOLA-5-MEGDR-L3-V1.0, 2003."
+   },
+   "tipo": "uint8",
+   "filas": 1440,
+   "columnas": 2880,
+   "bytes": 4147200,
+   "sha256": "6482f35c3c8df2877b06e64f2594514290a8163ceff344ab9bbe6707fd4efb55",
+   "estadisticas": {
+    "validos": 4147200,
+    "total": 4147200,
+    "min": 0.0,
+    "max": 255.0,
+    "media": 137.3362
+   },
+   "generado": "2026-11-14T11:33:19Z"
+  },
+  "mars_h2o": {
+   "cuerpo": "mars",
+   "variable": "agua",
+   "nombre": "Agua equivalente (H2O) en el primer metro",
+   "unidades": "% en peso",
+   "archivo": "grs_h2o_5deg.bin",
+   "escala": 1,
+   "desplazamiento": 0,
+   "sin_dato": null,
+   "lat_centro_0": 87.5,
+   "dlat": -5.0,
+   "lon_centro_0": -177.5,
+   "dlon": 5.0,
+   "lon_ciclica": true,
+   "resolucion": "5° × 5° (≈300 km), suavizado con ventana de 10°",
+   "procesado": "Copia de la columna CONCENTRATION de la tabla PDS (9999.999 = sin dato → NaN). La tabla ya viene suavizada con una ventana de 10° y rebineada a 5°. Sin interpolar.",
+   "fuente": {
+    "mision": "2001 Mars Odyssey · Gamma Ray Spectrometer",
+    "dataset": "ODY-M-GRS-5-ELEMENTS-V1.0",
+    "productos": [
+     "H2O_SR_5X5.TAB"
+    ],
+    "urls": [
+     "https://pds-geosciences.wustl.edu/ody/ody-m-grs-5-elements-v1/odgm_xxxx/data/smoothed/h2o_sr_5x5.tab",
+     "https://pds-geosciences.wustl.edu/ody/ody-m-grs-5-elements-v1/odgm_xxxx/data/smoothed/h2o_sr_5x5.lbl"
+    ],
+    "md5_originales": {
+     "h2o_sr_5x5.tab": "238AC1207D8F085FB4EA3B2F4B3B018D"
+    },
+    "cita": "Boynton, W. V. et al. (2007), Concentration of H, Si, Cl, K, Fe, and Th in the low- and mid-latitude regions of Mars, J. Geophys. Res., 112, E12S99, doi:10.1029/2007JE002887. Datos: ODY-M-GRS-5-ELEMENTS-V1.0, NASA PDS."
+   },
+   "tipo": "float32",
+   "filas": 36,
+   "columnas": 72,
+   "bytes": 10368,
+   "sha256": "4e8339a3f7f883d476c634a72949658a9e7548207a2425ef535f543df8cf2796",
+   "estadisticas": {
+    "validos": 1508,
+    "total": 2592,
+    "min": 1.645,
+    "max": 7.398,
+    "media": 3.9816
+   },
+   "generado": "2026-11-14T11:33:44Z"
+  },
+  "mars_h2o_sigma": {
+   "cuerpo": "mars",
+   "variable": "agua_sigma",
+   "nombre": "Incertidumbre de Agua equivalente (H2O) en el primer metro",
+   "unidades": "% en peso",
+   "archivo": "grs_h2o_sigma_5deg.bin",
+   "escala": 1,
+   "desplazamiento": 0,
+   "sin_dato": null,
+   "lat_centro_0": 87.5,
+   "dlat": -5.0,
+   "lon_centro_0": -177.5,
+   "dlon": 5.0,
+   "lon_ciclica": true,
+   "resolucion": "5° × 5° (≈300 km), suavizado con ventana de 10°",
+   "procesado": "Columna SIGMA WITH CFS (error con factores de corrección) de la misma tabla.",
+   "fuente": {
+    "mision": "2001 Mars Odyssey · Gamma Ray Spectrometer",
+    "dataset": "ODY-M-GRS-5-ELEMENTS-V1.0",
+    "productos": [
+     "H2O_SR_5X5.TAB"
+    ],
+    "urls": [
+     "https://pds-geosciences.wustl.edu/ody/ody-m-grs-5-elements-v1/odgm_xxxx/data/smoothed/h2o_sr_5x5.tab",
+     "https://pds-geosciences.wustl.edu/ody/ody-m-grs-5-elements-v1/odgm_xxxx/data/smoothed/h2o_sr_5x5.lbl"
+    ],
+    "md5_originales": {
+     "h2o_sr_5x5.tab": "238AC1207D8F085FB4EA3B2F4B3B018D"
+    },
+    "cita": "Boynton, W. V. et al. (2007), Concentration of H, Si, Cl, K, Fe, and Th in the low- and mid-latitude regions of Mars, J. Geophys. Res., 112, E12S99, doi:10.1029/2007JE002887. Datos: ODY-M-GRS-5-ELEMENTS-V1.0, NASA PDS."
+   },
+   "tipo": "float32",
+   "filas": 36,
+   "columnas": 72,
+   "bytes": 10368,
+   "sha256": "6433a907e94c5757b3f9b8bf4d3c993801e5c562668ac1723fad0d1860a669f9",
+   "estadisticas": {
+    "validos": 1508,
+    "total": 2592,
+    "min": 0.263,
+    "max": 0.861,
+    "media": 0.4357
+   },
+   "generado": "2026-11-14T11:33:44Z"
+  },
+  "mars_fe": {
+   "cuerpo": "mars",
+   "variable": "hierro",
+   "nombre": "Hierro (Fe)",
+   "unidades": "% en peso",
+   "archivo": "grs_fe_5deg.bin",
+   "escala": 1,
+   "desplazamiento": 0,
+   "sin_dato": null,
+   "lat_centro_0": 87.5,
+   "dlat": -5.0,
+   "lon_centro_0": -177.5,
+   "dlon": 5.0,
+   "lon_ciclica": true,
+   "resolucion": "5° × 5° (≈300 km), suavizado con ventana de 10°",
+   "procesado": "Copia de la columna CONCENTRATION de la tabla PDS (9999.999 = sin dato → NaN). La tabla ya viene suavizada con una ventana de 10° y rebineada a 5°. Sin interpolar.",
+   "fuente": {
+    "mision": "2001 Mars Odyssey · Gamma Ray Spectrometer",
+    "dataset": "ODY-M-GRS-5-ELEMENTS-V1.0",
+    "productos": [
+     "FE_SR_5X5.TAB"
+    ],
+    "urls": [
+     "https://pds-geosciences.wustl.edu/ody/ody-m-grs-5-elements-v1/odgm_xxxx/data/smoothed/fe_sr_5x5.tab",
+     "https://pds-geosciences.wustl.edu/ody/ody-m-grs-5-elements-v1/odgm_xxxx/data/smoothed/fe_sr_5x5.lbl"
+    ],
+    "md5_originales": {
+     "fe_sr_5x5.tab": "64D15CABD88C6FA3D2ED6463129253DE"
+    },
+    "cita": "Boynton, W. V. et al. (2007), Concentration of H, Si, Cl, K, Fe, and Th in the low- and mid-latitude regions of Mars, J. Geophys. Res., 112, E12S99, doi:10.1029/2007JE002887. Datos: ODY-M-GRS-5-ELEMENTS-V1.0, NASA PDS."
+   },
+   "tipo": "float32",
+   "filas": 36,
+   "columnas": 72,
+   "bytes": 10368,
+   "sha256": "af792d3df7452bf9963ea91ad3097b14e43bd44df9cb9c14bd6d9fc0f48187f5",
+   "estadisticas": {
+    "validos": 1508,
+    "total": 2592,
+    "min": 10.632,
+    "max": 19.301,
+    "media": 14.4668
+   },
+   "generado": "2026-11-14T11:33:44Z"
+  },
+  "mars_fe_sigma": {
+   "cuerpo": "mars",
+   "variable": "hierro_sigma",
+   "nombre": "Incertidumbre de Hierro (Fe)",
+   "unidades": "% en peso",
+   "archivo": "grs_fe_sigma_5deg.bin",
+   "escala": 1,
+   "desplazamiento": 0,
+   "sin_dato": null,
+   "lat_centro_0": 87.5,
+   "dlat": -5.0,
+   "lon_centro_0": -177.5,
+   "dlon": 5.0,
+   "lon_ciclica": true,
+   "resolucion": "5° × 5° (≈300 km), suavizado con ventana de 10°",
+   "procesado": "Columna SIGMA WITH CFS (error con factores de corrección) de la misma tabla.",
+   "fuente": {
+    "mision": "2001 Mars Odyssey · Gamma Ray Spectrometer",
+    "dataset": "ODY-M-GRS-5-ELEMENTS-V1.0",
+    "productos": [
+     "FE_SR_5X5.TAB"
+    ],
+    "urls": [
+     "https://pds-geosciences.wustl.edu/ody/ody-m-grs-5-elements-v1/odgm_xxxx/data/smoothed/fe_sr_5x5.tab",
+     "https://pds-geosciences.wustl.edu/ody/ody-m-grs-5-elements-v1/odgm_xxxx/data/smoothed/fe_sr_5x5.lbl"
+    ],
+    "md5_originales": {
+     "fe_sr_5x5.tab": "64D15CABD88C6FA3D2ED6463129253DE"
+    },
+    "cita": "Boynton, W. V. et al. (2007), Concentration of H, Si, Cl, K, Fe, and Th in the low- and mid-latitude regions of Mars, J. Geophys. Res., 112, E12S99, doi:10.1029/2007JE002887. Datos: ODY-M-GRS-5-ELEMENTS-V1.0, NASA PDS."
+   },
+   "tipo": "float32",
+   "filas": 36,
+   "columnas": 72,
+   "bytes": 10368,
+   "sha256": "c5039d8f3d1d63a37545cc8b0f38093bf9ab9a78637db88d753653454364db18",
+   "estadisticas": {
+    "validos": 1508,
+    "total": 2592,
+    "min": 0.719,
+    "max": 2.128,
+    "media": 1.0913
+   },
+   "generado": "2026-11-14T11:33:44Z"
+  },
+  "mars_si": {
+   "cuerpo": "mars",
+   "variable": "silicio",
+   "nombre": "Silicio (Si)",
+   "unidades": "% en peso",
+   "archivo": "grs_si_5deg.bin",
+   "escala": 1,
+   "desplazamiento": 0,
+   "sin_dato": null,
+   "lat_centro_0": 87.5,
+   "dlat": -5.0,
+   "lon_centro_0": -177.5,
+   "dlon": 5.0,
+   "lon_ciclica": true,
+   "resolucion": "5° × 5° (≈300 km), suavizado con ventana de 10°",
+   "procesado": "Copia de la columna CONCENTRATION de la tabla PDS (9999.999 = sin dato → NaN). La tabla ya viene suavizada con una ventana de 10° y rebineada a 5°. Sin interpolar.",
+   "fuente": {
+    "mision": "2001 Mars Odyssey · Gamma Ray Spectrometer",
+    "dataset": "ODY-M-GRS-5-ELEMENTS-V1.0",
+    "productos": [
+     "SI_SR_5X5.TAB"
+    ],
+    "urls": [
+     "https://pds-geosciences.wustl.edu/ody/ody-m-grs-5-elements-v1/odgm_xxxx/data/smoothed/si_sr_5x5.tab",
+     "https://pds-geosciences.wustl.edu/ody/ody-m-grs-5-elements-v1/odgm_xxxx/data/smoothed/si_sr_5x5.lbl"
+    ],
+    "md5_originales": {
+     "si_sr_5x5.tab": "27B771512B484BC800A182CDA23E00A6"
+    },
+    "cita": "Boynton, W. V. et al. (2007), Concentration of H, Si, Cl, K, Fe, and Th in the low- and mid-latitude regions of Mars, J. Geophys. Res., 112, E12S99, doi:10.1029/2007JE002887. Datos: ODY-M-GRS-5-ELEMENTS-V1.0, NASA PDS."
+   },
+   "tipo": "float32",
+   "filas": 36,
+   "columnas": 72,
+   "bytes": 10368,
+   "sha256": "a8c14170ae54d1944f80531c07f63bfa7b8a11a8f5617d1e220190a227e83e74",
+   "estadisticas": {
+    "validos": 1508,
+    "total": 2592,
+    "min": 18.107,
+    "max": 22.113,
+    "media": 20.2581
+   },
+   "generado": "2026-11-14T11:33:44Z"
+  },
+  "mars_si_sigma": {
+   "cuerpo": "mars",
+   "variable": "silicio_sigma",
+   "nombre": "Incertidumbre de Silicio (Si)",
+   "unidades": "% en peso",
+   "archivo": "grs_si_sigma_5deg.bin",
+   "escala": 1,
+   "desplazamiento": 0,
+   "sin_dato": null,
+   "lat_centro_0": 87.5,
+   "dlat": -5.0,
+   "lon_centro_0": -177.5,
+   "dlon": 5.0,
+   "lon_ciclica": true,
+   "resolucion": "5° × 5° (≈300 km), suavizado con ventana de 10°",
+   "procesado": "Columna SIGMA WITH CFS (error con factores de corrección) de la misma tabla.",
+   "fuente": {
+    "mision": "2001 Mars Odyssey · Gamma Ray Spectrometer",
+    "dataset": "ODY-M-GRS-5-ELEMENTS-V1.0",
+    "productos": [
+     "SI_SR_5X5.TAB"
+    ],
+    "urls": [
+     "https://pds-geosciences.wustl.edu/ody/ody-m-grs-5-elements-v1/odgm_xxxx/data/smoothed/si_sr_5x5.tab",
+     "https://pds-geosciences.wustl.edu/ody/ody-m-grs-5-elements-v1/odgm_xxxx/data/smoothed/si_sr_5x5.lbl"
+    ],
+    "md5_originales": {
+     "si_sr_5x5.tab": "27B771512B484BC800A182CDA23E00A6"
+    },
+    "cita": "Boynton, W. V. et al. (2007), Concentration of H, Si, Cl, K, Fe, and Th in the low- and mid-latitude regions of Mars, J. Geophys. Res., 112, E12S99, doi:10.1029/2007JE002887. Datos: ODY-M-GRS-5-ELEMENTS-V1.0, NASA PDS."
+   },
+   "tipo": "float32",
+   "filas": 36,
+   "columnas": 72,
+   "bytes": 10368,
+   "sha256": "77d1582fb79a62f4b22a1ceba7db914e632ee62f0886a0ab740dda2357ff6ba7",
+   "estadisticas": {
+    "validos": 1508,
+    "total": 2592,
+    "min": 0.263,
+    "max": 0.972,
+    "media": 0.4368
+   },
+   "generado": "2026-11-14T11:33:44Z"
+  },
+  "mars_cl": {
+   "cuerpo": "mars",
+   "variable": "cloro",
+   "nombre": "Cloro (Cl)",
+   "unidades": "% en peso",
+   "archivo": "grs_cl_5deg.bin",
+   "escala": 1,
+   "desplazamiento": 0,
+   "sin_dato": null,
+   "lat_centro_0": 87.5,
+   "dlat": -5.0,
+   "lon_centro_0": -177.5,
+   "dlon": 5.0,
+   "lon_ciclica": true,
+   "resolucion": "5° × 5° (≈300 km), suavizado con ventana de 10°",
+   "procesado": "Copia de la columna CONCENTRATION de la tabla PDS (9999.999 = sin dato → NaN). La tabla ya viene suavizada con una ventana de 10° y rebineada a 5°. Sin interpolar.",
+   "fuente": {
+    "mision": "2001 Mars Odyssey · Gamma Ray Spectrometer",
+    "dataset": "ODY-M-GRS-5-ELEMENTS-V1.0",
+    "productos": [
+     "CL_SR_5X5.TAB"
+    ],
+    "urls": [
+     "https://pds-geosciences.wustl.edu/ody/ody-m-grs-5-elements-v1/odgm_xxxx/data/smoothed/cl_sr_5x5.tab",
+     "https://pds-geosciences.wustl.edu/ody/ody-m-grs-5-elements-v1/odgm_xxxx/data/smoothed/cl_sr_5x5.lbl"
+    ],
+    "md5_originales": {
+     "cl_sr_5x5.tab": "7131A9C41B33816F7EA645ECFB7DC454"
+    },
+    "cita": "Boynton, W. V. et al. (2007), Concentration of H, Si, Cl, K, Fe, and Th in the low- and mid-latitude regions of Mars, J. Geophys. Res., 112, E12S99, doi:10.1029/2007JE002887. Datos: ODY-M-GRS-5-ELEMENTS-V1.0, NASA PDS."
+   },
+   "tipo": "float32",
+   "filas": 36,
+   "columnas": 72,
+   "bytes": 10368,
+   "sha256": "b245693520f98f192495b28ce3608988f2b0ad5178e42722491287a1f0515304",
+   "estadisticas": {
+    "validos": 1508,
+    "total": 2592,
+    "min": 0.216,
+    "max": 0.797,
+    "media": 0.482
+   },
+   "generado": "2026-11-14T11:33:44Z"
+  },
+  "mars_cl_sigma": {
+   "cuerpo": "mars",
+   "variable": "cloro_sigma",
+   "nombre": "Incertidumbre de Cloro (Cl)",
+   "unidades": "% en peso",
+   "archivo": "grs_cl_sigma_5deg.bin",
+   "escala": 1,
+   "desplazamiento": 0,
+   "sin_dato": null,
+   "lat_centro_0": 87.5,
+   "dlat": -5.0,
+   "lon_centro_0": -177.5,
+   "dlon": 5.0,
+   "lon_ciclica": true,
+   "resolucion": "5° × 5° (≈300 km), suavizado con ventana de 10°",
+   "procesado": "Columna SIGMA WITH CFS (error con factores de corrección) de la misma tabla.",
+   "fuente": {
+    "mision": "2001 Mars Odyssey · Gamma Ray Spectrometer",
+    "dataset": "ODY-M-GRS-5-ELEMENTS-V1.0",
+    "productos": [
+     "CL_SR_5X5.TAB"
+    ],
+    "urls": [
+     "https://pds-geosciences.wustl.edu/ody/ody-m-grs-5-elements-v1/odgm_xxxx/data/smoothed/cl_sr_5x5.tab",
+     "https://pds-geosciences.wustl.edu/ody/ody-m-grs-5-elements-v1/odgm_xxxx/data/smoothed/cl_sr_5x5.lbl"
+    ],
+    "md5_originales": {
+     "cl_sr_5x5.tab": "7131A9C41B33816F7EA645ECFB7DC454"
+    },
+    "cita": "Boynton, W. V. et al. (2007), Concentration of H, Si, Cl, K, Fe, and Th in the low- and mid-latitude regions of Mars, J. Geophys. Res., 112, E12S99, doi:10.1029/2007JE002887. Datos: ODY-M-GRS-5-ELEMENTS-V1.0, NASA PDS."
+   },
+   "tipo": "float32",
+   "filas": 36,
+   "columnas": 72,
+   "bytes": 10368,
+   "sha256": "8e21382365e67211323a2f33be01b9c4046c3301de10720803c6d7e1b6a0b12a",
+   "estadisticas": {
+    "validos": 1508,
+    "total": 2592,
+    "min": 0.03,
+    "max": 0.077,
+    "media": 0.0452
+   },
+   "generado": "2026-11-14T11:33:44Z"
+  },
+  "mars_k": {
+   "cuerpo": "mars",
+   "variable": "potasio",
+   "nombre": "Potasio (K)",
+   "unidades": "% en peso",
+   "archivo": "grs_k_5deg.bin",
+   "escala": 1,
+   "desplazamiento": 0,
+   "sin_dato": null,
+   "lat_centro_0": 87.5,
+   "dlat": -5.0,
+   "lon_centro_0": -177.5,
+   "dlon": 5.0,
+   "lon_ciclica": true,
+   "resolucion": "5° × 5° (≈300 km), suavizado con ventana de 10°",
+   "procesado": "Copia de la columna CONCENTRATION de la tabla PDS (9999.999 = sin dato → NaN). La tabla ya viene suavizada con una ventana de 10° y rebineada a 5°. Sin interpolar.",
+   "fuente": {
+    "mision": "2001 Mars Odyssey · Gamma Ray Spectrometer",
+    "dataset": "ODY-M-GRS-5-ELEMENTS-V1.0",
+    "productos": [
+     "K_SR_5X5.TAB"
+    ],
+    "urls": [
+     "https://pds-geosciences.wustl.edu/ody/ody-m-grs-5-elements-v1/odgm_xxxx/data/smoothed/k_sr_5x5.tab",
+     "https://pds-geosciences.wustl.edu/ody/ody-m-grs-5-elements-v1/odgm_xxxx/data/smoothed/k_sr_5x5.lbl"
+    ],
+    "md5_originales": {
+     "k_sr_5x5.tab": "28CB993610B22B7737E6617CB977E024"
+    },
+    "cita": "Boynton, W. V. et al. (2007), Concentration of H, Si, Cl, K, Fe, and Th in the low- and mid-latitude regions of Mars, J. Geophys. Res., 112, E12S99, doi:10.1029/2007JE002887. Datos: ODY-M-GRS-5-ELEMENTS-V1.0, NASA PDS."
+   },
+   "tipo": "float32",
+   "filas": 36,
+   "columnas": 72,
+   "bytes": 10368,
+   "sha256": "ec5ad1d15fdc21824560d5b22f84466c757bd4267cb5123ad41fd25cc0c845a0",
+   "estadisticas": {
+    "validos": 2592,
+    "total": 2592,
+    "min": 0.071,
+    "max": 0.561,
+    "media": 0.2984
+   },
+   "generado": "2026-11-14T11:33:44Z"
+  },
+  "mars_k_sigma": {
+   "cuerpo": "mars",
+   "variable": "potasio_sigma",
+   "nombre": "Incertidumbre de Potasio (K)",
+   "unidades": "% en peso",
+   "archivo": "grs_k_sigma_5deg.bin",
+   "escala": 1,
+   "desplazamiento": 0,
+   "sin_dato": null,
+   "lat_centro_0": 87.5,
+   "dlat": -5.0,
+   "lon_centro_0": -177.5,
+   "dlon": 5.0,
+   "lon_ciclica": true,
+   "resolucion": "5° × 5° (≈300 km), suavizado con ventana de 10°",
+   "procesado": "Columna SIGMA (la columna SIGMA WITH CFS no aplica a este elemento) de la misma tabla.",
+   "fuente": {
+    "mision": "2001 Mars Odyssey · Gamma Ray Spectrometer",
+    "dataset": "ODY-M-GRS-5-ELEMENTS-V1.0",
+    "productos": [
+     "K_SR_5X5.TAB"
+    ],
+    "urls": [
+     "https://pds-geosciences.wustl.edu/ody/ody-m-grs-5-elements-v1/odgm_xxxx/data/smoothed/k_sr_5x5.tab",
+     "https://pds-geosciences.wustl.edu/ody/ody-m-grs-5-elements-v1/odgm_xxxx/data/smoothed/k_sr_5x5.lbl"
+    ],
+    "md5_originales": {
+     "k_sr_5x5.tab": "28CB993610B22B7737E6617CB977E024"
+    },
+    "cita": "Boynton, W. V. et al. (2007), Concentration of H, Si, Cl, K, Fe, and Th in the low- and mid-latitude regions of Mars, J. Geophys. Res., 112, E12S99, doi:10.1029/2007JE002887. Datos: ODY-M-GRS-5-ELEMENTS-V1.0, NASA PDS."
+   },
+   "tipo": "float32",
+   "filas": 36,
+   "columnas": 72,
+   "bytes": 10368,
+   "sha256": "d8fcd772fe797ea1abf2ade81bcc340beb77f161aea39e4f46a229d2ecd051f8",
+   "estadisticas": {
+    "validos": 2592,
+    "total": 2592,
+    "min": 0.011,
+    "max": 0.043,
+    "media": 0.0202
+   },
+   "generado": "2026-11-14T11:33:44Z"
+  },
+  "mars_th": {
+   "cuerpo": "mars",
+   "variable": "torio",
+   "nombre": "Torio (Th)",
+   "unidades": "ppm",
+   "archivo": "grs_th_5deg.bin",
+   "escala": 1,
+   "desplazamiento": 0,
+   "sin_dato": null,
+   "lat_centro_0": 87.5,
+   "dlat": -5.0,
+   "lon_centro_0": -177.5,
+   "dlon": 5.0,
+   "lon_ciclica": true,
+   "resolucion": "5° × 5° (≈300 km), suavizado con ventana de 10°",
+   "procesado": "Copia de la columna CONCENTRATION de la tabla PDS (9999.999 = sin dato → NaN). La tabla ya viene suavizada con una ventana de 10° y rebineada a 5°. Sin interpolar.",
+   "fuente": {
+    "mision": "2001 Mars Odyssey · Gamma Ray Spectrometer",
+    "dataset": "ODY-M-GRS-5-ELEMENTS-V1.0",
+    "productos": [
+     "TH_SR_5X5.TAB"
+    ],
+    "urls": [
+     "https://pds-geosciences.wustl.edu/ody/ody-m-grs-5-elements-v1/odgm_xxxx/data/smoothed/th_sr_5x5.tab",
+     "https://pds-geosciences.wustl.edu/ody/ody-m-grs-5-elements-v1/odgm_xxxx/data/smoothed/th_sr_5x5.lbl"
+    ],
+    "md5_originales": {
+     "th_sr_5x5.tab": "AFD5AC10830A27559451480663790E80"
+    },
+    "cita": "Boynton, W. V. et al. (2007), Concentration of H, Si, Cl, K, Fe, and Th in the low- and mid-latitude regions of Mars, J. Geophys. Res., 112, E12S99, doi:10.1029/2007JE002887. Datos: ODY-M-GRS-5-ELEMENTS-V1.0, NASA PDS."
+   },
+   "tipo": "float32",
+   "filas": 36,
+   "columnas": 72,
+   "bytes": 10368,
+   "sha256": "3ac1476dc924e6049b29f260b2835f74390cc49370e9c96cbcae64ed4d6224b1",
+   "estadisticas": {
+    "validos": 2592,
+    "total": 2592,
+    "min": 0.163,
+    "max": 0.946,
+    "media": 0.5399
+   },
+   "generado": "2026-11-14T11:33:44Z"
+  },
+  "mars_th_sigma": {
+   "cuerpo": "mars",
+   "variable": "torio_sigma",
+   "nombre": "Incertidumbre de Torio (Th)",
+   "unidades": "ppm",
+   "archivo": "grs_th_sigma_5deg.bin",
+   "escala": 1,
+   "desplazamiento": 0,
+   "sin_dato": null,
+   "lat_centro_0": 87.5,
+   "dlat": -5.0,
+   "lon_centro_0": -177.5,
+   "dlon": 5.0,
+   "lon_ciclica": true,
+   "resolucion": "5° × 5° (≈300 km), suavizado con ventana de 10°",
+   "procesado": "Columna SIGMA (la columna SIGMA WITH CFS no aplica a este elemento) de la misma tabla.",
+   "fuente": {
+    "mision": "2001 Mars Odyssey · Gamma Ray Spectrometer",
+    "dataset": "ODY-M-GRS-5-ELEMENTS-V1.0",
+    "productos": [
+     "TH_SR_5X5.TAB"
+    ],
+    "urls": [
+     "https://pds-geosciences.wustl.edu/ody/ody-m-grs-5-elements-v1/odgm_xxxx/data/smoothed/th_sr_5x5.tab",
+     "https://pds-geosciences.wustl.edu/ody/ody-m-grs-5-elements-v1/odgm_xxxx/data/smoothed/th_sr_5x5.lbl"
+    ],
+    "md5_originales": {
+     "th_sr_5x5.tab": "AFD5AC10830A27559451480663790E80"
+    },
+    "cita": "Boynton, W. V. et al. (2007), Concentration of H, Si, Cl, K, Fe, and Th in the low- and mid-latitude regions of Mars, J. Geophys. Res., 112, E12S99, doi:10.1029/2007JE002887. Datos: ODY-M-GRS-5-ELEMENTS-V1.0, NASA PDS."
+   },
+   "tipo": "float32",
+   "filas": 36,
+   "columnas": 72,
+   "bytes": 10368,
+   "sha256": "deec5583b803a8fb5c9ca201d139895b8c8575e7415c9c49174cf3bf7426d997",
+   "estadisticas": {
+    "validos": 2592,
+    "total": 2592,
+    "min": 0.035,
+    "max": 0.092,
+    "media": 0.0569
+   },
+   "generado": "2026-11-14T11:33:44Z"
+  },
+  "mars_inercia": {
+   "cuerpo": "mars",
+   "variable": "inercia_termica",
+   "nombre": "Inercia térmica nocturna (TES)",
+   "unidades": "J m⁻² K⁻¹ s⁻¹ᐟ²",
+   "archivo": "tes_inercia_noche_4ppd.bin",
+   "escala": 1,
+   "desplazamiento": 0,
+   "sin_dato": 0,
+   "lat_centro_0": 89.875,
+   "dlat": -0.25,
+   "lon_centro_0": -179.875,
+   "dlon": 0.25,
+   "lon_ciclica": true,
+   "resolucion": "0,25° (≈15 km en el ecuador)",
+   "procesado": "Media, en cada bloque 5×5 del mapa de 1/20°, de los píxeles MEDIDOS (máscara de interpolación ≠ 0 e inercia > 0). Bloques sin ningún píxel medido = sin dato.",
+   "nota": "Rango derivado 5–5000; el mapa usa temperaturas nocturnas de 3 años marcianos (1999–2004). En latitudes polares el valor está afectado por hielos estacionales (ver DATASET.CAT).",
+   "fuente": {
+    "mision": "Mars Global Surveyor · TES",
+    "dataset": "MGS-M-TES-5-TIMAP-V1.0",
+    "productos": [
+     "GLOBAL_TI_NIGHT_2007.IMG",
+     "GLOBAL_TI_MSK_NIGHT_2007.IMG"
+    ],
+    "urls": [
+     "https://pds-geosciences.wustl.edu/mgs/mgs-m-tes-5-timap-v1/mgst_9001/data/global_ti_night_2007.img",
+     "https://pds-geosciences.wustl.edu/mgs/mgs-m-tes-5-timap-v1/mgst_9001/data/global_ti_night_2007.lbl",
+     "https://pds-geosciences.wustl.edu/mgs/mgs-m-tes-5-timap-v1/mgst_9001/data/global_ti_msk_night_2007.img",
+     "https://pds-geosciences.wustl.edu/mgs/mgs-m-tes-5-timap-v1/mgst_9001/catalog/dataset.cat"
+    ],
+    "md5_originales": {
+     "global_ti_night_2007.img": "0CB2BA2BC40DE8749E798853E66063C3",
+     "global_ti_msk_night_2007.img": "E6C1DE6B7E8A87A20345F720154240A8"
+    },
+    "cita": "Putzig, N. E. y Mellon, M. T. (2007), Apparent thermal inertia and the surface heterogeneity of Mars, Icarus, 191, 68–94. Datos: MGS-M-TES-5-TIMAP-V1.0, NASA PDS."
+   },
+   "tipo": "int16",
+   "filas": 720,
+   "columnas": 1440,
+   "bytes": 2073600,
+   "sha256": "85ae09fc136b580bef23301a9d6ccfb3645073ce95ea13e94b8f5cce7f33d14e",
+   "estadisticas": {
+    "validos": 1000656,
+    "total": 1036800,
+    "min": 5.0,
+    "max": 4988.0,
+    "media": 281.4666
+   },
+   "generado": "2026-11-14T11:33:19Z"
+  },
+  "moon_elev": {
+   "cuerpo": "moon",
+   "variable": "elevacion",
+   "nombre": "Altura sobre la esfera de 1737,4 km",
+   "unidades": "m",
+   "archivo": "lola_elev_8ppd.bin",
+   "escala": 1,
+   "desplazamiento": 0,
+   "sin_dato": null,
+   "lat_centro_0": 89.9375,
+   "dlat": -0.125,
+   "lon_centro_0": 0.0625,
+   "dlon": 0.125,
+   "lon_ciclica": true,
+   "resolucion": "0,125° (≈3,8 km en el ecuador)",
+   "procesado": "Altura = DN × 0,5 m (SCALING_FACTOR de la etiqueta) respecto a una esfera de 1737,4 km. Media de cada bloque 2×2 de 1/16° → 1/8°, redondeada al metro. Fila 0 = 90°N, columna 0 = 0°E; lat = 90 − (i+0,5)/8; lon = (j+0,5)/8.",
+   "nota": "Es altura respecto a una esfera, no respecto al geoide lunar. La etiqueta declara MINIMUM/MAXIMUM -18150/21580 DN, pero el archivo (MD5 verificado) contiene -17963/21371 DN.",
+   "extremos_16ppd": {
+    "dn_min_archivo": -17963,
+    "dn_max_archivo": 21371,
+    "dn_min_etiqueta": -18150,
+    "dn_max_etiqueta": 21580,
+    "max_m": 10685.5,
+    "max_lat": 5.4062,
+    "max_lonE": 201.3438,
+    "min_m": -8981.5,
+    "min_lat": -70.3438,
+    "min_lonE": 187.5312
+   },
+   "fuente": {
+    "mision": "Lunar Reconnaissance Orbiter · LOLA",
+    "dataset": "LRO-L-LOLA-4-GDR-V1.0",
+    "productos": [
+     "LDEM_16 (altura), versión V3.1"
+    ],
+    "urls": [
+     "https://pds-geosciences.wustl.edu/lro/lro-l-lola-3-rdr-v1/lrolol_1xxx/data/lola_gdr/cylindrical/img/ldem_16.img",
+     "https://pds-geosciences.wustl.edu/lro/lro-l-lola-3-rdr-v1/lrolol_1xxx/data/lola_gdr/cylindrical/img/ldem_16.lbl"
+    ],
+    "md5_originales": {
+     "ldem_16.img": "87D937CF968462A61043E1E5B3166D65"
+    },
+    "cita": "Smith, D. E. et al., LRO LOLA Gridded Data Record (GDR), NASA Planetary Data System, LRO-L-LOLA-4-GDR-V1.0."
+   },
+   "tipo": "int16",
+   "filas": 1440,
+   "columnas": 2880,
+   "bytes": 8294400,
+   "sha256": "06beff58d8a42d445cb08602df9ab9cb5625a46174d12baa0680afb9202cc067",
+   "estadisticas": {
+    "validos": 4147200,
+    "total": 4147200,
+    "min": -8729.0,
+    "max": 10552.0,
+    "media": -519.2024
+   },
+   "generado": "2026-11-14T11:37:45Z"
+  },
+  "moon_disparos": {
+   "cuerpo": "moon",
+   "variable": "disparos",
+   "nombre": "Disparos LOLA en la celda",
+   "unidades": "disparos (tope 255)",
+   "archivo": "lola_disparos_8ppd.bin",
+   "escala": 1,
+   "desplazamiento": 0,
+   "sin_dato": null,
+   "lat_centro_0": 89.9375,
+   "dlat": -0.125,
+   "lon_centro_0": 0.0625,
+   "dlon": 0.125,
+   "lon_ciclica": true,
+   "resolucion": "0,125° (≈3,8 km en el ecuador)",
+   "procesado": "Suma de LDEC_16 (disparos por celda de 1/16°) en cada bloque 2×2; tope 255. 0 = altura interpolada.",
+   "fuente": {
+    "mision": "Lunar Reconnaissance Orbiter · LOLA",
+    "dataset": "LRO-L-LOLA-4-GDR-V1.0",
+    "productos": [
+     "LDEC_16 (nº de observaciones), versión V3.0"
+    ],
+    "urls": [
+     "https://pds-geosciences.wustl.edu/lro/lro-l-lola-3-rdr-v1/lrolol_1xxx/data/lola_gdr/cylindrical/img/ldec_16.img",
+     "https://pds-geosciences.wustl.edu/lro/lro-l-lola-3-rdr-v1/lrolol_1xxx/data/lola_gdr/cylindrical/img/ldec_16.lbl"
+    ],
+    "md5_originales": {
+     "ldec_16.img": "5D9572B75662D1242AA91F5F6AC917B6"
+    },
+    "cita": "Smith, D. E. et al., LRO LOLA Gridded Data Record (GDR), NASA Planetary Data System, LRO-L-LOLA-4-GDR-V1.0."
+   },
+   "tipo": "uint8",
+   "filas": 1440,
+   "columnas": 2880,
+   "bytes": 4147200,
+   "sha256": "cb6ac6b2056a58ad368b9039fd37c7a410da4a3022456391807bffed0d2a5b5a",
+   "estadisticas": {
+    "validos": 4147200,
+    "total": 4147200,
+    "min": 0.0,
+    "max": 255.0,
+    "media": 253.7417
+   },
+   "generado": "2026-11-14T11:37:45Z"
+  },
+  "moon_pendiente": {
+   "cuerpo": "moon",
+   "variable": "pendiente_lola",
+   "nombre": "Pendiente bidireccional LOLA",
+   "unidades": "°",
+   "archivo": "lola_pendiente_8ppd.bin",
+   "escala": 0.01,
+   "desplazamiento": 0,
+   "sin_dato": 65535,
+   "lat_centro_0": 89.9375,
+   "dlat": -0.125,
+   "lon_centro_0": 0.0625,
+   "dlon": 0.125,
+   "lon_ciclica": true,
+   "resolucion": "0,125° (≈3,8 km en el ecuador)",
+   "procesado": "Valor físico = DN × 0.0015 + 45.0 (etiqueta); -32768 = sin dato. Media de las celdas válidas de cada bloque 2×2 de 1/16° → 1/8°. Guardado como entero = valor × 100.",
+   "nota": "La etiqueta describe el producto como pendiente «a partir de un ajuste plano a tres disparos sucesivos» con base variable de 30 a 120 m, y en la descripción de la imagen cita «a baseline of 240 meters»: la propia etiqueta no es consistente; se toma como pendiente a escala de decenas–centenas de metros. Datos de 2009–2011 (hasta la fase LRO_SM_17).",
+   "fuente": {
+    "mision": "Lunar Reconnaissance Orbiter · LOLA",
+    "dataset": "LRO-L-LOLA-4-GDR-V1.0",
+    "productos": [
+     "LDSM_16 (pendiente), versión V2.0"
+    ],
+    "urls": [
+     "https://pds-geosciences.wustl.edu/lro/lro-l-lola-3-rdr-v1/lrolol_1xxx/data/lola_gdr/cylindrical/img/ldsm_16.img",
+     "https://pds-geosciences.wustl.edu/lro/lro-l-lola-3-rdr-v1/lrolol_1xxx/data/lola_gdr/cylindrical/img/ldsm_16.lbl"
+    ],
+    "md5_originales": {
+     "ldsm_16.img": "A8A4DD2CA68AB1AB0FFBFA3F4579E6C1"
+    },
+    "cita": "Smith, D. E. et al., LRO LOLA Gridded Data Record (GDR), NASA Planetary Data System, LRO-L-LOLA-4-GDR-V1.0."
+   },
+   "tipo": "uint16",
+   "filas": 1440,
+   "columnas": 2880,
+   "bytes": 8294400,
+   "sha256": "c56e31b7858a433c504d1eaecb702ba3f9ee7675f2618315bb46cbfdb6b6d491",
+   "estadisticas": {
+    "validos": 4141095,
+    "total": 4147200,
+    "min": 0.17,
+    "max": 47.06,
+    "media": 8.6644
+   },
+   "generado": "2026-11-14T11:37:45Z"
+  },
+  "moon_rugosidad": {
+   "cuerpo": "moon",
+   "variable": "rugosidad_lola",
+   "nombre": "Rugosidad LOLA (desviación típica de alturas)",
+   "unidades": "m",
+   "archivo": "lola_rugosidad_8ppd.bin",
+   "escala": 0.001,
+   "desplazamiento": 0,
+   "sin_dato": 65535,
+   "lat_centro_0": 89.9375,
+   "dlat": -0.125,
+   "lon_centro_0": 0.0625,
+   "dlon": 0.125,
+   "lon_ciclica": true,
+   "resolucion": "0,125° (≈3,8 km en el ecuador)",
+   "procesado": "Valor físico = DN × 0.001 + 0.0 (etiqueta); -32768 = sin dato. Media de las celdas válidas de cada bloque 2×2 de 1/16° → 1/8°. Guardado como entero = valor × 1000.",
+   "nota": "Desviación típica residual de alturas tras ajustar un plano a 5–15 retornos de tres disparos sucesivos (base 30–120 m). Datos de 2009–2011.",
+   "fuente": {
+    "mision": "Lunar Reconnaissance Orbiter · LOLA",
+    "dataset": "LRO-L-LOLA-4-GDR-V1.0",
+    "productos": [
+     "LDRM_16 (rugosidad), versión V2.0"
+    ],
+    "urls": [
+     "https://pds-geosciences.wustl.edu/lro/lro-l-lola-3-rdr-v1/lrolol_1xxx/data/lola_gdr/cylindrical/img/ldrm_16.img",
+     "https://pds-geosciences.wustl.edu/lro/lro-l-lola-3-rdr-v1/lrolol_1xxx/data/lola_gdr/cylindrical/img/ldrm_16.lbl"
+    ],
+    "md5_originales": {
+     "ldrm_16.img": "B58888900578FC1F152101530D6881E5"
+    },
+    "cita": "Smith, D. E. et al., LRO LOLA Gridded Data Record (GDR), NASA Planetary Data System, LRO-L-LOLA-4-GDR-V1.0."
+   },
+   "tipo": "uint16",
+   "filas": 1440,
+   "columnas": 2880,
+   "bytes": 8294400,
+   "sha256": "d8574b6ab88d1446267170d58e2da65db666e7ed2b6ffd1ccc93ba02fa98ca91",
+   "estadisticas": {
+    "validos": 4141095,
+    "total": 4147200,
+    "min": 0.026,
+    "max": 12.005,
+    "media": 0.9634
+   },
+   "generado": "2026-11-14T11:37:45Z"
+  },
+  "moon_h": {
+   "cuerpo": "moon",
+   "variable": "hidrogeno",
+   "nombre": "Hidrógeno (espectrómetro de neutrones)",
+   "unidades": "ppm",
+   "archivo": "lp_hidrogeno_05deg.bin",
+   "escala": 1,
+   "desplazamiento": 0,
+   "sin_dato": null,
+   "lat_centro_0": 89.75,
+   "dlat": -0.5,
+   "lon_centro_0": -179.75,
+   "dlon": 0.5,
+   "lon_ciclica": true,
+   "resolucion": "0,5° (≈15 km); huella real del instrumento mayor",
+   "procesado": "Copia de la tabla ASCII publicada (última columna), reordenada con el norte en la fila 0. Se comprobó que coincide con la versión binaria .dat (valor × 10) con diferencia ≤ 1 unidad.",
+   "nota": "Producto especial del equipo de Lunar Prospector alojado en el PDS Geosciences Node: la propia página advierte de que NO es un archivo PDS revisado por pares. Contiene 4180 celdas con valor negativo (no físico) y 1 celda con desbordamiento de formato («***», se deja sin dato). La fuente avisa: las abundancias «no son necesariamente fiables en regiones con mucho torio y tierras raras».",
+   "fuente": {
+    "mision": "Lunar Prospector · espectrómetros de neutrones y rayos gamma",
+    "dataset": "Productos especiales (no archivo PDS)",
+    "productos": [
+     "hydrogenhd.txt",
+     "hydrogenhd.dat"
+    ],
+    "urls": [
+     "https://pds-geosciences.wustl.edu/missions/lunarp/reduced/hydrogenhd.txt",
+     "https://pds-geosciences.wustl.edu/missions/lunarp/reduced/hydrogenhd.dat",
+     "https://pds-geosciences.wustl.edu/missions/lunarp/reduced_special.html"
+    ],
+    "md5_originales": {},
+    "cita": "Feldman, W. C. et al. (2001), Evidence for water ice near the lunar poles, J. Geophys. Res., 106(E10), 23231–23251."
+   },
+   "tipo": "float32",
+   "filas": 360,
+   "columnas": 720,
+   "bytes": 1036800,
+   "sha256": "81019a147ab6359d27be4a0f7134164d446b16ee28849d9396b052a87bdf12a1",
+   "estadisticas": {
+    "validos": 259199,
+    "total": 259200,
+    "min": -56.197,
+    "max": 195.55,
+    "media": 62.7815
+   },
+   "generado": "2026-11-14T11:37:45Z"
+  },
+  "moon_feo": {
+   "cuerpo": "moon",
+   "variable": "feo",
+   "nombre": "Óxido de hierro FeO (espectrómetro gamma)",
+   "unidades": "% en peso",
+   "archivo": "lp_feo_05deg.bin",
+   "escala": 1,
+   "desplazamiento": 0,
+   "sin_dato": null,
+   "lat_centro_0": 89.75,
+   "dlat": -0.5,
+   "lon_centro_0": -179.75,
+   "dlon": 0.5,
+   "lon_ciclica": true,
+   "resolucion": "0,5° (≈15 km); huella real del instrumento mayor",
+   "procesado": "Copia de la tabla ASCII publicada (última columna), reordenada con el norte en la fila 0. Se comprobó que coincide con la versión binaria .dat (valor × 10) con diferencia ≤ 1 unidad.",
+   "nota": "Producto especial del equipo de Lunar Prospector alojado en el PDS Geosciences Node: la propia página advierte de que NO es un archivo PDS revisado por pares.",
+   "fuente": {
+    "mision": "Lunar Prospector · espectrómetros de neutrones y rayos gamma",
+    "dataset": "Productos especiales (no archivo PDS)",
+    "productos": [
+     "ironhd.txt",
+     "ironhd.dat"
+    ],
+    "urls": [
+     "https://pds-geosciences.wustl.edu/missions/lunarp/reduced/ironhd.txt",
+     "https://pds-geosciences.wustl.edu/missions/lunarp/reduced/ironhd.dat",
+     "https://pds-geosciences.wustl.edu/missions/lunarp/reduced_special.html"
+    ],
+    "md5_originales": {},
+    "cita": "Lawrence, D. J. et al. (2002), Iron abundances on the lunar surface as measured by the Lunar Prospector gamma-ray and neutron spectrometers, J. Geophys. Res., 107(E12), 5130."
+   },
+   "tipo": "float32",
+   "filas": 360,
+   "columnas": 720,
+   "bytes": 1036800,
+   "sha256": "3ef514d9360f529733c2e3a4a91a5be99c532e15b51f51f77c4b670752b1ac7a",
+   "estadisticas": {
+    "validos": 259200,
+    "total": 259200,
+    "min": 2.622,
+    "max": 26.645,
+    "media": 7.8374
+   },
+   "generado": "2026-11-14T11:37:45Z"
+  },
+  "moon_tmax": {
+   "cuerpo": "moon",
+   "variable": "temp_max",
+   "nombre": "Temperatura bolométrica máxima de la curva diurna",
+   "unidades": "K",
+   "archivo": "diviner_temp_max_05deg.bin",
+   "escala": 0.1,
+   "desplazamiento": 0,
+   "sin_dato": -32768,
+   "lat_centro_0": 89.75,
+   "dlat": -0.5,
+   "lon_centro_0": -179.75,
+   "dlon": 0.5,
+   "lon_ciclica": true,
+   "resolucion": "0,5° (≈15 km en el ecuador)",
+   "procesado": "Temperatura de brillo bolométrica media (tbol) de observaciones nadir 2009-07-05 → 2015-04-01, agrupada por la fuente en celdas de 0,5° y 96 intervalos de 0,25 h de hora local. Máximo de tbol entre los intervalos horarios con dato.",
+   "nota": "Solo una parte de los 96 intervalos horarios tiene observaciones en cada celda (ver capa de nº de intervalos): la máxima y la mínima son las de los intervalos observados. A 0,5° no se resuelven sombras permanentes individuales.",
+   "fuente": {
+    "mision": "Lunar Reconnaissance Orbiter · Diviner",
+    "dataset": "LRO-L-DLRE-5-GCP-V1.0",
+    "productos": [
+     "GLOBAL_CUMUL_AVG_CYL_<banda>_002.TAB (18 bandas de 10° de latitud), columna tbol"
+    ],
+    "urls": [
+     "https://pds-geosciences.wustl.edu/lro/urn-nasa-pds-lro_diviner_derived1/data_derived_gcp/",
+     "https://pds-geosciences.wustl.edu/lro/urn-nasa-pds-lro_diviner_derived1/label/dlre_gcp.fmt"
+    ],
+    "md5_originales": {
+     "global_cumul_avg_cyl_90s80s_002.tab": "3200DD1267B676CAD89300D344A88010",
+     "global_cumul_avg_cyl_80s70s_002.tab": "D26AA3C85B82105DCB15825DE076A4CE",
+     "global_cumul_avg_cyl_70s60s_002.tab": "B3C131B9C243168FE7B0060D4DC418F8",
+     "global_cumul_avg_cyl_60s50s_002.tab": "62C5B3F9764E0626697398776A019005",
+     "global_cumul_avg_cyl_50s40s_002.tab": "26727CFA54C758DFD8E0274C52D24E0E",
+     "global_cumul_avg_cyl_40s30s_002.tab": "3D7F97803C6A9082E9A6274892A4BCBD",
+     "global_cumul_avg_cyl_30s20s_002.tab": "24916E51C8FB8BEFC14AD83F761D7DE8",
+     "global_cumul_avg_cyl_20s10s_002.tab": "0B13CB5D7F244E3BB5DC8545A7D08EAC",
+     "global_cumul_avg_cyl_10s00s_002.tab": "C1FC628BA4FBEDF0DE620573D215686C",
+     "global_cumul_avg_cyl_00n10n_002.tab": "0044E6DF5344775442241AFB8E1A6E66",
+     "global_cumul_avg_cyl_10n20n_002.tab": "66DCD592B7BB614FFA72EB110D0C506A",
+     "global_cumul_avg_cyl_20n30n_002.tab": "DEDFE3F2CCC0EE71E993D9B5BCFC69F3",
+     "global_cumul_avg_cyl_30n40n_002.tab": "5DFE356183B56E4E1DF3DE54ECC10278",
+     "global_cumul_avg_cyl_40n50n_002.tab": "837DC75075C1B342DD30427FB4D468EB",
+     "global_cumul_avg_cyl_50n60n_002.tab": "93C039247E7F7AD5E54D0358243C5488",
+     "global_cumul_avg_cyl_60n70n_002.tab": "71E6784DD51CC2833D907DA337546663",
+     "global_cumul_avg_cyl_70n80n_002.tab": "C132354928AD9B09A3DA974B6AF9F215",
+     "global_cumul_avg_cyl_80n90n_002.tab": "396E9215AB3925B3B1FACF6D487050C4"
+    },
+    "cita": "Williams, J.-P. et al. (2017), The global surface temperatures of the Moon as measured by the Diviner Lunar Radiometer Experiment, Icarus, 283, 300–325. Datos: LRO-L-DLRE-5-GCP-V1.0, NASA PDS."
+   },
+   "tipo": "int16",
+   "filas": 360,
+   "columnas": 720,
+   "bytes": 518400,
+   "sha256": "eee1c9722bffd9bc61378425172620bd8f46480be06b5edf0c7954aeeb7c07c2",
+   "estadisticas": {
+    "validos": 259200,
+    "total": 259200,
+    "min": 51.3,
+    "max": 439.0,
+    "media": 335.3384
+   },
+   "generado": "2026-11-14T11:38:00Z"
+  },
+  "moon_tmin": {
+   "cuerpo": "moon",
+   "variable": "temp_min",
+   "nombre": "Temperatura bolométrica mínima de la curva diurna",
+   "unidades": "K",
+   "archivo": "diviner_temp_min_05deg.bin",
+   "escala": 0.1,
+   "desplazamiento": 0,
+   "sin_dato": -32768,
+   "lat_centro_0": 89.75,
+   "dlat": -0.5,
+   "lon_centro_0": -179.75,
+   "dlon": 0.5,
+   "lon_ciclica": true,
+   "resolucion": "0,5° (≈15 km en el ecuador)",
+   "procesado": "Temperatura de brillo bolométrica media (tbol) de observaciones nadir 2009-07-05 → 2015-04-01, agrupada por la fuente en celdas de 0,5° y 96 intervalos de 0,25 h de hora local. Mínimo de tbol entre los intervalos horarios con dato.",
+   "nota": "Solo una parte de los 96 intervalos horarios tiene observaciones en cada celda (ver capa de nº de intervalos): la máxima y la mínima son las de los intervalos observados. A 0,5° no se resuelven sombras permanentes individuales.",
+   "fuente": {
+    "mision": "Lunar Reconnaissance Orbiter · Diviner",
+    "dataset": "LRO-L-DLRE-5-GCP-V1.0",
+    "productos": [
+     "GLOBAL_CUMUL_AVG_CYL_<banda>_002.TAB (18 bandas de 10° de latitud), columna tbol"
+    ],
+    "urls": [
+     "https://pds-geosciences.wustl.edu/lro/urn-nasa-pds-lro_diviner_derived1/data_derived_gcp/",
+     "https://pds-geosciences.wustl.edu/lro/urn-nasa-pds-lro_diviner_derived1/label/dlre_gcp.fmt"
+    ],
+    "md5_originales": {
+     "global_cumul_avg_cyl_90s80s_002.tab": "3200DD1267B676CAD89300D344A88010",
+     "global_cumul_avg_cyl_80s70s_002.tab": "D26AA3C85B82105DCB15825DE076A4CE",
+     "global_cumul_avg_cyl_70s60s_002.tab": "B3C131B9C243168FE7B0060D4DC418F8",
+     "global_cumul_avg_cyl_60s50s_002.tab": "62C5B3F9764E0626697398776A019005",
+     "global_cumul_avg_cyl_50s40s_002.tab": "26727CFA54C758DFD8E0274C52D24E0E",
+     "global_cumul_avg_cyl_40s30s_002.tab": "3D7F97803C6A9082E9A6274892A4BCBD",
+     "global_cumul_avg_cyl_30s20s_002.tab": "24916E51C8FB8BEFC14AD83F761D7DE8",
+     "global_cumul_avg_cyl_20s10s_002.tab": "0B13CB5D7F244E3BB5DC8545A7D08EAC",
+     "global_cumul_avg_cyl_10s00s_002.tab": "C1FC628BA4FBEDF0DE620573D215686C",
+     "global_cumul_avg_cyl_00n10n_002.tab": "0044E6DF5344775442241AFB8E1A6E66",
+     "global_cumul_avg_cyl_10n20n_002.tab": "66DCD592B7BB614FFA72EB110D0C506A",
+     "global_cumul_avg_cyl_20n30n_002.tab": "DEDFE3F2CCC0EE71E993D9B5BCFC69F3",
+     "global_cumul_avg_cyl_30n40n_002.tab": "5DFE356183B56E4E1DF3DE54ECC10278",
+     "global_cumul_avg_cyl_40n50n_002.tab": "837DC75075C1B342DD30427FB4D468EB",
+     "global_cumul_avg_cyl_50n60n_002.tab": "93C039247E7F7AD5E54D0358243C5488",
+     "global_cumul_avg_cyl_60n70n_002.tab": "71E6784DD51CC2833D907DA337546663",
+     "global_cumul_avg_cyl_70n80n_002.tab": "C132354928AD9B09A3DA974B6AF9F215",
+     "global_cumul_avg_cyl_80n90n_002.tab": "396E9215AB3925B3B1FACF6D487050C4"
+    },
+    "cita": "Williams, J.-P. et al. (2017), The global surface temperatures of the Moon as measured by the Diviner Lunar Radiometer Experiment, Icarus, 283, 300–325. Datos: LRO-L-DLRE-5-GCP-V1.0, NASA PDS."
+   },
+   "tipo": "int16",
+   "filas": 360,
+   "columnas": 720,
+   "bytes": 518400,
+   "sha256": "d9eb1159c3107010c9f03a6953ba48a271d6b6cc2e53741a1a59b9d023705dc4",
+   "estadisticas": {
+    "validos": 259200,
+    "total": 259200,
+    "min": 19.4,
+    "max": 132.0,
+    "media": 82.8904
+   },
+   "generado": "2026-11-14T11:38:00Z"
+  },
+  "moon_tmedia": {
+   "cuerpo": "moon",
+   "variable": "temp_media",
+   "nombre": "Temperatura bolométrica media diurna",
+   "unidades": "K",
+   "archivo": "diviner_temp_media_05deg.bin",
+   "escala": 0.1,
+   "desplazamiento": 0,
+   "sin_dato": -32768,
+   "lat_centro_0": 89.75,
+   "dlat": -0.5,
+   "lon_centro_0": -179.75,
+   "dlon": 0.5,
+   "lon_ciclica": true,
+   "resolucion": "0,5° (≈15 km en el ecuador)",
+   "procesado": "Temperatura de brillo bolométrica media (tbol) de observaciones nadir 2009-07-05 → 2015-04-01, agrupada por la fuente en celdas de 0,5° y 96 intervalos de 0,25 h de hora local. Integral de la poligonal periódica que une los intervalos con dato (interpolación lineal en hora local) dividida por 24 h. Solo es representativa si el hueco máximo sin datos es pequeño (ver capa de hueco).",
+   "nota": "Solo una parte de los 96 intervalos horarios tiene observaciones en cada celda (ver capa de nº de intervalos): la máxima y la mínima son las de los intervalos observados. A 0,5° no se resuelven sombras permanentes individuales.",
+   "fuente": {
+    "mision": "Lunar Reconnaissance Orbiter · Diviner",
+    "dataset": "LRO-L-DLRE-5-GCP-V1.0",
+    "productos": [
+     "GLOBAL_CUMUL_AVG_CYL_<banda>_002.TAB (18 bandas de 10° de latitud), columna tbol"
+    ],
+    "urls": [
+     "https://pds-geosciences.wustl.edu/lro/urn-nasa-pds-lro_diviner_derived1/data_derived_gcp/",
+     "https://pds-geosciences.wustl.edu/lro/urn-nasa-pds-lro_diviner_derived1/label/dlre_gcp.fmt"
+    ],
+    "md5_originales": {
+     "global_cumul_avg_cyl_90s80s_002.tab": "3200DD1267B676CAD89300D344A88010",
+     "global_cumul_avg_cyl_80s70s_002.tab": "D26AA3C85B82105DCB15825DE076A4CE",
+     "global_cumul_avg_cyl_70s60s_002.tab": "B3C131B9C243168FE7B0060D4DC418F8",
+     "global_cumul_avg_cyl_60s50s_002.tab": "62C5B3F9764E0626697398776A019005",
+     "global_cumul_avg_cyl_50s40s_002.tab": "26727CFA54C758DFD8E0274C52D24E0E",
+     "global_cumul_avg_cyl_40s30s_002.tab": "3D7F97803C6A9082E9A6274892A4BCBD",
+     "global_cumul_avg_cyl_30s20s_002.tab": "24916E51C8FB8BEFC14AD83F761D7DE8",
+     "global_cumul_avg_cyl_20s10s_002.tab": "0B13CB5D7F244E3BB5DC8545A7D08EAC",
+     "global_cumul_avg_cyl_10s00s_002.tab": "C1FC628BA4FBEDF0DE620573D215686C",
+     "global_cumul_avg_cyl_00n10n_002.tab": "0044E6DF5344775442241AFB8E1A6E66",
+     "global_cumul_avg_cyl_10n20n_002.tab": "66DCD592B7BB614FFA72EB110D0C506A",
+     "global_cumul_avg_cyl_20n30n_002.tab": "DEDFE3F2CCC0EE71E993D9B5BCFC69F3",
+     "global_cumul_avg_cyl_30n40n_002.tab": "5DFE356183B56E4E1DF3DE54ECC10278",
+     "global_cumul_avg_cyl_40n50n_002.tab": "837DC75075C1B342DD30427FB4D468EB",
+     "global_cumul_avg_cyl_50n60n_002.tab": "93C039247E7F7AD5E54D0358243C5488",
+     "global_cumul_avg_cyl_60n70n_002.tab": "71E6784DD51CC2833D907DA337546663",
+     "global_cumul_avg_cyl_70n80n_002.tab": "C132354928AD9B09A3DA974B6AF9F215",
+     "global_cumul_avg_cyl_80n90n_002.tab": "396E9215AB3925B3B1FACF6D487050C4"
+    },
+    "cita": "Williams, J.-P. et al. (2017), The global surface temperatures of the Moon as measured by the Diviner Lunar Radiometer Experiment, Icarus, 283, 300–325. Datos: LRO-L-DLRE-5-GCP-V1.0, NASA PDS."
+   },
+   "tipo": "int16",
+   "filas": 360,
+   "columnas": 720,
+   "bytes": 518400,
+   "sha256": "5cc3f302410c865f61ee13eab8d13d8c2f4bb7e3c093c72fc5ed27d8caef1bb2",
+   "estadisticas": {
+    "validos": 259200,
+    "total": 259200,
+    "min": 40.2,
+    "max": 230.8,
+    "media": 185.7448
+   },
+   "generado": "2026-11-14T11:38:00Z"
+  },
+  "moon_t_nbins": {
+   "cuerpo": "moon",
+   "variable": "temp_n_intervalos",
+   "nombre": "Intervalos horarios con dato (de 96)",
+   "unidades": "intervalos",
+   "archivo": "diviner_temp_n_intervalos_05deg.bin",
+   "escala": 1,
+   "desplazamiento": 0,
+   "sin_dato": null,
+   "lat_centro_0": 89.75,
+   "dlat": -0.5,
+   "lon_centro_0": -179.75,
+   "dlon": 0.5,
+   "lon_ciclica": true,
+   "resolucion": "0,5° (≈15 km en el ecuador)",
+   "procesado": "Temperatura de brillo bolométrica media (tbol) de observaciones nadir 2009-07-05 → 2015-04-01, agrupada por la fuente en celdas de 0,5° y 96 intervalos de 0,25 h de hora local. Número de intervalos de 0,25 h con tbol válido.",
+   "fuente": {
+    "mision": "Lunar Reconnaissance Orbiter · Diviner",
+    "dataset": "LRO-L-DLRE-5-GCP-V1.0",
+    "productos": [
+     "GLOBAL_CUMUL_AVG_CYL_<banda>_002.TAB (18 bandas de 10° de latitud), columna tbol"
+    ],
+    "urls": [
+     "https://pds-geosciences.wustl.edu/lro/urn-nasa-pds-lro_diviner_derived1/data_derived_gcp/",
+     "https://pds-geosciences.wustl.edu/lro/urn-nasa-pds-lro_diviner_derived1/label/dlre_gcp.fmt"
+    ],
+    "md5_originales": {
+     "global_cumul_avg_cyl_90s80s_002.tab": "3200DD1267B676CAD89300D344A88010",
+     "global_cumul_avg_cyl_80s70s_002.tab": "D26AA3C85B82105DCB15825DE076A4CE",
+     "global_cumul_avg_cyl_70s60s_002.tab": "B3C131B9C243168FE7B0060D4DC418F8",
+     "global_cumul_avg_cyl_60s50s_002.tab": "62C5B3F9764E0626697398776A019005",
+     "global_cumul_avg_cyl_50s40s_002.tab": "26727CFA54C758DFD8E0274C52D24E0E",
+     "global_cumul_avg_cyl_40s30s_002.tab": "3D7F97803C6A9082E9A6274892A4BCBD",
+     "global_cumul_avg_cyl_30s20s_002.tab": "24916E51C8FB8BEFC14AD83F761D7DE8",
+     "global_cumul_avg_cyl_20s10s_002.tab": "0B13CB5D7F244E3BB5DC8545A7D08EAC",
+     "global_cumul_avg_cyl_10s00s_002.tab": "C1FC628BA4FBEDF0DE620573D215686C",
+     "global_cumul_avg_cyl_00n10n_002.tab": "0044E6DF5344775442241AFB8E1A6E66",
+     "global_cumul_avg_cyl_10n20n_002.tab": "66DCD592B7BB614FFA72EB110D0C506A",
+     "global_cumul_avg_cyl_20n30n_002.tab": "DEDFE3F2CCC0EE71E993D9B5BCFC69F3",
+     "global_cumul_avg_cyl_30n40n_002.tab": "5DFE356183B56E4E1DF3DE54ECC10278",
+     "global_cumul_avg_cyl_40n50n_002.tab": "837DC75075C1B342DD30427FB4D468EB",
+     "global_cumul_avg_cyl_50n60n_002.tab": "93C039247E7F7AD5E54D0358243C5488",
+     "global_cumul_avg_cyl_60n70n_002.tab": "71E6784DD51CC2833D907DA337546663",
+     "global_cumul_avg_cyl_70n80n_002.tab": "C132354928AD9B09A3DA974B6AF9F215",
+     "global_cumul_avg_cyl_80n90n_002.tab": "396E9215AB3925B3B1FACF6D487050C4"
+    },
+    "cita": "Williams, J.-P. et al. (2017), The global surface temperatures of the Moon as measured by the Diviner Lunar Radiometer Experiment, Icarus, 283, 300–325. Datos: LRO-L-DLRE-5-GCP-V1.0, NASA PDS."
+   },
+   "tipo": "uint8",
+   "filas": 360,
+   "columnas": 720,
+   "bytes": 259200,
+   "sha256": "fa4bce4dcf3a9ba70778c433f1a8f2c016abdeaf2c461f0f994ecc680febdc63",
+   "estadisticas": {
+    "validos": 259200,
+    "total": 259200,
+    "min": 40.0,
+    "max": 96.0,
+    "media": 65.4888
+   },
+   "generado": "2026-11-14T11:38:00Z"
+  },
+  "moon_t_hueco": {
+   "cuerpo": "moon",
+   "variable": "temp_hueco",
+   "nombre": "Mayor hueco sin datos en la curva diurna",
+   "unidades": "h",
+   "archivo": "diviner_temp_hueco_05deg.bin",
+   "escala": 0.25,
+   "desplazamiento": 0,
+   "sin_dato": null,
+   "lat_centro_0": 89.75,
+   "dlat": -0.5,
+   "lon_centro_0": -179.75,
+   "dlon": 0.5,
+   "lon_ciclica": true,
+   "resolucion": "0,5° (≈15 km en el ecuador)",
+   "procesado": "Temperatura de brillo bolométrica media (tbol) de observaciones nadir 2009-07-05 → 2015-04-01, agrupada por la fuente en celdas de 0,5° y 96 intervalos de 0,25 h de hora local. Mayor racha de intervalos consecutivos sin dato (hora local cíclica) × 0,25 h. 24 h = celda sin ninguna observación.",
+   "fuente": {
+    "mision": "Lunar Reconnaissance Orbiter · Diviner",
+    "dataset": "LRO-L-DLRE-5-GCP-V1.0",
+    "productos": [
+     "GLOBAL_CUMUL_AVG_CYL_<banda>_002.TAB (18 bandas de 10° de latitud), columna tbol"
+    ],
+    "urls": [
+     "https://pds-geosciences.wustl.edu/lro/urn-nasa-pds-lro_diviner_derived1/data_derived_gcp/",
+     "https://pds-geosciences.wustl.edu/lro/urn-nasa-pds-lro_diviner_derived1/label/dlre_gcp.fmt"
+    ],
+    "md5_originales": {
+     "global_cumul_avg_cyl_90s80s_002.tab": "3200DD1267B676CAD89300D344A88010",
+     "global_cumul_avg_cyl_80s70s_002.tab": "D26AA3C85B82105DCB15825DE076A4CE",
+     "global_cumul_avg_cyl_70s60s_002.tab": "B3C131B9C243168FE7B0060D4DC418F8",
+     "global_cumul_avg_cyl_60s50s_002.tab": "62C5B3F9764E0626697398776A019005",
+     "global_cumul_avg_cyl_50s40s_002.tab": "26727CFA54C758DFD8E0274C52D24E0E",
+     "global_cumul_avg_cyl_40s30s_002.tab": "3D7F97803C6A9082E9A6274892A4BCBD",
+     "global_cumul_avg_cyl_30s20s_002.tab": "24916E51C8FB8BEFC14AD83F761D7DE8",
+     "global_cumul_avg_cyl_20s10s_002.tab": "0B13CB5D7F244E3BB5DC8545A7D08EAC",
+     "global_cumul_avg_cyl_10s00s_002.tab": "C1FC628BA4FBEDF0DE620573D215686C",
+     "global_cumul_avg_cyl_00n10n_002.tab": "0044E6DF5344775442241AFB8E1A6E66",
+     "global_cumul_avg_cyl_10n20n_002.tab": "66DCD592B7BB614FFA72EB110D0C506A",
+     "global_cumul_avg_cyl_20n30n_002.tab": "DEDFE3F2CCC0EE71E993D9B5BCFC69F3",
+     "global_cumul_avg_cyl_30n40n_002.tab": "5DFE356183B56E4E1DF3DE54ECC10278",
+     "global_cumul_avg_cyl_40n50n_002.tab": "837DC75075C1B342DD30427FB4D468EB",
+     "global_cumul_avg_cyl_50n60n_002.tab": "93C039247E7F7AD5E54D0358243C5488",
+     "global_cumul_avg_cyl_60n70n_002.tab": "71E6784DD51CC2833D907DA337546663",
+     "global_cumul_avg_cyl_70n80n_002.tab": "C132354928AD9B09A3DA974B6AF9F215",
+     "global_cumul_avg_cyl_80n90n_002.tab": "396E9215AB3925B3B1FACF6D487050C4"
+    },
+    "cita": "Williams, J.-P. et al. (2017), The global surface temperatures of the Moon as measured by the Diviner Lunar Radiometer Experiment, Icarus, 283, 300–325. Datos: LRO-L-DLRE-5-GCP-V1.0, NASA PDS."
+   },
+   "tipo": "uint8",
+   "filas": 360,
+   "columnas": 720,
+   "bytes": 259200,
+   "sha256": "2dccae83bc57ad6ba680675311e21e0b20ac736b5a3fafc3f13121f4133fd865",
+   "estadisticas": {
+    "validos": 259200,
+    "total": 259200,
+    "min": 0.0,
+    "max": 3.0,
+    "media": 0.8614
+   },
+   "generado": "2026-11-14T11:38:00Z"
+  },
+  "moon_t_hmax": {
+   "cuerpo": "moon",
+   "variable": "temp_hora_max",
+   "nombre": "Hora local de la temperatura máxima",
+   "unidades": "h",
+   "archivo": "diviner_temp_hora_max_05deg.bin",
+   "escala": 1,
+   "desplazamiento": 0,
+   "sin_dato": 255,
+   "lat_centro_0": 89.75,
+   "dlat": -0.5,
+   "lon_centro_0": -179.75,
+   "dlon": 0.5,
+   "lon_ciclica": true,
+   "resolucion": "0,5° (≈15 km en el ecuador)",
+   "procesado": "Temperatura de brillo bolométrica media (tbol) de observaciones nadir 2009-07-05 → 2015-04-01, agrupada por la fuente en celdas de 0,5° y 96 intervalos de 0,25 h de hora local. Índice k del intervalo; hora local = (k + 0,5) × 0,25 h.",
+   "fuente": {
+    "mision": "Lunar Reconnaissance Orbiter · Diviner",
+    "dataset": "LRO-L-DLRE-5-GCP-V1.0",
+    "productos": [
+     "GLOBAL_CUMUL_AVG_CYL_<banda>_002.TAB (18 bandas de 10° de latitud), columna tbol"
+    ],
+    "urls": [
+     "https://pds-geosciences.wustl.edu/lro/urn-nasa-pds-lro_diviner_derived1/data_derived_gcp/",
+     "https://pds-geosciences.wustl.edu/lro/urn-nasa-pds-lro_diviner_derived1/label/dlre_gcp.fmt"
+    ],
+    "md5_originales": {
+     "global_cumul_avg_cyl_90s80s_002.tab": "3200DD1267B676CAD89300D344A88010",
+     "global_cumul_avg_cyl_80s70s_002.tab": "D26AA3C85B82105DCB15825DE076A4CE",
+     "global_cumul_avg_cyl_70s60s_002.tab": "B3C131B9C243168FE7B0060D4DC418F8",
+     "global_cumul_avg_cyl_60s50s_002.tab": "62C5B3F9764E0626697398776A019005",
+     "global_cumul_avg_cyl_50s40s_002.tab": "26727CFA54C758DFD8E0274C52D24E0E",
+     "global_cumul_avg_cyl_40s30s_002.tab": "3D7F97803C6A9082E9A6274892A4BCBD",
+     "global_cumul_avg_cyl_30s20s_002.tab": "24916E51C8FB8BEFC14AD83F761D7DE8",
+     "global_cumul_avg_cyl_20s10s_002.tab": "0B13CB5D7F244E3BB5DC8545A7D08EAC",
+     "global_cumul_avg_cyl_10s00s_002.tab": "C1FC628BA4FBEDF0DE620573D215686C",
+     "global_cumul_avg_cyl_00n10n_002.tab": "0044E6DF5344775442241AFB8E1A6E66",
+     "global_cumul_avg_cyl_10n20n_002.tab": "66DCD592B7BB614FFA72EB110D0C506A",
+     "global_cumul_avg_cyl_20n30n_002.tab": "DEDFE3F2CCC0EE71E993D9B5BCFC69F3",
+     "global_cumul_avg_cyl_30n40n_002.tab": "5DFE356183B56E4E1DF3DE54ECC10278",
+     "global_cumul_avg_cyl_40n50n_002.tab": "837DC75075C1B342DD30427FB4D468EB",
+     "global_cumul_avg_cyl_50n60n_002.tab": "93C039247E7F7AD5E54D0358243C5488",
+     "global_cumul_avg_cyl_60n70n_002.tab": "71E6784DD51CC2833D907DA337546663",
+     "global_cumul_avg_cyl_70n80n_002.tab": "C132354928AD9B09A3DA974B6AF9F215",
+     "global_cumul_avg_cyl_80n90n_002.tab": "396E9215AB3925B3B1FACF6D487050C4"
+    },
+    "cita": "Williams, J.-P. et al. (2017), The global surface temperatures of the Moon as measured by the Diviner Lunar Radiometer Experiment, Icarus, 283, 300–325. Datos: LRO-L-DLRE-5-GCP-V1.0, NASA PDS."
+   },
+   "tipo": "uint8",
+   "filas": 360,
+   "columnas": 720,
+   "bytes": 259200,
+   "sha256": "9cf50a412ee564bdbbe3a298a8b2e1b91a8eb90b732447e58568da9506854dfa",
+   "estadisticas": {
+    "validos": 259200,
+    "total": 259200,
+    "min": 1.0,
+    "max": 95.0,
+    "media": 48.0706
+   },
+   "generado": "2026-11-14T11:38:00Z"
+  },
+  "moon_t_hmin": {
+   "cuerpo": "moon",
+   "variable": "temp_hora_min",
+   "nombre": "Hora local de la temperatura mínima",
+   "unidades": "h",
+   "archivo": "diviner_temp_hora_min_05deg.bin",
+   "escala": 1,
+   "desplazamiento": 0,
+   "sin_dato": 255,
+   "lat_centro_0": 89.75,
+   "dlat": -0.5,
+   "lon_centro_0": -179.75,
+   "dlon": 0.5,
+   "lon_ciclica": true,
+   "resolucion": "0,5° (≈15 km en el ecuador)",
+   "procesado": "Temperatura de brillo bolométrica media (tbol) de observaciones nadir 2009-07-05 → 2015-04-01, agrupada por la fuente en celdas de 0,5° y 96 intervalos de 0,25 h de hora local. Índice k del intervalo; hora local = (k + 0,5) × 0,25 h.",
+   "fuente": {
+    "mision": "Lunar Reconnaissance Orbiter · Diviner",
+    "dataset": "LRO-L-DLRE-5-GCP-V1.0",
+    "productos": [
+     "GLOBAL_CUMUL_AVG_CYL_<banda>_002.TAB (18 bandas de 10° de latitud), columna tbol"
+    ],
+    "urls": [
+     "https://pds-geosciences.wustl.edu/lro/urn-nasa-pds-lro_diviner_derived1/data_derived_gcp/",
+     "https://pds-geosciences.wustl.edu/lro/urn-nasa-pds-lro_diviner_derived1/label/dlre_gcp.fmt"
+    ],
+    "md5_originales": {
+     "global_cumul_avg_cyl_90s80s_002.tab": "3200DD1267B676CAD89300D344A88010",
+     "global_cumul_avg_cyl_80s70s_002.tab": "D26AA3C85B82105DCB15825DE076A4CE",
+     "global_cumul_avg_cyl_70s60s_002.tab": "B3C131B9C243168FE7B0060D4DC418F8",
+     "global_cumul_avg_cyl_60s50s_002.tab": "62C5B3F9764E0626697398776A019005",
+     "global_cumul_avg_cyl_50s40s_002.tab": "26727CFA54C758DFD8E0274C52D24E0E",
+     "global_cumul_avg_cyl_40s30s_002.tab": "3D7F97803C6A9082E9A6274892A4BCBD",
+     "global_cumul_avg_cyl_30s20s_002.tab": "24916E51C8FB8BEFC14AD83F761D7DE8",
+     "global_cumul_avg_cyl_20s10s_002.tab": "0B13CB5D7F244E3BB5DC8545A7D08EAC",
+     "global_cumul_avg_cyl_10s00s_002.tab": "C1FC628BA4FBEDF0DE620573D215686C",
+     "global_cumul_avg_cyl_00n10n_002.tab": "0044E6DF5344775442241AFB8E1A6E66",
+     "global_cumul_avg_cyl_10n20n_002.tab": "66DCD592B7BB614FFA72EB110D0C506A",
+     "global_cumul_avg_cyl_20n30n_002.tab": "DEDFE3F2CCC0EE71E993D9B5BCFC69F3",
+     "global_cumul_avg_cyl_30n40n_002.tab": "5DFE356183B56E4E1DF3DE54ECC10278",
+     "global_cumul_avg_cyl_40n50n_002.tab": "837DC75075C1B342DD30427FB4D468EB",
+     "global_cumul_avg_cyl_50n60n_002.tab": "93C039247E7F7AD5E54D0358243C5488",
+     "global_cumul_avg_cyl_60n70n_002.tab": "71E6784DD51CC2833D907DA337546663",
+     "global_cumul_avg_cyl_70n80n_002.tab": "C132354928AD9B09A3DA974B6AF9F215",
+     "global_cumul_avg_cyl_80n90n_002.tab": "396E9215AB3925B3B1FACF6D487050C4"
+    },
+    "cita": "Williams, J.-P. et al. (2017), The global surface temperatures of the Moon as measured by the Diviner Lunar Radiometer Experiment, Icarus, 283, 300–325. Datos: LRO-L-DLRE-5-GCP-V1.0, NASA PDS."
+   },
+   "tipo": "uint8",
+   "filas": 360,
+   "columnas": 720,
+   "bytes": 259200,
+   "sha256": "16b1ff7192bbb0a92bb7529e8b206a975eb0573884f05c5e67548f6c103dcfbf",
+   "estadisticas": {
+    "validos": 259200,
+    "total": 259200,
+    "min": 0.0,
+    "max": 95.0,
+    "media": 21.3174
+   },
+   "generado": "2026-11-14T11:38:00Z"
+  }
+ },
+ "actualizado": "2026-11-14T11:38:00Z"
+}
