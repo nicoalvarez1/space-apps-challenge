@@ -1,0 +1,56 @@
+{
+  "moon": {
+    "radius_m": 1737400.0,
+    "hmin": -8981.5,
+    "hmax": 10685.5,
+    "height": "moon_height.png",
+    "hi": {
+      "color": "moon_color_hi.jpg",
+      "normal": "moon_normal_hi.jpg"
+    },
+    "lo": {
+      "color": "moon_color_lo.jpg",
+      "normal": "moon_normal_lo.jpg"
+    }
+  },
+  "mars": {
+    "radius_m": 3396000.0,
+    "hmin": -8177.0,
+    "hmax": 21171.0,
+    "height": "mars_height.png",
+    "hi": {
+      "color": "mars_color_hi.jpg",
+      "normal": "mars_normal_hi.jpg"
+    },
+    "lo": {
+      "color": "mars_color_lo.jpg",
+      "normal": "mars_normal_lo.jpg"
+    }
+  },
+  "credits": {
+    "moon": "NASA/GSFC/ASU · LRO LROC WAC color mosaic (SVS 4720) · LRO LOLA topography",
+    "mars": "NASA/JPL/USGS · Viking MDIM 2.1 · MGS MOLA topography",
+    "earth": "NASA Earth Observatory · Blue Marble NG · NASA/NOAA VIIRS Black Marble · NOAA ETOPO2 · NASA MODIS (GIBS)",
+    "stars": "NASA/Goddard Space Flight Center Scientific Visualization Studio · Deep Star Maps 2020 (Hipparcos & Tycho-2)"
+  },
+  "earth": {
+    "hi": {
+      "color": "earth_color_hi.jpg",
+      "night": "earth_night_hi.jpg",
+      "normal": "earth_normal.jpg",
+      "rough": "earth_rough.jpg",
+      "clouds": "earth_clouds_hi.jpg"
+    },
+    "lo": {
+      "color": "earth_color_lo.jpg",
+      "night": "earth_night_lo.jpg",
+      "normal": "earth_normal.jpg",
+      "rough": "earth_rough.jpg",
+      "clouds": "earth_clouds_lo.jpg"
+    }
+  },
+  "stars": {
+    "hi": "stars_hi.jpg",
+    "lo": "stars_lo.jpg"
+  }
+}

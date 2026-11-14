@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Landfall · Buscador de bases lunares y marcianas</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script type="importmap">
+    { "imports": { "three": "./vendor/three.module.js", "three/addons/": "./vendor/addons/" } }
+  </script>
+</head>
+<body>
+  <canvas id="stage"></canvas>
+  <div id="markers"></div>
+
+  <!-- Barra superior -->
+  <header id="hud" hidden>
+    <div class="brand"><span class="logo">◐</span> LANDFALL</div>
+    <div id="chips" class="chips"></div>
+    <span class="demo" title="Los datos son de demostración hasta conectar el backend">DATOS DEMO</span>
+    <button id="btn-new" class="btn ghost">↺ Nueva misión</button>
+  </header>
+
+  <!-- Configuración de la misión -->
+  <main id="setup">
+    <div class="card wizard">
+      <div class="brand big"><span class="logo">◐</span> LANDFALL</div>
+      <h1>¿Dónde construimos la primera base?</h1>
+      <p class="lead">Elige el destino y el objetivo de la misión. Simularemos el viaje, analizaremos el terreno y marcaremos los mejores emplazamientos.</p>
+
+      <div class="load" id="load-status"><i id="load-bar"></i><span id="load-text">Cargando modelos de la NASA…</span></div>
+
+      <div class="steps" id="steps"><i class="on"></i><i></i><i></i></div>
+
+      <section data-step="1">
+        <h2>1 · Destino</h2>
+        <div class="grid two" id="g-body"></div>
+      </section>
+      <section data-step="2" hidden>
+        <h2>2 · Objetivo de la misión</h2>
+        <div class="grid" id="g-obj"></div>
+      </section>
+      <section data-step="3" hidden>
+        <h2>3 · Parámetros</h2>
+        <label class="field">Tripulación <b id="crew-val">6</b> personas
+          <input id="crew" type="range" min="2" max="20" value="6">
+        </label>
+        <div class="field">Duración de la estancia
+          <div class="seg" id="g-dur"></div>
+        </div>
+        <div class="summary" id="summary"></div>
+      </section>
+
+      <div class="nav">
+        <button id="btn-back" class="btn ghost" disabled>← Atrás</button>
+        <button id="btn-next" class="btn primary" disabled>Siguiente →</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Telemetría durante el viaje -->
+  <div id="flight" hidden>
+    <div class="phase" id="f-phase">Trayectoria</div>
+    <div class="bar"><i id="f-bar"></i></div>
+    <div class="telemetry">
+      <div><small>DISTANCIA RESTANTE</small><b id="f-dist">—</b></div>
+      <div><small>FASE</small><b id="f-state">Inyección translunar</b></div>
+      <div><small>DATOS</small><b id="f-layers">—</b></div>
+    </div>
+    <button id="btn-skip" class="btn ghost small">Saltar viaje ⏭</button>
+  </div>
+
+  <!-- Resultados -->
+  <aside id="results" class="panel" hidden>
+    <div class="panel-head">
+      <h3>Mejores emplazamientos</h3>
+      <small id="res-sub"></small>
+    </div>
+    <ol id="res-list"></ol>
+    <div class="panel-foot" id="res-layers"></div>
+  </aside>
+
+  <!-- Detalle de un emplazamiento -->
+  <aside id="detail" class="panel wide" hidden>
+    <button class="close" id="detail-close" aria-label="Cerrar">✕</button>
+    <div id="detail-body"></div>
+  </aside>
+
+  <!-- Entrenamiento en la Tierra -->
+  <aside id="training" class="panel wide" hidden>
+    <button class="close" id="training-close" aria-label="Volver">✕</button>
+    <div id="training-body"></div>
+  </aside>
+
+  <footer id="credits"></footer>
+  <div id="toast" hidden></div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
