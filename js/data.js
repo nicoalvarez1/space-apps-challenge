@@ -1,8 +1,8 @@
 // ============================================================================
-//  DATOS DE DEMOSTRACIÓN
-//  Valores orientativos (0-100) para poder desarrollar el frontend sin backend.
-//  Cuando el backend esté listo, js/api.js los sustituirá por datos reales
-//  (LOLA/LRO, Diviner, LCROSS, MOLA, HiRISE, CRISM, SHARAD...).
+//  EMPLAZAMIENTOS, OBJETIVOS Y PUNTUACIÓN
+//  Los valores 0-100 escritos aquí son ESTIMACIONES de demostración. Al puntuar, js/api.js
+//  sustituye terreno, hielo, térmica y recursos por valores calculados con las capas reales
+//  del PDS (js/capas.js). Solar, radiación, enlace y ciencia siguen siendo estimaciones.
 // ============================================================================
 
 export const METRICS = {
@@ -23,7 +23,7 @@ export const BODIES = {
     distanceKm: 384400, travel: 'Tierra → Luna',
     radiusKm: 1737, gravity: '1,62 m/s²', day: '29,5 días terrestres',
     temp: '−173 °C / +127 °C',
-    layers: ['LRO · LOLA (altimetría)', 'LRO · Diviner (temperatura)', 'LCROSS / LEND (hielo)', 'LROC (imagen de alta resolución)', 'GRAIL (gravedad)'],
+    layers: ['LRO · LOLA (elevación, pendiente y rugosidad)', 'LRO · Diviner (temperatura de superficie)', 'Lunar Prospector (hidrógeno y FeO)'],
     blurb: 'Primer paso: base permanente cislunar.',
   },
   mars: {
@@ -32,7 +32,7 @@ export const BODIES = {
     distanceKm: 225000000, travel: 'Tierra → Marte',
     radiusKm: 3390, gravity: '3,71 m/s²', day: '24 h 37 min',
     temp: '−125 °C / +20 °C',
-    layers: ['MGS · MOLA (altimetría)', 'MRO · HiRISE (imagen)', 'MRO · CRISM (mineralogía)', 'SHARAD (hielo subsuperficial)', 'Odyssey · GRS (agua)'],
+    layers: ['MGS · MOLA (elevación y pendiente)', 'MGS · TES (inercia térmica)', 'Odyssey · GRS (agua, Fe, Si, Cl, K, Th)'],
     blurb: 'El siguiente salto: asentamiento humano.',
   },
 };
@@ -274,10 +274,19 @@ export function effectiveWeights(objectiveId, params) {
   return base;
 }
 
-export function scoreSites(bodyId, objectiveId, params) {
+// `medidas` (opcional) viene de capas.js → medirSitios: { [id]: { medidas, metricas: { terrain: { v, de }, … } } }
+export function scoreSites(bodyId, objectiveId, params, medidas = {}) {
   const w = effectiveWeights(objectiveId, params);
   return SITES[bodyId]
-    .map((s) => {
+    .map((s0) => {
+      const med = medidas[s0.id], real = {};
+      for (const [k, r] of Object.entries(med?.metricas ?? {})) {
+        // La temperatura de superficie no describe el interior de un tubo de lava: ahí se mantiene la estimación
+        if (k === 'thermal' && s0.traits.includes('lava_tube')) continue;
+        real[k] = r;
+      }
+      const s = { ...s0, metrics: { ...s0.metrics, ...Object.fromEntries(Object.entries(real).map(([k, r]) => [k, r.v])) },
+        real: Object.fromEntries(Object.entries(real).map(([k, r]) => [k, r.de])), medidas: med?.medidas ?? [] };
       const contrib = Object.fromEntries(Object.keys(w).map((k) => [k, s.metrics[k] * w[k]]));
       const score = Math.round(Object.values(contrib).reduce((a, b) => a + b, 0));
       return { ...s, score, weights: w, contrib, ...prosCons(s) };

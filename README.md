@@ -7,7 +7,7 @@ Necesita un servidor estático (los módulos ES no funcionan con `file://`):
 
 ```
 cd space-apps-challenge
-py -m http.server 8080      # o la extensión "Live Server" de VS Code
+python3 -m http.server 8080  # (Windows: py -m http.server 8080) o la extensión "Live Server" de VS Code
 ```
 Abre http://localhost:8080
 
@@ -15,9 +15,27 @@ Abre http://localhost:8080
 - `index.html`, `css/style.css` – interfaz (asistente, HUD, paneles).
 - `js/main.js` – flujo de la app: asistente → viaje → resultados → detalle → entrenamiento.
 - `js/scene.js` – escena 3D, cámara, marcadores. **Aquí se configuran los modelos de Blender.**
-- `js/data.js` – objetivos, pesos, emplazamientos y análogos terrestres (**datos de demostración**).
+- `js/data.js` – objetivos, pesos, emplazamientos y análogos terrestres (estimaciones de demostración).
+- `js/capas.js` – lectura de las capas reales del PDS (`base-planetaria/web/data`), mediciones por sitio y capas sobre el globo.
 - `js/api.js` – capa de datos; pon `API_BASE` para usar el backend.
 - `js/textures.js` – texturas procedurales de respaldo.
+
+## Datos reales del PDS en la web
+`js/capas.js` carga las rejillas de `base-planetaria/web/data/` (descritas en `capas.json`) directamente en el navegador:
+- **Puntuación:** para cada emplazamiento se promedian las celdas en 0,5° de arco (≈ 15 km en la Luna, ≈ 30 km en Marte) y cuatro factores pasan a calcularse con datos medidos, con una escala lineal explícita (visible al pasar el cursor por la etiqueta `PDS`):
+
+  | Factor | Luna | Marte |
+  |---|---|---|
+  | Terreno | pendiente LOLA: 25° → 0, 0° → 100 | pendiente regional MOLA (diferencias centrales, base 15 km): 5° → 0, 0° → 100 |
+  | Hielo | hidrógeno Lunar Prospector: 50 → 0, 150 ppm → 100 | agua equivalente GRS: 2 % → 0, 7 % → 100 |
+  | Térmica | oscilación diurna Diviner (Tmáx − Tmín): 300 K → 0, 0 K → 100 | inercia térmica TES: 50 → 0, 400 → 100 |
+  | Recursos | FeO Lunar Prospector: 4 % → 0, 20 % → 100 | hierro GRS: 11 % → 0, 18 % → 100 |
+
+  En los sitios con tubos de lava la térmica sigue siendo la estimación (la temperatura de superficie no describe el interior). **Solar, radiación, enlace y ciencia siguen siendo estimaciones de demostración.**
+- **Ficha del sitio:** sección «Mediciones NASA PDS» con media y rango de cada capa.
+- **Capas sobre el globo:** panel «Capas de datos» (elevación, pendiente, temperatura, hidrógeno/agua, elementos…). Escala de color entre los percentiles 2 y 98; el cursor lee el valor de la celda. Sin interpolar: cada píxel toma la celda que lo contiene.
+
+Si las capas no se pueden cargar, la web vuelve a las estimaciones y lo indica en la barra superior (`DATOS DEMO`).
 
 ## Modelos de Blender
 Exporta como glTF binario (`.glb`) y copia a `assets/`: `moon.glb`, `mars.glb`, `earth.glb`.

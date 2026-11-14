@@ -17,7 +17,7 @@
   <header id="hud" hidden>
     <div class="brand"><span class="logo">◐</span> LANDFALL</div>
     <div id="chips" class="chips"></div>
-    <span class="demo" title="Los datos son de demostración hasta conectar el backend">DATOS DEMO</span>
+    <span class="demo" id="data-badge" title="Datos de demostración">DATOS DEMO</span>
     <button id="btn-new" class="btn ghost">↺ Nueva misión</button>
   </header>
 
@@ -69,6 +69,13 @@
     </div>
     <button id="btn-skip" class="btn ghost small">Saltar viaje ⏭</button>
   </div>
+
+  <!-- Capas de datos reales sobre el globo -->
+  <aside id="layers" hidden>
+    <h3>Capas de datos <small>NASA PDS</small></h3>
+    <div id="layer-list" class="lchips" role="group" aria-label="Capa de datos sobre el globo"></div>
+    <div id="legend" hidden></div>
+  </aside>
 
   <!-- Resultados -->
   <aside id="results" class="panel" hidden>

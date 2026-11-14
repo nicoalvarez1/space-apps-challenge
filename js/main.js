@@ -2,6 +2,7 @@ import { BODIES, OBJECTIVES, DURATIONS, METRICS, TRAIT_LABELS } from './data.js'
 import { fetchSites, fetchTraining } from './api.js';
 import { Viewer } from './scene.js';
 import { earthSiteData } from './cmr.js';
+import { CAPAS_GLOBO, RAMPAS, RADIO_KM, RADIO_ZONA, capa, pintarCapa } from './capas.js';
 
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -44,7 +45,7 @@ function renderSetup() {
   if (step === 3) {
     const b = BODIES[mission.body], o = OBJECTIVES[mission.objective];
     $('#summary').innerHTML = `Misión a <b>${b.name}</b> · <b>${o.name}</b><br>Tripulación de <b>${mission.crew}</b> durante <b>${DURATIONS[mission.duration].name}</b>.<br>
-      Se analizarán ${b.layers.length} capas de datos: ${b.layers.map((l) => l.split(' · ')[0]).join(', ')}.`;
+      Se analizarán datos reales de ${b.layers.length} instrumentos: ${b.layers.map((l) => l.split(' (')[0]).join(', ')}.`;
   }
 }
 
@@ -110,6 +111,11 @@ function showResults() {
       <span class="sc">${s.score}</span></li>`).join('');
   $('#res-layers').innerHTML = `<b>Capas:</b> ${b.layers.join(' · ')}`;
   $('#results').hidden = false;
+  const real = sites.some((s) => Object.keys(s.real ?? {}).length);
+  $('#data-badge').textContent = real ? 'PDS + ESTIMACIONES' : 'DATOS DEMO';
+  $('#data-badge').title = real ? 'Terreno, hielo, térmica y recursos se calculan con datos medidos (NASA PDS). Solar, radiación, enlace y ciencia son estimaciones de demostración.'
+    : 'No se pudieron cargar las capas del PDS: todas las puntuaciones son estimaciones de demostración.';
+  $('#layers').hidden = !viewer.bodies[mission.body]?.surfaceMat; renderLayers();
   viewer.setSites(sites, selectSite);
   viewer.controls.autoRotate = true;
   toast(`Mejor emplazamiento: ${sites[0].name}`);
@@ -139,7 +145,7 @@ function radar(metrics) {
 
 function renderDetail(s) {
   const bars = Object.entries(s.metrics).map(([k, v]) => [k, v, s.weights?.[k] ?? 0]).sort((a, b) => b[2] - a[2])
-    .map(([k, v, w]) => `<div class="row"><span>${METRICS[k].icon} ${METRICS[k].short} <small>${Math.round(w * 100)}%</small></span>
+    .map(([k, v, w]) => `<div class="row"><span>${METRICS[k].icon} ${METRICS[k].short} <small>${Math.round(w * 100)}%</small>${s.real?.[k] ? ` <abbr class="pds" title="${esc(s.real[k])}">PDS</abbr>` : ''}</span>
       <div class="t"><i class="${v < 45 ? 'low' : v < 65 ? 'mid' : ''}" style="width:${v}%"></i></div><span class="v">${v}</span></div>`).join('');
   $('#detail-body').innerHTML = `
     <div class="d-head"><div class="ring" style="--p:${s.score}"><b>${s.score}</b></div>
@@ -147,8 +153,11 @@ function renderDetail(s) {
       <small>${esc(s.region)} · ${Math.abs(s.lat).toFixed(1)}°${s.lat >= 0 ? 'N' : 'S'} ${Math.abs(s.lon).toFixed(1)}°${s.lon >= 0 ? 'E' : 'O'}</small></div></div>
     <p class="desc">${esc(s.desc)}</p>
     ${radar(s.metrics)}
-    <h4>Datos clave</h4><div class="facts">${(s.facts || []).map(([l, v]) => `<div class="fact"><small>${esc(l)}</small><b>${esc(v)}</b></div>`).join('')}</div>
+    ${s.medidas?.length ? `<h4>Mediciones NASA PDS <span class="muted">(media en ≈ ${zonaKm()} km de radio)</span></h4>
+      <div class="facts">${s.medidas.map((m) => `<div class="fact"><small>${esc(m.nombre)} · ${esc(m.fuente)}</small><b>${esc(m.texto)}</b>${m.rango ? `<small class="rg">${esc(m.rango)}</small>` : ''}</div>`).join('')}</div>` : ''}
+    <h4>Datos de referencia <span class="muted">(estimación)</span></h4><div class="facts">${(s.facts || []).map(([l, v]) => `<div class="fact"><small>${esc(l)}</small><b>${esc(v)}</b></div>`).join('')}</div>
     <h4>Factores para tu objetivo <span class="muted">(peso)</span></h4><div class="bars">${bars}</div>
+    ${Object.keys(s.real ?? {}).length ? '<p class="small muted"><abbr class="pds">PDS</abbr> = calculado con datos medidos (pasa el cursor para ver la fórmula). El resto son estimaciones de demostración.</p>' : ''}
     ${s.pros?.length ? `<h4>Ventajas</h4><ul class="pc">${s.pros.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>` : ''}
     ${s.cons?.length ? `<h4>Riesgos</h4><ul class="pc con">${s.cons.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>` : ''}
     <button class="btn primary cta" id="btn-train">🌍 ¿Dónde entrenar en la Tierra?</button>`;
@@ -165,7 +174,7 @@ async function closeDetail() {
 
 // ============================ ENTRENAMIENTO ================================
 async function openTraining(site, pick = 0) {
-  $('#detail').hidden = true; $('#training').hidden = false;
+  $('#detail').hidden = true; $('#training').hidden = false; $('#layers').hidden = true;
   $('#training-body').innerHTML = `<p class="muted">Buscando el análogo terrestre más parecido a ${esc(site.name)}…</p>`;
   const list = await fetchTraining(site, mission);
   const a = list[pick];
@@ -233,8 +242,55 @@ async function renderCmr(a) {
 $('#training-close').onclick = closeTraining;
 async function closeTraining() {
   const s = current; $('#training').hidden = true; viewer.clearAnalogs();
+  $('#layers').hidden = !viewer.bodies[mission.body]?.surfaceMat;
   if (s) { renderDetail(s); $('#detail').hidden = false; await viewer.backToBody(); await viewer.focusSite(s); }
 }
+
+// ============================ CAPAS DE DATOS ===============================
+// Proyecta sobre el globo una capa real del PDS y muestra su leyenda; el cursor lee el valor de la celda.
+let layer = null, layerRun = 0, probeRaf = 0;
+const zonaKm = () => Math.round(RADIO_ZONA * (Math.PI / 180) * RADIO_KM[mission.body]);
+const coord = (lat, lon) => `${Math.abs(lat).toFixed(1)}°${lat >= 0 ? 'N' : 'S'} ${Math.abs(lon).toFixed(1)}°${lon >= 0 ? 'E' : 'O'}`;
+const PROBE_HINT = 'Pasa el cursor por el globo para leer el valor';
+
+function renderLayers() {
+  $('#layer-list').innerHTML = (CAPAS_GLOBO[mission.body] ?? []).map((d) =>
+    `<button data-layer="${d.id}" class="${layer?.def.id === d.id ? 'sel' : ''}" aria-pressed="${layer?.def.id === d.id}">${d.corto}</button>`).join('');
+  $('#legend').hidden = !layer;
+  if (!layer) return;
+  const { def, capa: c, min, max } = layer, m = c.meta;
+  $('#legend').innerHTML = `<b>${esc(m.nombre)}</b>
+    <div class="lg-bar" style="background:linear-gradient(90deg, ${RAMPAS[def.rampa].join(', ')})"></div>
+    <div class="lg-ends"><span>≤ ${esc(def.fmt(min))}</span><span>≥ ${esc(def.fmt(max))}</span></div>
+    <div class="lg-probe" id="lg-probe">${PROBE_HINT}</div>
+    <small>${esc(m.fuente.mision)} · ${esc(m.resolucion)}. Escala entre los percentiles 2 y 98; sin dato = sin color.</small>`;
+}
+
+async function setLayer(id) {
+  const body = mission.body, def = CAPAS_GLOBO[body]?.find((d) => d.id === id), run = ++layerRun;
+  if (!def) return;
+  if (layer?.def.id === id) { layer = null; viewer.setOverlay(body, null); renderLayers(); return; }
+  document.querySelector(`[data-layer="${id}"]`)?.classList.add('busy');
+  try {
+    const c = await capa(id);
+    if (run !== layerRun || mission.body !== body) return;
+    const p = pintarCapa(c, def.rampa);
+    if (viewer.setOverlay(body, p.canvas)) layer = { def, capa: c, min: p.min, max: p.max };
+  } catch (e) { console.warn('Capa no disponible', e); toast('No se pudo cargar la capa de datos'); }
+  if (run === layerRun) renderLayers();
+}
+
+$('#layer-list').addEventListener('click', (e) => { const b = e.target.closest('[data-layer]'); if (b) setLayer(b.dataset.layer); });
+$('#stage').addEventListener('pointermove', (e) => {
+  if (!layer || probeRaf) return;
+  probeRaf = requestAnimationFrame(() => {
+    probeRaf = 0; const el = document.getElementById('lg-probe'); if (!el || !layer) return;
+    const p = viewer.probe(e.clientX, e.clientY);
+    if (!p) { el.textContent = PROBE_HINT; return; }
+    const v = layer.capa.en(p.lat, p.lon);
+    el.innerHTML = `${coord(p.lat, p.lon)} · <b>${v === v ? esc(layer.def.fmt(v)) : 'sin dato'}</b>`;
+  });
+});
 
 // ============================ UTILIDADES ===================================
 let toastT;
@@ -243,7 +299,8 @@ function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = fal
 function resetMission() {
   runId++; viewer.tween = null;
   viewer.clearSites(); viewer.clearAnalogs(); viewer.setIntro();
-  ['#hud', '#flight', '#results', '#detail', '#training'].forEach((s) => ($(s).hidden = true));
+  if (layer) { viewer.setOverlay(mission.body, null); layer = null; } layerRun++;
+  ['#hud', '#flight', '#results', '#detail', '#training', '#layers'].forEach((s) => ($(s).hidden = true));
   $('#setup').hidden = false; step = 1; mission.body = mission.objective = null; current = null; renderSetup();
 }
 

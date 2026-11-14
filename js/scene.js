@@ -207,6 +207,7 @@ export class Viewer {
       displacementMap: hmap, displacementScale: (m.hmax - m.hmin) * k, displacementBias: m.hmin * k,
     });
     pivot.add(new THREE.Mesh(new THREE.SphereGeometry(R, 512, 256), mat));
+    body.surfaceMat = mat;
     // radio local de la superficie (para colocar marcadores justo sobre el terreno)
     body.surfaceR = (lat, lon) => R + (m.hmin + sample(lat, lon) * (m.hmax - m.hmin)) * k;
     this._upload(color, normal, hmap);
@@ -218,6 +219,7 @@ export class Viewer {
     const mat = new THREE.MeshStandardMaterial({ map: t.map, roughness: id === 'earth' ? 0.7 : 0.95, metalness: 0 });
     if (t.bump) { mat.bumpMap = t.bump; mat.bumpScale = t.bumpScale * R; }
     pivot.add(new THREE.Mesh(new THREE.SphereGeometry(R, 96, 64), mat));
+    if (id !== 'earth') body.surfaceMat = mat;
     if (t.clouds) {
       body.clouds = new THREE.Mesh(new THREE.SphereGeometry(R * 1.012, 64, 48),
         new THREE.MeshStandardMaterial({ map: t.clouds, transparent: true, opacity: 0.55, depthWrite: false }));
@@ -383,6 +385,36 @@ export class Viewer {
 
   clearAnalogs() {
     this.markers = this.markers.filter((m) => { if (m.cls === 'analog') { m.el.remove(); return false; } return true; });
+  }
+
+  // ---------- capas de datos sobre el globo ----------
+  // Proyecta un lienzo equirectangular (x=0 ↔ 180°O, arriba = norte) como color propio de la superficie;
+  // el albedo se atenúa para que el relieve siga leyéndose debajo. `null` restaura el aspecto normal.
+  setOverlay(id, canvas) {
+    const b = this.bodies[id], mat = b?.surfaceMat; if (!mat) return false;
+    b.overlayTex?.dispose(); b.overlayTex = null;
+    if (canvas) {
+      const t = new THREE.CanvasTexture(canvas);
+      t.colorSpace = THREE.SRGBColorSpace; t.wrapS = THREE.RepeatWrapping; t.wrapT = THREE.ClampToEdgeWrapping;
+      t.anisotropy = Math.min(8, this.renderer.capabilities.getMaxAnisotropy());
+      b.overlayTex = t; mat.emissiveMap = t; mat.emissive.set(0xffffff); mat.emissiveIntensity = 0.85; mat.color.set(0x6a6a6a);
+    } else { mat.emissiveMap = null; mat.emissive.set(0x000000); mat.color.set(0xffffff); }
+    mat.needsUpdate = true;
+    return true;
+  }
+
+  // Latitud/longitud bajo el cursor en el cuerpo actual (esfera de referencia, sin relieve) o null
+  probe(clientX, clientY) {
+    const id = this.current, b = this.bodies[id];
+    if (!b || this.mode !== 'orbit' || this.focusId !== id || this.tween) return null;
+    const r = this.canvas.getBoundingClientRect();
+    this._ray ??= new THREE.Raycaster();
+    this._ray.setFromCamera(new THREE.Vector2(((clientX - r.left) / r.width) * 2 - 1, -((clientY - r.top) / r.height) * 2 + 1), this.camera);
+    const hit = this._ray.ray.intersectSphere(new THREE.Sphere(POS[id], b.R), new THREE.Vector3());
+    if (!hit) return null;
+    const p = hit.sub(POS[id]).applyQuaternion(b.pivot.quaternion.clone().invert()).normalize();
+    let lon = Math.atan2(p.z, -p.x) / DEG - 180; if (lon < -180) lon += 360;
+    return { lat: Math.asin(Math.max(-1, Math.min(1, p.y))) / DEG, lon };
   }
 
   // ---------- marcadores ----------

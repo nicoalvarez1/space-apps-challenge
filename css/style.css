@@ -116,7 +116,7 @@ h4 { margin: 1.3rem 0 .6rem; font-size: .72rem; letter-spacing: .15em; text-tran
 .fact { border: 1px solid var(--line); border-radius: 10px; padding: .5rem .7rem; }
 .fact small { display: block; color: var(--mute); font-size: .66rem; }
 .fact b { font-size: .85rem; }
-.bars .row { display: grid; grid-template-columns: 110px 1fr 30px; align-items: center; gap: .6rem; font-size: .78rem; margin: .35rem 0; color: var(--mute); }
+.bars .row { display: grid; grid-template-columns: 148px 1fr 30px; align-items: center; gap: .6rem; font-size: .78rem; margin: .35rem 0; color: var(--mute); }
 .bars .t { height: 6px; background: var(--line); border-radius: 6px; overflow: hidden; }
 .bars .t i { display: block; height: 100%; border-radius: 6px; background: var(--accent); transition: width .8s; }
 .bars .t i.low { background: var(--bad); } .bars .t i.mid { background: var(--gold); }
@@ -151,6 +151,26 @@ h4 { margin: 1.3rem 0 .6rem; font-size: .72rem; letter-spacing: .15em; text-tran
 .mchart .hit { fill: transparent; }
 .mchart g:hover .bar, .mchart g:focus .bar { fill: #9dffe4; }
 .mchart text { fill: var(--mute); font-size: 9px; font-family: var(--mono); }
+
+/* ---------- capas de datos PDS ---------- */
+#layers { position: fixed; left: 1rem; top: 4.2rem; z-index: 6; width: 268px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+  padding: .8rem .9rem; backdrop-filter: blur(12px); }
+#layers h3 { margin: 0 0 .6rem; font-size: .72rem; letter-spacing: .15em; text-transform: uppercase; color: var(--accent); }
+#layers h3 small { color: var(--mute); letter-spacing: .05em; font-weight: 400; margin-left: .3rem; }
+.lchips { display: flex; flex-wrap: wrap; gap: .35rem; }
+.lchips button { border: 1px solid var(--line); background: rgba(255,255,255,.04); border-radius: 99px; padding: .25rem .65rem; font-size: .74rem; color: var(--mute); transition: .15s; }
+.lchips button:hover { color: var(--text); border-color: rgba(93,255,208,.5); }
+.lchips button.sel { background: var(--accent); color: #022; border-color: transparent; font-weight: 700; }
+.lchips button.busy { opacity: .55; cursor: progress; }
+#legend { margin-top: .8rem; padding-top: .7rem; border-top: 1px solid var(--line); font-size: .76rem; line-height: 1.4; }
+#legend > b { display: block; font-size: .8rem; }
+.lg-bar { height: 10px; border-radius: 4px; margin: .5rem 0 .25rem; border: 1px solid var(--line); }
+.lg-ends { display: flex; justify-content: space-between; gap: .5rem; font: .68rem var(--mono); color: var(--mute); }
+.lg-probe { margin: .55rem 0; padding: .4rem .55rem; border: 1px dashed var(--line); border-radius: 8px; color: var(--mute); font-size: .74rem; min-height: 2.1em; }
+.lg-probe b { color: var(--text); font-family: var(--mono); }
+#legend small { display: block; color: var(--mute); font-size: .66rem; }
+.pds { font: 700 .56rem var(--mono); letter-spacing: .06em; color: var(--accent); border: 1px solid rgba(93,255,208,.5); border-radius: 4px; padding: 0 .25rem; text-decoration: none; cursor: help; }
+.fact .rg { font: .62rem var(--mono); margin-top: .15rem; }
 
 /* ---------- marcadores 3D ---------- */
 .marker { position: absolute; left: 0; top: 0; pointer-events: auto; background: none; border: 0; padding: 0; margin: 0; will-change: transform; }
@@ -191,5 +211,8 @@ h4 { margin: 1.3rem 0 .6rem; font-size: .72rem; letter-spacing: .15em; text-tran
   #hud { padding: .6rem .8rem; flex-wrap: wrap; } .demo { display: none; }
   #credits { display: none; }
   #flight { bottom: 1rem; } .telemetry { grid-template-columns: 1fr 1fr; } .telemetry div:nth-child(3) { display: none; }
-  .bars .row { grid-template-columns: 90px 1fr 28px; }
+  .bars .row { grid-template-columns: 132px 1fr 28px; }
+  #layers { top: 3.3rem; left: .6rem; right: .6rem; width: auto; padding: .5rem .6rem; }
+  #layers h3 { display: none; } .lchips { flex-wrap: nowrap; overflow-x: auto; } .lchips button { flex: none; }
+  #legend small { display: none; }
 }
