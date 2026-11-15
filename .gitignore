@@ -8,3 +8,5 @@ base-planetaria/datos_pds/srtmswbd/
 publicar/
 video/tmp/
 video/*.mp4
+base-planetaria/datos_pds/
+.DS_Store
