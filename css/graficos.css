@@ -7,7 +7,7 @@
 :root {
   --g-enfasis: var(--accent);            /* emplazamiento elegido */
   --g-contexto: #7c86a6;                 /* los demás emplazamientos */
-  --g-planeta: #3d4763;                  /* distribución de toda la superficie */
+  --g-planeta: #56628a;                  /* distribución de toda la superficie (≥ 3:1 sobre el fondo: lleva el dato) */
   --g-rejilla: rgba(160, 190, 255, .10);
   --g-eje: rgba(160, 190, 255, .28);
   --g-superficie: #0a0e1c;               /* fondo de los paneles: separa marcas que se tocan */

@@ -17,12 +17,12 @@
 //  Estado propio (ctx.estado): orden = 'puesto' | 'asc' | 'desc' y foco = celda que recibe el tabulador.
 // ============================================================================
 import { RADIO_ZONA } from '../capas.js';
-import { muestra } from '../analitica.js';
-import { esc, nf, pct, pctTxt, masInfo, SEQ, colorSeq, tintaSobreSeq, decimalesDe, conTip, tipHtml, figura, nombreCorto, fuenteDe } from './base.js';
+import { muestra, cobertura } from '../analitica.js';
+import { esc, nf, pct, pctTxt, SEQ, colorSeq, tintaSobreSeq, decimalesDe, conTip, tipHtml, figura, nombreCorto, fuenteDe, unaParada } from './base.js';
 
 const DEG = Math.PI / 180;
 const ORDENES = [['puesto', 'By rank'], ['asc', 'Low to high'], ['desc', 'High to low']];
-// «a, b y c» («e» ante i- o hi-: «Inercia térmica e Hidrógeno»; no ante diptongo: «y Hierro»)
+// «a, b and c»
 const lista = (xs) => (xs.length > 1 ? `${xs.slice(0, -1).join(', ')} and ${xs[xs.length - 1]}` : xs[0] ?? '');
 
 export function pintar(el, ctx) {
@@ -51,7 +51,7 @@ export function pintar(el, ctx) {
   const cabGrupos = grupos.map((g) => `<th scope="colgroup" colspan="${g.n}" class="g-mz-grupo">${esc(g.nombre)}</th>`).join('');
   const cabCapas = cols.map((k) => {
     const d = k.def, es = d.id === capa, ordena = es && orden !== 'puesto';
-    return `<th scope="col"${ordena ? ` aria-sort="${orden === 'asc' ? 'ascending' : 'descending'}"` : ''}><button type="button" class="g-mz-capa${es ? ' sel' : ''}" data-capa="${esc(d.id)}" aria-pressed="${es}">
+    return `<th scope="col"${ordena ? ` aria-sort="${orden === 'asc' ? 'ascending' : 'descending'}"` : ''}><button type="button" class="g-mz-capa${es ? ' sel' : ''}" data-an-capa="${esc(d.id)}" aria-pressed="${es}">
       <span>${esc(d.corto)}${ordena ? `<i aria-hidden="true"> ${orden === 'asc' ? '↑' : '↓'}</i>` : ''}</span><small>${esc(d.unidad)}</small></button></th>`;
   }).join('');
 
@@ -61,7 +61,7 @@ export function pintar(el, ctx) {
     if (!v) return `<td class="g-mz-nd" data-k="${i},${j}" tabindex="-1"><span aria-hidden="true">—</span><span class="sr-only">no data</span></td>`;
     const N = pct(v.pct);
     const estilo = N == null ? '' : ` style="background:${colorSeq(v.pct)};color:${tintaSobreSeq(v.pct)}"`;
-    return `<td data-k="${i},${j}" tabindex="-1"${estilo}>${esc(k.def.tick(v.media))}<span class="sr-only">, ${N == null ? '' : `higher than or equal to ${pctTxt(v.pct)} % of the surface`}</span></td>`;
+    return `<td data-k="${i},${j}" tabindex="-1"${estilo}>${esc(k.def.tick(v.media))}<span class="sr-only">, ${N == null ? '' : `higher than or equal to ${esc(pctTxt(v.pct))} % of the surface`}</span></td>`;
   };
   const cuerpoTabla = vista.map(({ f, i }) => {
     const s = f.sitio, es = s.id === sel;
@@ -97,14 +97,18 @@ export function pintar(el, ctx) {
   const pasos = [...new Set(unicas.map((k) => Math.abs(k.capa.meta.dlat)))].sort((a, b) => a - b).map((p) => `${nf(p, decimalesDe([p]))}°`);
   const muestreadas = cols.some((k) => muestra(k.capa).paso > 1);                   // ya calculada por medirTodo: no cuesta nada
   const conSigma = cols.filter((k) => k.sigma), derivadas = cols.filter((k) => k.derivada), invertidas = cols.filter((k) => k.def.invertir);
+  // capas sin dato en parte de la superficie (Odyssey GRS no publica los polos): su percentil solo cuenta la parte con dato
+  const parciales = cols.map((k) => [k, cobertura(k.capa)]).filter(([, q]) => q < 0.995);
+  const primeraFrase = (t) => { const f = String(t ?? '').split(/\.\s/)[0]; return /[.!?]$/.test(f) ? f : `${f}.`; };
   const fuentes = new Map();                                                         // fuente → capas que la comparten
   for (const k of cols) { const f = fuenteDe(k.capa); fuentes.set(f, [...(fuentes.get(f) ?? []), corto(k)]); }
   const pie = [
     `<b>Value</b>: mean of the cells whose center lies within ${radio}° of arc of the site (≈ ${nf(km)} km).`,
     unicas.length ? `Where no cell is that close (${esc(lista(pasos))} grids: ${esc(lista(unicas.map(corto)))}), it is the value of the cell that contains the site.` : '',
     `<b>Percentile</b>: share of the surface ${esc(cuerpo.de)} with an equal or lower cell value, weighted by area; only cells with data count${muestreadas ? ' and, in the finest grids, a regular sample of them' : ''}.`,
+    parciales.length ? `Part of the surface has no data (the percentile refers only to the part with data): ${esc(parciales.map(([k, q]) => `${corto(k)}: ${nf(q * 100)} % with data`).join('; '))}.` : '',
     ...derivadas.map((k) => `“${esc(corto(k))}” is not a published grid: it is derived in the browser from the ${esc(k.capa.meta.fuente?.mision ?? k.def.grupo)} elevation (slope between neighboring cells).`),
-    ...invertidas.map((k) => `In “${esc(corto(k))}” the color follows the measured value (${esc(k.def.unidad)}), as in the other columns.`),
+    ...invertidas.map((k) => `In “${esc(corto(k))}” the color follows the measured value (${esc(k.def.unidad)}), as in the other columns: light = high value. ${esc(primeraFrase(k.def.por))}`),
     conSigma.length ? `The published uncertainty (${esc(lista(conSigma.map(corto)))}) and the range within the area are shown when pointing at each cell.` : 'The range within the area is shown when pointing at each cell.',
     `<br><b>Sources</b>: ${[...fuentes].map(([f, cs]) => `${esc(lista(cs))} — ${esc(f)}`).join('; ')}.`,
   ].filter(Boolean).join(' ');
@@ -132,6 +136,7 @@ export function pintar(el, ctx) {
   const fijar = (td) => { el.querySelector('td[tabindex="0"]')?.setAttribute('tabindex', '-1'); td.setAttribute('tabindex', '0'); estado.foco = td.dataset.k; };
   const inicial = (typeof estado.foco === 'string' && /^\d+,\d+$/.test(estado.foco) && el.querySelector(`td[data-k="${estado.foco}"]`)) || el.querySelector('td[data-k]');
   if (inicial) inicial.setAttribute('tabindex', '0');
+  unaParada(el, '.g-mz-sitio');                                 // los nombres de fila: una parada; las flechas pasan de uno a otro
   el.addEventListener('focusin', (e) => { const td = e.target.closest?.('td[data-k]'); if (td && el.contains(td)) fijar(td); });
   el.addEventListener('keydown', (e) => {
     const td = e.target.closest?.('td[data-k]');
@@ -151,16 +156,17 @@ export function pintar(el, ctx) {
   });
 
   // ---- tooltip (cursor, dedo y foco): la medición completa de la celda, o la ficha de la capa en su cabecera
-  conTip(el, 'td[data-k], button[data-capa]', (t) => {
-    if (t.dataset.capa) {
-      const k = cols.find((x) => x.def.id === t.dataset.capa);
+  conTip(el, 'td[data-k], button[data-an-capa]', (t) => {
+    if (t.dataset.anCapa) {
+      const k = cols.find((x) => x.def.id === t.dataset.anCapa);
       return k ? tipHtml(k.capa.meta.nombre ?? k.def.corto, [['Unit', k.def.unidad]], fuenteDe(k.capa)) : null;
     }
     const [i, j] = t.dataset.k.split(',').map(Number), f = filas[i], k = cols[j];
     if (!f || !k) return null;
     const d = k.def, v = f.v[d.id];
     if (!v) return tipHtml(f.sitio.name, [[d.corto, 'no data']], `No cell with data within ${radio}° of arc, nor the one that contains the site`);
-    const N = pct(v.pct), fs = [[d.corto, d.fmt(v.media)], [`Higher than or equal to`, N == null ? '—' : `${pctTxt(v.pct)} % of ${cuerpo.nombre}`]];
+    const parcial = cobertura(k.capa) < 0.995;                  // sin dato en parte de la superficie: el percentil es de la parte con dato
+    const N = pct(v.pct), fs = [[d.corto, d.fmt(v.media)], [`Higher than or equal to`, N == null ? '—' : `${pctTxt(v.pct)} % of ${parcial ? 'the surface with data' : cuerpo.nombre}`]];
     // el rango va en formato breve (número y unidad corta): con el formato completo (p. ej. kelvin y °C) no cabe en una línea
     if (v.n > 1) fs.push(['Range within the area', `${d.breve(v.min)} … ${d.breve(v.max)}`]);
     if (v.sigma != null) fs.push(['Published uncertainty', `± ${d.fmt(v.sigma)}`]);

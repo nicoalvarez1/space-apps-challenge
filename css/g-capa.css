@@ -8,9 +8,9 @@
 /* Cada columna es un grupo (barra + zona de acierto de toda la altura): al pasar o al recibir el foco se aclara la
    barra y se marca la columna. Texto y tooltip dan el valor; el cambio de tono solo dice «estás aquí». */
 .g-di-col { outline: none; }
-.g-di-col:hover .g-area, .g-di-col:focus-visible .g-area { fill: #56628a; }
+.g-di-col:hover .g-area, .g-di-col:focus-visible .g-area { fill: #7c86a6; }
 .g-di-col:hover .g-hit, .g-di-col:focus-visible .g-hit { fill: rgba(160, 190, 255, .07); }
-.g-di-col:focus-visible .g-hit { stroke: var(--g-eje); stroke-width: 1; }
+.g-di-col:focus-visible .g-hit { stroke: var(--accent); stroke-width: 1.5; }
 
 /* línea fina del emplazamiento destacado, de su etiqueta a la base del histograma */
 .g-di-guia { stroke: var(--g-enfasis); stroke-width: 1; pointer-events: none; }
@@ -18,7 +18,10 @@
 /* ---------- latitud: franjas (zonas de acierto de toda la altura) ---------- */
 .g-la-fr { outline: none; }
 .g-svg .g-la-fr:hover, .g-svg .g-la-fr:focus-visible { fill: rgba(160, 190, 255, .09); }
-.g-svg .g-la-fr:focus-visible { stroke: var(--g-eje); stroke-width: 1; }
+.g-svg .g-la-fr:focus-visible { stroke: var(--accent); stroke-width: 1.5; }
+/* banda de cuartiles: más opaca y con borde, para que lleve el dato con ≥ 3:1 sobre el fondo (la banda del perfil
+   del terreno, que solo marca la zona medida, se queda como estaba) */
+.g-la-svg .g-banda { opacity: .7; stroke: var(--g-planeta); stroke-width: 1; }
 
 /* ---------- comunes a los dos ---------- */
 /* Etiqueta directa del destacado: halo del color del fondo para que se lea sobre barras, líneas y puntos.

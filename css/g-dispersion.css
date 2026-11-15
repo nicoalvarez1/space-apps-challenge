@@ -21,7 +21,7 @@
 /* franja de acierto de las líneas de mediana (tooltip con su valor) */
 .g-ds-med { cursor: help; }
 .g-ds-med:focus { outline: none; }
-.g-ds-med:focus-visible { fill: rgba(198, 205, 228, .16); }
+.g-ds-med:focus-visible { fill: rgba(198, 205, 228, .16); stroke: var(--accent); stroke-width: 1.5; }
 
 /* muestra de la leyenda para las barras de error: un trazo fino con remates */
 .g-ley i.g-ds-ley-err { width: 14px; height: 7px; border-radius: 0; border: solid var(--g-contexto); border-width: 0 1px;

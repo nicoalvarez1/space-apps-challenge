@@ -29,7 +29,7 @@ export const masAltoQue = (p) => (p == null || p !== p ? '' : `higher than ${pct
 export const COLOR = {
   enfasis: '#5dffd0',               // el emplazamiento elegido (el acento de la web)
   contexto: '#7c86a6',              // los demás emplazamientos
-  planeta: '#3d4763',               // la distribución de toda la superficie (fondo del gráfico)
+  planeta: '#56628a',               // la distribución de toda la superficie (fondo del gráfico; ≥ 3:1 sobre el fondo)
   serie1: '#3987e5', serie2: '#d95926',
   tinta: '#e8ecf8', tinta2: '#c6cde4', mudo: '#8e98b8', fondo: '#0a0e1c',
 };
@@ -48,10 +48,11 @@ export function rampa(paradas) {
 }
 const seq = rampa(SEQ);
 export const colorSeq = (t) => `rgb(${seq(t).join(', ')})`;
-// Texto legible dentro de una celda pintada con colorSeq(t): casi negro sobre los pasos claros, blanco sobre los oscuros
+// Texto legible dentro de una celda pintada con colorSeq(t): negro sobre los pasos claros, blanco sobre los oscuros.
+// Umbral 0,179 (luminancia en la que el contraste con negro y con blanco se iguala): así ningún paso de SEQ baja de 4,5:1.
 export function tintaSobreSeq(t) {
   const [r, g, b] = seq(t).map((v) => { const s = v / 255; return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4; });
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b > 0.3 ? '#0b0b0b' : '#ffffff';
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b > 0.179 ? '#000000' : '#ffffff';
 }
 
 // ---------------------------------------------------------------------------
@@ -85,6 +86,7 @@ export function decimalesDe(ms) {
 //  Tooltip compartido
 // ---------------------------------------------------------------------------
 let cajaTip = null;
+let ancla = null;   // { el, h } del tooltip puesto por el foco (conTip): al desplazar la página, se recoloca bajo su elemento
 // tip(html, x, y): lo muestra junto al punto (x, y) de la ventana sin salirse de ella; tip(null) lo oculta
 export function tip(html, x = 0, y = 0) {
   if (!cajaTip) {
@@ -92,7 +94,7 @@ export function tip(html, x = 0, y = 0) {
     cajaTip.className = 'g-tip'; cajaTip.setAttribute('role', 'tooltip'); cajaTip.hidden = true;
     document.body.appendChild(cajaTip);
   }
-  if (html == null) { cajaTip.hidden = true; return; }
+  if (html == null) { ancla = null; cajaTip.hidden = true; return; }
   cajaTip.innerHTML = html; cajaTip.hidden = false;
   const w = cajaTip.offsetWidth, h = cajaTip.offsetHeight;
   const px = Math.max(8, Math.min(x + 14, innerWidth - w - 8)), py = y + 16 + h > innerHeight - 8 ? Math.max(8, y - h - 12) : y + 16;
@@ -103,15 +105,41 @@ export function tip(html, x = 0, y = 0) {
 // elemento que cumple `selector` (o null). Vale igual para el cursor, el dedo y el foco del teclado.
 export function conTip(raiz, selector, contenido) {
   const de = (e) => { const el = e.target.closest?.(selector); return el && raiz.contains(el) ? el : null; };
-  const alPuntero = (e) => { const el = de(e), h = el && contenido(el, e); if (h) tip(h, e.clientX, e.clientY); else tip(null); };
+  const alPuntero = (e) => { const el = de(e), h = el && contenido(el, e); ancla = null; if (h) tip(h, e.clientX, e.clientY); else tip(null); };
   raiz.addEventListener('pointermove', alPuntero);
   raiz.addEventListener('pointerdown', alPuntero);
   raiz.addEventListener('pointerleave', () => tip(null));
   raiz.addEventListener('focusin', (e) => {
     const el = de(e), h = el && contenido(el, e);
-    if (h) { const r = el.getBoundingClientRect(); tip(h, r.left + r.width / 2, r.bottom); }
+    if (h) { const r = el.getBoundingClientRect(); tip(h, r.left + r.width / 2, r.bottom); ancla = { el, h }; }
   });
   raiz.addEventListener('focusout', () => tip(null));
+}
+
+// El tooltip es position: fixed. Si lo puso el foco y la página (o el panel) se desplaza, se recoloca bajo su elemento.
+// Los tooltips sin ancla (puntero, mapa del entorno, perfil del terreno) se dejan como están: ocultarlos aquí los
+// borraría nada más aparecer cuando el propio foco trae el gráfico a la vista (ese desplazamiento llega después del foco).
+if (typeof addEventListener === 'function') addEventListener('scroll', () => {
+  const a = ancla;
+  if (!a || !cajaTip || cajaTip.hidden) return;
+  if (!a.el.isConnected) { tip(null); return; }
+  const r = a.el.getBoundingClientRect(); tip(a.h, r.left + r.width / 2, r.bottom); ancla = a;
+}, { capture: true, passive: true });
+
+// Una sola parada del tabulador para un grupo de marcas (p. ej. los emplazamientos de un gráfico): entra la destacada
+// (.sel) o la primera, y las flechas recorren las demás en el orden del documento. Si el foco llega por otra vía
+// (clic, o el panel que lo devuelve tras repintar), esa marca pasa a ser la parada.
+export function unaParada(raiz, selector) {
+  const els = () => [...raiz.querySelectorAll(selector)];
+  const fijar = (el) => { if (el) els().forEach((x) => x.setAttribute('tabindex', x === el ? '0' : '-1')); };
+  fijar(raiz.querySelector(`${selector}.sel`) ?? els()[0]);
+  raiz.addEventListener('focusin', (e) => { const a = e.target.closest?.(selector); if (a && raiz.contains(a)) fijar(a); });
+  raiz.addEventListener('keydown', (e) => {
+    const d = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key], a = e.target.closest?.(selector);
+    if (!d || !a || !raiz.contains(a) || e.ctrlKey || e.metaKey || e.altKey) return;
+    const xs = els(), o = xs[xs.indexOf(a) + d];
+    if (o) { e.preventDefault(); o.focus(); }
+  });
 }
 
 // Filas del tooltip: valor destacado y etiqueta secundaria. filas = [[etiqueta, valor], …]
@@ -161,6 +189,10 @@ export const leyenda = (entradas) => `<div class="g-ley">${entradas.map((e) => `
 
 // Nombre corto de un emplazamiento para etiquetas con poco sitio: «Shackleton», «Marius Hills»
 export const nombreCorto = (nombre) => nombre.replace(/\s+(crater rim|crater|massif|ridge|pit|skylight|plateau|basin|plain|lava tubes)$/i, '');
+
+// «Maximum», «Minimum» y «Mean» solo se entienden junto a su grupo: fuera del selector de capas y de las cabeceras de
+// la matriz se escriben completas («Mean temperature»)
+export const nombreDe = (def) => (def.grupo?.startsWith('Temperature') ? `${def.corto} temperature` : def.corto);
 
 // Nombre del cuerpo con su artículo y sus preposiciones
 export const CUERPO = { moon: { nombre: 'the Moon', en: 'on the Moon', de: 'of the Moon' }, mars: { nombre: 'Mars', en: 'on Mars', de: 'of Mars' } };

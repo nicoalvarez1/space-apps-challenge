@@ -1,9 +1,9 @@
 // ============================================================================
 //  PANEL «COMPARAR CON DATOS MEDIDOS»  (#analisis, se abre desde la lista de resultados)
 //
-//  Todos los emplazamientos del cuerpo frente a las capas reales del NASA PDS que ya carga la web. Aquí no interviene
-//  la puntuación ni ninguna estimación: cada número es una celda de una rejilla publicada o un resumen de celdas
-//  (js/analitica.js). El panel solo reparte los datos entre los gráficos y lleva dos elecciones compartidas:
+//  Todos los emplazamientos del cuerpo frente a las capas reales del NASA PDS que ya carga la web. Ningún valor ni color
+//  depende de la puntuación ni de estimaciones: cada número es una celda de una rejilla publicada o un resumen de celdas
+//  (js/analitica.js); sitio.rank solo sirve para identificar y ordenar los emplazamientos. El panel solo reparte los datos entre los gráficos y lleva dos elecciones compartidas:
 //    · el emplazamiento destacado (énfasis: uno en color y los demás en gris, en todos los gráficos a la vez);
 //    · la capa en detalle (la de los gráficos de distribución, latitud y dispersión).
 //
@@ -13,7 +13,7 @@
 //         cols, filas → js/analitica.js medirTodo (filas en el orden del ranking); sel = id del emplazamiento destacado
 //         capa = id de la capa en detalle; estado = objeto propio del gráfico que se conserva entre pintados;
 //         repintar() = vuelve a pintar ese gráfico (tras cambiar su estado). Un gráfico nunca se llama a sí mismo.
-//    Marcas de emplazamiento: data-sitio="<id>" (clic o Intro → lo destaca). Cabeceras o botones de capa: data-capa="<id>".
+//    Marcas de emplazamiento: data-sitio="<id>" (clic o Intro → lo destaca). Cabeceras o botones de capa: data-an-capa="<id>" (no data-capa: ese lo escucha proposito.js para las capas del globo).
 // ============================================================================
 import { medirTodo } from '../analitica.js';
 import { RADIO_KM } from '../capas.js';
@@ -42,14 +42,21 @@ function contexto(nombre) {
   };
 }
 
-// Cada pintado estrena contenedor: así los escuchas del gráfico anterior desaparecen con él
+// Cada pintado estrena contenedor: así los escuchas del gráfico anterior desaparecen con él. Del contenedor viejo se
+// conservan el desplazamiento horizontal de la matriz, si «Show as table» estaba abierto y, mientras se pinta, su alto
+// (si no, al leer el ancho del contenedor vacío el panel se acorta y salta hacia arriba cerca del final).
 function pintarGrafico(nombre) {
   const viejo = $(`[data-g="${nombre}"]`, caja());
   if (!viejo || !st?.datos) return;
   const foco = claveFoco(viejo), nuevo = viejo.cloneNode(false);
+  const sl = $('.g-mz-caja', viejo)?.scrollLeft ?? 0, abierta = !!$('details.g-tabla', viejo)?.open;
+  nuevo.style.minHeight = `${viejo.offsetHeight}px`;
   viejo.replaceWith(nuevo);
   try { GRAFICOS[nombre].pintar(nuevo, contexto(nombre)); }
   catch (e) { console.error(`Gráfico «${nombre}»`, e); nuevo.innerHTML = '<p class="g-vacio">This chart could not be drawn.</p>'; }
+  nuevo.style.minHeight = '';
+  if (abierta) { const d = $('details.g-tabla', nuevo); if (d) d.open = true; }
+  if (sl) { const c = $('.g-mz-caja', nuevo); if (c) c.scrollLeft = sl; }
   if (foco) $(foco, nuevo)?.focus({ preventScroll: true });
 }
 
@@ -57,7 +64,7 @@ function pintarGrafico(nombre) {
 function claveFoco(cont) {
   const a = document.activeElement;
   if (!a || !cont.contains(a)) return null;
-  for (const at of ['data-clave', 'data-sitio', 'data-capa']) if (a.hasAttribute(at)) return `${a.tagName.toLowerCase()}[${at}="${CSS.escape(a.getAttribute(at))}"]`;
+  for (const at of ['data-clave', 'data-sitio', 'data-an-capa']) if (a.hasAttribute(at)) return `${a.tagName.toLowerCase()}[${at}="${CSS.escape(a.getAttribute(at))}"]`;
   return a.id ? `#${CSS.escape(a.id)}` : null;
 }
 
@@ -69,8 +76,10 @@ function pintarControles() {
   const ficha = $('[data-an-ficha]', caja());
   if (ficha) { ficha.hidden = !s; if (s) ficha.textContent = `Open the ${nombreCorto(s.name)} site sheet →`; }
   const por = $('#an-capa-por', caja());
-  // Visible: qué se mide; la explicación larga de la capa, tras «Learn more»
-  if (por) por.innerHTML = k ? `${esc(k.capa.meta.nombre)} (${esc(k.def.unidad)}).${masInfo(k.def.por ? `<p class="g-pie">${esc(k.def.por)}</p>` : '')}` : '';
+  // Visible: qué se mide; la explicación larga de la capa, tras «Learn more». La frase «Inverted scale…» de def.por
+  // habla del globo: en estos gráficos el color y los ejes siguen al valor medido, sin invertir, y no se copia.
+  const porTxt = (d) => String(d.por ?? '').replace(/\s*Inverted scale:[^.]*\./, '');
+  if (por) por.innerHTML = k ? `${esc(k.capa.meta.nombre)} · ${esc(k.def.unidad)}.${masInfo(k.def.por ? `<p class="g-pie">${esc(porTxt(k.def))}</p>` : '')}` : '';
 }
 
 function pintarTodo() {
@@ -81,7 +90,8 @@ function pintarTodo() {
     <h2 id="analisis-tit" tabindex="-1">Sites ${esc(c.en)}, compared with measured data</h2>
     <p class="an-intro">How each site compares with the rest ${esc(c.de)}, using real NASA measurements. Pick a site to highlight it.</p>
     ${masInfo(`<p class="g-pie">Every number comes from the NASA PDS grids the site already uses: the area-weighted mean of the cells within 0.5° of arc of each
-      site, with the whole surface ${esc(c.de)} as reference. Neither the score nor any estimate is involved here.</p>`)}
+      site, with the whole surface ${esc(c.de)} as reference. No value or color in these charts depends on the score or on estimates; each site’s
+      number is only its rank in the results list, used to identify and sort it.</p>`)}
     <div class="g-ctl an-sitios" role="group" aria-label="Highlighted site">
       <span class="an-rot">Highlight</span>
       <div class="g-seg">${sitios.map((s) => `<button type="button" data-an-sitio="${esc(s.id)}" aria-pressed="false" title="${esc(s.name)}"><b>${s.rank}</b> ${esc(nombreCorto(s.name))}</button>`).join('')}</div>
@@ -161,12 +171,11 @@ export function iniciar() {
     else if (t.dataset.anFicha != null) { const id = st?.sel, ver = st?.alVerFicha; cerrar(); if (id) ver?.(id); }
     else if (t.dataset.anSitio) elegir(t.dataset.anSitio);
     else if (t.dataset.anCapa) elegirCapa(t.dataset.anCapa);
-    else if (t.dataset.capa) elegirCapa(t.dataset.capa);
     else if (t.dataset.sitio) elegir(t.dataset.sitio);
     else return false;
     return true;
   };
-  const objetivo = (e) => e.target.closest?.('[data-an-cerrar], [data-an-ficha], [data-an-sitio], [data-an-capa], [data-capa], [data-sitio]');
+  const objetivo = (e) => e.target.closest?.('[data-an-cerrar], [data-an-ficha], [data-an-sitio], [data-an-capa], [data-sitio]');
   el.addEventListener('click', (e) => { actuar(objetivo(e)); });
   el.addEventListener('keydown', (e) => {
     if (e.key !== 'Enter' && e.key !== ' ') return;

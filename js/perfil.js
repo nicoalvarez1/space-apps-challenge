@@ -138,6 +138,11 @@ export function iniciar(a) {
   $('#btn-grafico').addEventListener('click', () => { abierto = !abierto; aplicarAbierto(); if (abierto) $('#perfil [data-barra]')?.focus(); });
 }
 
+// Pliega el gráfico igual que su botón (#btn-grafico) y dice si estaba abierto; desplegar() lo vuelve a abrir. Lo usa el
+// panel de entrenamiento en la Tierra (js/main.js), que es ancho y ocupa el mismo sitio de la pantalla.
+export function plegar() { const era = abierto; if (abierto) { abierto = false; aplicarAbierto(); } return era; }
+export function desplegar() { if (!abierto) { abierto = true; aplicarAbierto(); } }
+
 // Al mostrar los resultados: calcula el reparto de cada emplazamiento con la puntuación existente
 export async function mostrar({ body, mission, sitios }) {
   if (!api || !props.length) return;

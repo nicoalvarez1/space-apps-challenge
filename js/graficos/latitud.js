@@ -16,9 +16,9 @@
 // ============================================================================
 import { perfilLatitud } from '../analitica.js';
 import { RADIO_ZONA } from '../capas.js';
-import { esc, nf, lineal, marcas, decimalesDe, conTip, tipHtml, tabla, figura, leyenda, nombreCorto, fuenteDe } from './base.js';
+import { esc, nf, lineal, marcas, decimalesDe, conTip, tipHtml, tabla, figura, leyenda, nombreCorto, fuenteDe, nombreDe, unaParada } from './base.js';
 
-const W = 460, H = 236, M = { l: 50, r: 14, t: 18, b: 36 };
+const H = 236, M = { l: 50, r: 14, t: 18, b: 36 };           // el ancho del viewBox es el del contenedor (ver pintar)
 const R = 5;
 const LATS = [-90, -60, -30, 0, 30, 60, 90];              // marcas del eje de latitud
 const ANCHO_LETRA = 5.7;                                  // ancho medio de un carácter de 10 px en negrita (para anclar la etiqueta)
@@ -33,12 +33,14 @@ function rotulador(def, ms) {
 }
 
 export function pintar(el, ctx) {
+  // viewBox ≈ píxeles reales (entre 280 y 560): en móvil el texto no se encoge por debajo de su tamaño
+  const W = Math.round(Math.min(560, Math.max(280, el.clientWidth || 460)));
   const k = ctx.cols.find((x) => x.def.id === ctx.capa);
   if (!k) { el.innerHTML = '<p class="g-vacio">Choose a layer to see how it changes with latitude.</p>'; return; }
-  const { def, capa: c } = k;
+  const { def, capa: c } = k, nom = nombreDe(def);
   const breve = (v) => def.breve(v).trim();               // las unidades largas se omiten en «breve» y dejan un espacio al final
   const paso = Math.max(2, Math.abs(c.meta.dlat)), p = perfilLatitud(c, paso), nb = p.lat.length, dPaso = decimalesDe([paso]);
-  const titulo = `${def.corto}: from pole to pole`;
+  const titulo = `${nom}: from pole to pole`;
   const conDato = (b) => Number.isFinite(p.media[b]) && Number.isFinite(p.q25[b]) && Number.isFinite(p.q75[b]);
   const franjaDe = (lat) => Math.min(nb - 1, Math.max(0, Math.floor((lat + 90) / paso)));        // igual que perfilLatitud()
   const limites = (b) => [-90 + b * paso, Math.min(90, -90 + (b + 1) * paso)];
@@ -86,7 +88,7 @@ export function pintar(el, ctx) {
   const tipFranja = (b) => {
     const aqui = ctx.filas.filter((f) => franjaDe(f.sitio.lat) === b).map((f) => nombreCorto(f.sitio.name));
     const notaSitios = aqui.length ? `Sites in this band: ${aqui.join(', ')}.` : '';
-    if (!conDato(b)) return tipHtml(franja(b), [[def.corto, 'no data']], `The layer has no published data in this band. ${notaSitios}`.trim());
+    if (!conDato(b)) return tipHtml(franja(b), [[nom, 'no data']], `The layer has no published data in this band. ${notaSitios}`.trim());
     const cobertura = p.fraccion[b] < 0.995 ? `${nf(p.fraccion[b] * 100)} % of the cells in the band have data.` : '';
     return tipHtml(franja(b), [['Mean', def.fmt(p.media[b])], ['25 % quartile', breve(p.q25[b])], ['75 % quartile', breve(p.q75[b])]],
       [cobertura, notaSitios].filter(Boolean).join(' '));
@@ -101,7 +103,7 @@ export function pintar(el, ctx) {
       aria-label="${esc(`${q.f.sitio.name}: ${def.fmt(q.v.media)} at ${latTxt(q.f.sitio.lat, 1)}; mean of its latitude band: ${mediaFranja(q)}`)}"
       cx="${cx(q)}" cy="${cy(q)}" r="${R}"/>`).join('');
   const tipSitio = new Map(pts.map((q) => {
-    const filas = [['Latitude', latTxt(q.f.sitio.lat, 1)], [def.corto, def.fmt(q.v.media)], ['Mean of its latitude band', mediaFranja(q)]];
+    const filas = [['Latitude', latTxt(q.f.sitio.lat, 1)], [nom, def.fmt(q.v.media)], ['Mean of its latitude band', mediaFranja(q)]];
     const nota = [
       `${franja(q.b)}.`,
       q.v.unica ? `No cell has its center within ${nf(RADIO_ZONA, 1)}°: this is the cell that contains the point.` : '',
@@ -132,14 +134,14 @@ export function pintar(el, ctx) {
   }
 
   const yM = (M.t + yB) / 2;
-  const svg = `<svg class="g-svg g-la-svg" viewBox="0 0 ${W} ${H}" role="group" aria-label="${esc(titulo)}">
+  const svg = `<svg class="g-svg g-la-svg" viewBox="0 0 ${W} ${H}" role="group" aria-label="${esc(`${titulo}. The arrow keys move through the sites.`)}">
     ${my.map((v) => `<line class="g-rej" x1="${M.l}" x2="${W - M.r}" y1="${f1(y(v))}" y2="${f1(y(v))}"/>
       <text x="${M.l - 6}" y="${f1(y(v) + 3.5)}" text-anchor="end">${esc(rot(v))}</text>`).join('')}
     ${LATS.map((la) => `<line class="g-rej" x1="${f1(x(la))}" x2="${f1(x(la))}" y1="${M.t}" y2="${yB}"/>
       <text x="${f1(x(la))}" y="${yB + 15}" text-anchor="middle">${esc(latTxt(la))}</text>`).join('')}
     <line class="g-eje" x1="${M.l}" x2="${W - M.r}" y1="${yB}" y2="${yB}"/>
     <text class="g-txt" x="${(M.l + W - M.r) / 2}" y="${H - 5}" text-anchor="middle">Latitude</text>
-    <text class="g-txt" x="11" y="${yM}" text-anchor="middle" transform="rotate(-90 11 ${yM})">${esc(`${def.corto} (${def.unidad})`)}</text>
+    <text class="g-txt" x="11" y="${yM}" text-anchor="middle" transform="rotate(-90 11 ${yM})">${esc(`${nom} (${def.unidad})`)}</text>
     ${bandas}${lineas}
     <g class="g-la-frs" role="group" aria-label="Profile by latitude bands: left and right arrows move through them">${franjas}</g>
     ${zonas}${puntos}${etiqueta}
@@ -159,12 +161,13 @@ export function pintar(el, ctx) {
     'Between adjacent bands the line joins their means; the value of each band is in its tooltip.',
     huecos ? 'The line breaks where the layer has no published data.' : '',
     `<b>Points:</b> mean of the cells whose center lies within ${nf(RADIO_ZONA, 1)}° of arc of each site.`,
-    k.derivada && c.meta.nota ? esc(c.meta.nota) : '',
+    def.invertir ? `<b>How to read it:</b> ${esc(primeraFrase(def.por))}` : '',
+    c.meta.nota ? esc(c.meta.nota) : '',
   ].filter(Boolean).join(' ');
 
   const tablaHtml = tabla({
-    titulo: `${def.corto}: each site and the mean of its latitude band (${nf(paso, dPaso)}° bands)`,
-    cabeceras: ['Site', 'Latitude', `${def.corto} (${def.unidad})`, `Mean of its band (${def.unidad})`],
+    titulo: `${nom}: each site and the mean of its latitude band (${nf(paso, dPaso)}° bands)`,
+    cabeceras: ['Site', 'Latitude', `${nom} (${def.unidad})`, `Mean of its band (${def.unidad})`],
     filas: ctx.filas.map((f) => {
       const v = f.v[def.id], b = franjaDe(f.sitio.lat);
       return [f.sitio.name, latTxt(f.sitio.lat, 1), v ? def.tick(v.media) : 'no data', conDato(b) ? def.tick(p.media[b]) : 'no data'];
@@ -178,6 +181,7 @@ export function pintar(el, ctx) {
 
   // Un solo conTip para puntos y franjas: dos escuchas sobre el mismo contenedor se ocultarían el tooltip el uno al otro
   conTip(el, '[data-sitio], .g-la-fr', (t) => (t.dataset.sitio ? tipSitio.get(t.dataset.sitio) ?? null : tipFranja(Number(t.dataset.b))));
+  unaParada(el, 'circle[data-sitio]');                          // los emplazamientos: una sola parada del tabulador
 
   // Las franjas son una sola parada del tabulador; dentro se recorren con las flechas (si no, serían hasta 90 paradas)
   el.addEventListener('keydown', (e) => {
@@ -188,4 +192,10 @@ export function pintar(el, ctx) {
     e.preventDefault();
     fr.setAttribute('tabindex', '-1'); otra.setAttribute('tabindex', '0'); otra.focus();
   });
+}
+
+// Primera frase de la explicación de la capa (def.por): la que dice cómo leer el valor, sin lo que habla del globo
+function primeraFrase(por) {
+  const f = String(por).split(/\.\s/)[0];
+  return /[.!?]$/.test(f) ? f : `${f}.`;
 }

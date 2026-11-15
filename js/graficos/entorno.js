@@ -8,10 +8,11 @@
 //
 //  De dónde sale cada número:
 //  - Imagen: js/analitica.js → ventana(capa, lat, lon, R, 180, Rkm, { suave: true }) (azimutal equidistante; interpola
-//    entre celdas SOLO para la vista). La escala de color es local: del mínimo al máximo de esa imagen.
+//    entre celdas SOLO para la vista). La escala de color es local: del mínimo al máximo de las celdas publicadas del
+//    entorno (o de la imagen, si al interpolar con celdas vecinas del borde se sale de ellos).
 //  - Lectura con el cursor, el dedo o las flechas: puntoVentana → [lat, lon] y Capa.en(lat, lon), es decir, el valor
 //    de la celda publicada que contiene el punto (nunca el interpolado). Distancia y rumbo: geometría de la proyección.
-//  - Tabla: Capa.en en el emplazamiento y mínimo/máximo de ventana(..., { suave: false }) muestreada a medio paso de rejilla.
+//  - Tabla: Capa.en en el emplazamiento y mínimo/máximo de las celdas con el centro dentro del cuadrado (extremosVentana).
 //  - Círculo: RADIO_ZONA·π/180·Rkm km. Barra de escala: una marca redonda de marcas() cercana a un cuarto del lado.
 //  - Exageración vertical del sombreado: ctx.exageracion (js/analitica.js → exageracionRelieve), solo ayuda visual.
 //  Aquí no hay puntuación, umbrales ni estimaciones.
@@ -19,7 +20,7 @@
 //  ctx = { body, cuerpo, Rkm, sitio, cols, exageracion, estado, repintar }   (sin filas ni sel: es la ficha de UN sitio)
 // ============================================================================
 import { RAMPAS, RADIO_KM, RADIO_ZONA } from '../capas.js';
-import { ventana, puntoVentana, esLocal, RADIO_ENTORNO_KM } from '../analitica.js';
+import { ventana, puntoVentana, esLocal, extremosVentana, RADIO_ENTORNO_KM } from '../analitica.js';
 import { esc, nf, coord, marcas, decimalesDe, tip, tipHtml, tabla, figura, fuenteDe } from './base.js';
 import { pintarRelieve } from './relieve.js';
 
@@ -60,23 +61,22 @@ export function pintar(el, ctx) {
     if (!v) { v = ventana(x.capa, lat, lon, R, N, Rkm, { suave: true }); v.huecos = v.v.some((z) => z !== z); memo.suave.set(x.def.id, v); }
     return v;
   };
-  // Extremos de las celdas publicadas (sin interpolar). La ventana se muestrea a MEDIO paso de rejilla (dos puntos por
-  // celda de lado): a paso entero, como la proyección no está alineada con la rejilla, se saltan celdas y el máximo de
-  // la tabla podía quedar por debajo del de la imagen. Muy cerca del polo las celdas se estrechan y aún puede saltarse alguna.
+  // Extremos de las celdas publicadas (sin interpolar): se recorren todas las celdas de la rejilla cuyo centro cae dentro
+  // del cuadrado, en la misma proyección (analitica.js → extremosVentana). Un muestreo de la ventana se saltaba celdas
+  // (sobre todo cerca del polo, donde se estrechan) y daba extremos más estrechos que los reales.
   const crudaDe = (x) => {
     let v = memo.cruda.get(x.def.id);
-    if (!v) {
-      const n = 2 * Math.max(1, Math.round(lado / celdaKm(x.capa, Rkm))), w = ventana(x.capa, lat, lon, R, n, Rkm, { suave: false });
-      v = { n, min: w.min <= w.max ? w.min : NaN, max: w.min <= w.max ? w.max : NaN };
-      memo.cruda.set(x.def.id, v);
-    }
+    if (!v) { v = extremosVentana(x.capa, lat, lon, R, Rkm); memo.cruda.set(x.def.id, v); }
     return v;
   };
 
   const vElev = kElev ? suaveDe(kElev) : null, vTinte = k === kElev ? vElev : suaveDe(k);
-  const hayDato = vTinte.min <= vTinte.max, tramo = vTinte.max - vTinte.min, inv = !!k.def.invertir;
-  // Escala de color LOCAL y lineal entre el mínimo y el máximo de esta imagen (invertida si la capa lo pide, como en el globo)
-  const pos = (v) => { const t = tramo > 0 ? (v - vTinte.min) / tramo : 0.5; return inv ? 1 - t : t; };
+  // Escala de color LOCAL y lineal entre el mínimo y el máximo de las celdas publicadas de este entorno (invertida si la
+  // capa lo pide, como en el globo): así sus extremos son los mismos que dan la tabla y el cursor. Si no hubiera celdas
+  // con dato (crudaDe → NaN), los de la imagen.
+  const ext = crudaDe(k), hayDato = vTinte.min <= vTinte.max, inv = !!k.def.invertir;
+  const eMin = ext.min === ext.min ? Math.min(ext.min, vTinte.min) : vTinte.min, eMax = ext.max === ext.max ? Math.max(ext.max, vTinte.max) : vTinte.max, tramo = eMax - eMin;
+  const pos = (v) => { const t = tramo > 0 ? (v - eMin) / tramo : 0.5; return inv ? 1 - t : t; };
   const paradas = RAMPAS[k.def.rampa] ?? RAMPAS.relieve;
   const exa = ctx.exageracion > 0 ? ctx.exageracion : 1;
 
@@ -103,7 +103,7 @@ export function pintar(el, ctx) {
   const degradado = (inv ? [...paradas].reverse() : paradas).join(', ');
   const ley = `<div class="g-en-ley">
     <i class="g-en-barra" style="background: linear-gradient(90deg, ${esc(degradado)})" aria-hidden="true"></i>
-    <div class="g-en-ext">${hayDato ? `<span>${esc(k.def.fmt(vTinte.min))}</span><span>${esc(k.def.fmt(vTinte.max))}</span>` : '<span>no data in these surroundings</span>'}</div>
+    <div class="g-en-ext">${hayDato ? `<span>${esc(k.def.fmt(eMin))}</span><span>${esc(k.def.fmt(eMax))}</span>` : '<span>no data in these surroundings</span>'}</div>
     <div class="g-en-nota"><span>${esc(k.def.corto)}${inv ? ' (light = low)' : ''}</span>${
       vTinte.huecos ? '<span><i class="g-en-hueco" aria-hidden="true"></i>no data</span>' : ''}</div>
   </div>`;
@@ -118,14 +118,14 @@ export function pintar(el, ctx) {
     : `${kElev ? `<b>Relief:</b> ${esc(fuenteDe(kElev.capa))}. ` : ''}<b>${esc(k.def.corto)}${k.derivada ? ' (derived quantity)' : ''}:</b> ${esc(fuenteDe(k.capa))}.`;
   const pie = `${fuentes} Azimuthal equidistant projection centered on the site, north up: distances and bearings from the center are exact.
     ${kElev ? `The shading (light from the northwest, vertical exaggeration ×${esc(exa >= 1 ? nf(Math.round(exa)) : nf(exa, 1))}) only helps to read the relief; it is not data. ` : ''}
-    The image interpolates between cells and its color scale runs from the minimum to the maximum of what is shown; the cursor and the table give the value of the published cell.
+    The image interpolates between cells and its color scale runs from the minimum to the maximum of the published cells in these surroundings; the cursor and the table give the value of the published cell.
     Circle: the measured area, ${esc(nf(RADIO_ZONA, 1))}° of arc (${esc(nf(zonaKm, 0))} km).${
       Math.abs(lat) > 85 ? ' Near the pole, “north” is the direction of the site’s meridian.' : ''}`;
 
   // ---- alternativa en tabla: celdas publicadas, sin interpolar ----
   const tablaHtml = tabla({
-    titulo: `Surroundings of ${sitio.name} (${coord(lat, lon)}): cell of the site and extremes of the published cells (not interpolated, sampled at half the grid spacing) in a ${nf(lado)} km square`,
-    cabeceras: ['Layer', 'At the site', 'Minimum of the surroundings', 'Maximum of the surroundings'],
+    titulo: `Surroundings of ${sitio.name} (${coord(lat, lon)}): cell of the site and extremes of the published cells (not interpolated: cells whose center lies inside the square) in a ${nf(lado)} km square`,
+    cabeceras: ['Layer', 'Cell of the site', 'Minimum of the surroundings', 'Maximum of the surroundings'],
     filas: elegibles.map((x) => { const c = crudaDe(x); return [`${x.def.corto}${x.derivada ? ' (derived)' : ''}`, valor(x, x.capa.en(lat, lon)), valor(x, c.min), valor(x, c.max)]; }),
     abierta: !!estado.tabla,
   });

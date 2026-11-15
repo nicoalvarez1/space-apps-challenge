@@ -20,7 +20,7 @@
 // ============================================================================
 import { RADIO_ZONA } from '../capas.js';
 import { cuantil } from '../analitica.js';
-import { esc, nf, pct, COLOR, lineal, marcas, decimalesDe, conTip, tipHtml, tabla, figura, leyenda, nombreCorto, fuenteDe, pctTxt } from './base.js';
+import { esc, nf, pct, COLOR, lineal, marcas, decimalesDe, conTip, tipHtml, tabla, figura, leyenda, nombreCorto, fuenteDe, pctTxt, unaParada } from './base.js';
 
 const vacio = (t) => `<p class="g-vacio">${esc(t)}</p>`;
 const px = (v) => Number(v.toFixed(1));
@@ -48,7 +48,9 @@ function separar(textos) {
 
 // Fila de un emplazamiento: es la marca que el panel escucha (data-sitio; clic o Intro → lo destaca). La zona de
 // acierto ocupa toda la fila y sirve también de banda de la fila destacada y de anillo de foco (css/g-especifico.css).
-const grupoFila = (s, sel, aria, y, alto, W, dentro) => `<g class="g-es-fila${sel ? ' sel' : ''}" data-sitio="${esc(s.id)}" tabindex="0" role="button" aria-pressed="${sel}" aria-label="${esc(aria)}">
+// clave (Marte): «<capa>:<sitio>», única aunque el emplazamiento se repita en cada panel; con ella el panel devuelve el
+// foco a la fila del mismo panel tras repintar (panel.js → claveFoco), no a la del primero.
+const grupoFila = (s, sel, aria, y, alto, W, dentro, clave = '') => `<g class="g-es-fila${sel ? ' sel' : ''}" data-sitio="${esc(s.id)}"${clave ? ` data-clave="${esc(clave)}"` : ''} tabindex="0" role="button" aria-pressed="${sel}" aria-label="${esc(aria)}">
   <rect class="g-hit g-es-zona" x="0" y="${px(y)}" width="${W}" height="${alto}" rx="3"/>${dentro}</g>`;
 
 // ---------------------------------------------------------------------------
@@ -65,7 +67,9 @@ function luna(el, ctx) {
 
   // Eje X: de la menor a la mayor temperatura de los emplazamientos. Más margen a la izquierda (cabe el valor escrito
   // de la mínima del destacado sin pisar los nombres) que a la derecha (el de la máxima cabe en el margen derecho).
-  const uni = kMax.def.unidad, W = 460, mL = 138, mR = 28, mT = 6, alto = 22, base = mT + filas.length * alto, H = base + 36;
+  // viewBox ≈ píxeles reales (entre 280 y 560): en móvil el texto no se encoge; con poco ancho, nombres más cortos
+  const W = Math.round(Math.min(560, Math.max(280, el.clientWidth || 460)));
+  const uni = kMax.def.unidad, mL = W < 380 ? 96 : 138, mR = 28, mT = 6, alto = 22, base = mT + filas.length * alto, H = base + 36;
   const lo = Math.min(...todos), hi = Math.max(...todos), span = hi - lo || 1;
   const x = lineal(lo - 0.09 * span, hi + 0.04 * span, mL, W - mR);
   const ms = marcas(x.d[0], x.d[1], 5), dec = decimalesDe(ms);
@@ -86,7 +90,7 @@ function luna(el, ctx) {
     const aria = `${rotulo(r.s)}: ${hay ? `minimum ${txt(kMin, r.mi)}, mean ${txt(kMed, r.me)}, maximum ${txt(kMax, r.ma)}` : 'no temperature data'}`;
     return grupoFila(r.s, sel, aria, y, alto, W, `
       <text class="${cls}" x="16" y="${ty}" text-anchor="end">${esc(r.s.rank)}</text>
-      <text class="${cls}" x="22" y="${ty}">${esc(corta(nombreCorto(r.s.name), 21))}</text>
+      <text class="${cls}" x="22" y="${ty}">${esc(corta(nombreCorto(r.s.name), W < 380 ? 13 : 21))}</text>
       ${hay ? '' : `<text class="g-es-nd" x="${mL + 6}" y="${ty}">no data</text>`}
       ${xi != null && xa != null ? `<line class="g-es-seg" x1="${xi}" x2="${xa}" y1="${cy}" y2="${cy}"/>` : ''}
       ${xm != null ? `<line class="g-es-med" x1="${xm}" x2="${xm}" y1="${px(cy - 7)}" y2="${px(cy + 7)}"/>` : ''}
@@ -103,13 +107,15 @@ function luna(el, ctx) {
   const nota = incompletos.length ? `<p class="g-es-nota">No minimum or maximum data (that mark is not drawn): ${esc(incompletos.map((r) => `${r.s.rank}. ${nombreCorto(r.s.name)}`).join(', '))}.</p>` : '';
   // Los dos colores de serie salen de base.js (COLOR) y llegan al SVG y a la leyenda como variables CSS
   const cuerpo = `<div class="g-es-serie" style="--g-es-min: ${COLOR.serie1}; --g-es-max: ${COLOR.serie2}">${ley}
-    <svg class="g-svg" viewBox="0 0 ${W} ${H}" role="group" aria-label="${esc(`Minimum, mean and maximum surface temperature at each site ${ctx.cuerpo.en}`)}">${eje}${dibujo}</svg></div>`;
+    <svg class="g-svg" viewBox="0 0 ${W} ${H}" role="group" aria-label="${esc(`Minimum, mean and maximum surface temperature at each site ${ctx.cuerpo.en}. The arrow keys move through the sites`)}">${eje}${dibujo}</svg></div>`;
 
-  // Pie: qué es cada temperatura, con las palabras de los metadatos de cada capa
+  // Pie: qué es cada temperatura, con las palabras de los metadatos de cada capa. Se quitan las remisiones a capas que
+  // la web no ofrece («(see the gap layer)», «(see the number-of-intervals layer)»): el lector no podría verlas.
+  const sinRemision = (t) => String(t ?? '').replace(/\s*\(see the [^)]*layer\)/g, '');
   const proc = separar(ks.map((k) => k.capa.meta.procesado)), notas = unicos(ks.map((k) => k.capa.meta.nota));
-  const pie = `<b>Source</b>: ${esc(unicos(ks.map((k) => fuenteDe(k.capa))).join('; '))}. ${esc(proc.comun)}
-    ${ks.map((k, i) => `<b>${nombres[i]}</b>: ${esc(k.capa.meta.nombre ?? k.def.corto)}. ${esc(proc.propio[i])}`).join(' ')}
-    ${notas.map(esc).join(' ')}
+  const pie = `<b>Source</b>: ${esc(unicos(ks.map((k) => fuenteDe(k.capa))).join('; '))}. ${esc(sinRemision(proc.comun))}
+    ${ks.map((k, i) => `<b>${nombres[i]}</b>: ${esc(k.capa.meta.nombre ?? k.def.corto)}. ${esc(sinRemision(proc.propio[i]))}`).join(' ')}
+    ${notas.map((t) => esc(sinRemision(t))).join(' ')}
     <b>At each site</b>: mean of the cells whose center lies within ${ARCO} of arc (if there are none, the cell that contains it). The swing is that maximum minus that minimum.`;
 
   const tablaHtml = tabla({ titulo: `Surface temperature at each site ${ctx.cuerpo.en} (Diviner)`,
@@ -120,6 +126,7 @@ function luna(el, ctx) {
     sub: 'Coldest and hottest ground temperature at each site, measured from orbit.',
     cuerpo, mas: nota, pie, tablaHtml, clase: 'g-es g-es-luna' });
 
+  unaParada(el, 'g.g-es-fila');                                 // las filas: una sola parada del tabulador
   const porId = new Map(filas.map((r) => [r.s.id, r]));
   conTip(el, '.g-es-fila', (g) => {
     const r = porId.get(g.dataset.sitio);
@@ -170,7 +177,7 @@ function marte(el, ctx) {
     const filas = ctx.filas.map((f, i) => {
       const s = f.sitio, z = f.v[id] ?? null, y = mT + i * alto, cy = px(y + alto / 2), ty = px(y + alto / 2 + 3.5), sel = s.id === ctx.sel;
       const puesto = `<text${sel ? ' class="g-val"' : ''} x="${mL - 6}" y="${ty}" text-anchor="end">${esc(s.rank)}</text>`;
-      if (!z) return grupoFila(s, sel, `${rotulo(s)}: ${k.def.corto}, no data`, y, alto, W, puesto);   // sin dato: sin marca
+      if (!z) return grupoFila(s, sel, `${rotulo(s)}: ${k.def.corto}, no data`, y, alto, W, puesto, `${id}:${s.id}`);   // sin dato: sin marca
       const e = conSigma(z) ? z.sigma : 0, cx = px(x(z.media)), x0 = px(x(z.media - e)), x1 = px(x(z.media + e));
       let marca = `${e ? `<line class="g-ml g-es-err${sel ? ' sel' : ''}" x1="${x0}" x2="${x1}" y1="${cy}" y2="${cy}"/>` : ''}
         <circle class="g-m${sel ? ' sel' : ''}" cx="${cx}" cy="${cy}" r="4.5"/>`;
@@ -179,11 +186,11 @@ function marte(el, ctx) {
         const aDerecha = der + 4 + ancho <= W || izq - 4 - ancho < mL;
         marca += `<text class="g-val g-es-halo" x="${px(aDerecha ? der + 4 : izq - 4)}" y="${ty}" text-anchor="${aDerecha ? 'start' : 'end'}">${esc(t)}</text>`;
       }
-      return grupoFila(s, sel, `${rotulo(s)}: ${k.def.corto}, ${valorSigma(k.def, z)}`, y, alto, W, puesto + marca);
+      return grupoFila(s, sel, `${rotulo(s)}: ${k.def.corto}, ${valorSigma(k.def, z)}`, y, alto, W, puesto + marca, `${id}:${s.id}`);
     }).join('');
 
     return `<div class="g-es-panel">${titulo}
-      <svg class="g-svg" viewBox="0 0 ${W} ${H}" data-es-col="${esc(id)}" role="group" aria-label="${esc(`${k.def.corto} (${k.def.unidad}): value and published uncertainty at each site. Surface median ${ctx.cuerpo.en}: ${medianaTxt(k)}`)}">${eje}${filas}</svg></div>`;
+      <svg class="g-svg" viewBox="0 0 ${W} ${H}" data-es-col="${esc(id)}" role="group" aria-label="${esc(`${k.def.corto} (${k.def.unidad}): value and published uncertainty at each site. Surface median ${ctx.cuerpo.en}: ${medianaTxt(k)}. The arrow keys move through the sites`)}">${eje}${filas}</svg></div>`;
   };
 
   const elegido = ctx.filas.find((f) => f.sitio.id === ctx.sel);
@@ -203,13 +210,13 @@ function marte(el, ctx) {
     grupos.set(t, [...(grupos.get(t) ?? []), k.def.corto]);
   }
   const barras = [...grupos].map(([t, quien]) => `${esc(quien.join(', '))}: “${esc(t)}”`).join('; ');
-  const proc = separar(cols.map((k) => k.capa.meta.procesado)), citas = unicos(cols.map((k) => k.capa.meta.fuente?.cita));
-  const pie = `<b>Source</b>: ${esc(unicos(cols.map((k) => fuenteDe(k.capa))).join('; '))}. ${esc(proc.comun)}
+  const citas = unicos(cols.map((k) => k.capa.meta.fuente?.cita));
+  const pie = `<b>Source</b>: ${esc(unicos(cols.map((k) => fuenteDe(k.capa))).join('; '))}.
     <b>Point</b>: ${unaCelda ? `value of the ${esc(paso)} cell that contains the site` : `mean of the ${esc(paso)} cells whose center lies within ${ARCO} of arc of the site (if there are none, the cell that contains it)`};
     sites that fall in the same cell share a value.
     <b>Bar</b>: from the value minus the uncertainty to the value plus the uncertainty that the source publishes for that same cell (${barras}).
     <b>Vertical line</b>: median of the cells with data ${esc(ctx.cuerpo.en)}, weighted by their area; the cursor percentile refers to that same surface with data.
-    Each panel has its own horizontal scale. ${citas.map(esc).join(' ')}`;
+    ${citas.map(esc).join(' ')}`;
 
   const tablaHtml = tabla({ titulo: `Surface composition at each site ${ctx.cuerpo.en}: value ± published uncertainty (Odyssey GRS)`,
     cabeceras: ['Site', ...cols.map((k) => `${k.def.corto} (${k.def.unidad})`)],
@@ -217,9 +224,10 @@ function marte(el, ctx) {
       [`Median of the surface ${ctx.cuerpo.de}`, ...cols.map((k) => medianaTxt(k, k.def.tick))]] });
 
   el.innerHTML = figura({ titulo: 'What the ground is made of',
-    sub: 'One box per chemical element, one row per site. The line around each dot shows the margin of error.',
+    sub: 'One box per chemical element, each with its own horizontal scale; one row per site. The line around each dot shows the margin of error.',
     cuerpo, mas: nota, pie, tablaHtml, clase: 'g-es g-es-marte' });
 
+  el.querySelectorAll('svg[data-es-col]').forEach((sv) => unaParada(sv, 'g.g-es-fila'));   // una parada por panel, no una por fila
   const porId = new Map(ctx.filas.map((f) => [f.sitio.id, f])), porCol = new Map(cols.map((k) => [k.def.id, k]));
   conTip(el, '.g-es-fila', (g) => {
     const f = porId.get(g.dataset.sitio), k = porCol.get(g.closest('svg')?.dataset.esCol);

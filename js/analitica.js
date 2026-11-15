@@ -60,6 +60,14 @@ export function cuantil(c, q) {
   return m.v[a];
 }
 
+// Parte (0…1) del área muestreada que tiene dato (la misma muestra y los mismos pesos que muestra(); no la modifica).
+// Odyssey GRS no publica los polos: ahí el percentil y la mediana se refieren solo a la parte con dato.
+export function cobertura(c) {
+  const m = muestra(c); let todo = 0;
+  for (let i = 0; i < c.n; i += m.paso) todo += Math.cos(c.lat(i) * DEG) * Math.ceil(c.w / m.paso);
+  return todo > 0 ? m.total / todo : NaN;
+}
+
 // Intervalos adecuados al tamaño de la rejilla: las de 5° (Odyssey GRS) solo tienen ~2 000 celdas con dato
 export const intervalosPara = (c) => (c.n * c.w < 10000 ? 20 : 40);
 
@@ -161,6 +169,26 @@ export function ventana(c, lat, lon, radioKm, n, Rkm, { suave = false } = {}) {
     }
   }
   return { n, km, radioKm, v, min, max, lat, lon, Rkm };
+}
+
+// Extremos de las celdas con dato cuyo centro cae dentro del cuadrado de lado 2·radioKm centrado en (lat, lon), en la
+// misma proyección que ventana() (azimutal equidistante). Recorre las celdas de la rejilla, no un muestreo: no se salta
+// ninguna, tampoco junto al polo, donde las celdas se estrechan.
+export function extremosVentana(c, lat, lon, radioKm, Rkm) {
+  const s0 = Math.sin(lat * DEG), c0 = Math.cos(lat * DEG), alc = (radioKm * Math.SQRT2 / Rkm) / DEG;
+  const a = c.fila(Math.min(90, lat + alc)), b = c.fila(Math.max(-90, lat - alc));
+  let min = Infinity, max = -Infinity;
+  for (let i = Math.min(a, b); i <= Math.max(a, b); i++) {
+    const la = c.lat(i) * DEG, s = Math.sin(la), co = Math.cos(la);
+    for (let j = 0; j < c.w; j++) {
+      const dl = (c.lon(j) - lon) * DEG, cc = Math.acos(Math.max(-1, Math.min(1, s0 * s + c0 * co * Math.cos(dl))));
+      if (cc > Math.PI / 2) continue;                          // hemisferio opuesto (evita ∞·0 en el antípoda)
+      const k = cc > 1e-9 ? cc / Math.sin(cc) : 1;
+      if (Math.abs(Rkm * k * co * Math.sin(dl)) > radioKm || Math.abs(Rkm * k * (c0 * s - s0 * co * Math.cos(dl))) > radioKm) continue;
+      const v = c.celda(i, j); if (v === v) { if (v < min) min = v; if (v > max) max = v; }
+    }
+  }
+  return { min: min <= max ? min : NaN, max: min <= max ? max : NaN };
 }
 
 // Coordenadas [lat, lon] del punto de una ventana situado a (xKm al este, yKm al norte) del centro

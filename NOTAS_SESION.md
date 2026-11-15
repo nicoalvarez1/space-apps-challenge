@@ -1,51 +1,38 @@
-# Notas para continuar (sesión del 15-11-2026)
+# Notas para continuar (actualizado el 15-11-2026, noche)
 
-Estado del trabajo en la web «Landfall» al cerrar la sesión. Nada está en git: todo son cambios sin commit en el árbol de trabajo.
+Web «Landfall» (NASA Space Apps 2026). Interfaz en inglés (otra sesión la tradujo); comentarios del código en español.
+
+## Estado
+- **Git:** todo está commiteado y subido a GitHub (`main` de nicoalvarez1/space-apps-challenge, último commit 756766a). Se reescribieron los 5 commits que no estaban subidos para sacar `base-planetaria/datos_pds/` (3 GB, archivos de 149 MB que GitHub rechaza); esos datos siguen en disco y ahora están en `.gitignore`. Rama local `respaldo-antes-de-limpiar` = copia del historial anterior (se puede borrar cuando se confirme que no falta nada).
+- **Despliegue:** el usuario lo está publicando en **Render** (Static Site: Build `bash tools/publicar.sh`, Publish directory `publicar`; o Web Service con Start `python3 -m http.server $PORT --directory publicar`). Dominio **topgit.earth** (registrado en Porkbun): añadir el dominio en Render y los registros DNS en Porkbun.
+- **Tarea en curso al cerrar:** el usuario pidió una AUDITORÍA a fondo de la web («hasta el último píxel»): primero listar fallos SIN corregir; corregirlos solo cuando el usuario lo indique. El informe de esa auditoría está en `AUDITORIA.md` (si existe; si no, la auditoría quedó a medias y hay que rehacerla).
 
 ## Cómo arrancar
-- Servidor: `python3 -m http.server 8080` en la raíz (suele haber uno ya en marcha en el puerto 8080; si `preview_start {name: "web"}` falla por puerto ocupado, abrir `http://localhost:8080/` directamente).
-- Ir directo a resultados: `http://localhost:8080/?vista=resultados&cuerpo=moon&proposito=recursos&sub=liquido&objetivo=isru` (o `cuerpo=mars`).
-- No hay `node`. Para comprobar números: `.venv/bin/python` con numpy sobre `base-planetaria/web/data/*.bin` (descritos en `capas.json`).
+- Servidor: `python3 -m http.server 8080` en la raíz (suele haber uno ya en marcha). Live Server de VS Code (5500) tiene la recarga automática desactivada (`.vscode/settings.json`, `"**"`).
+- Ir directo a resultados: `http://localhost:8080/?vista=resultados&cuerpo=mars&proposito=recursos&sub=liquido&objetivo=isru` (o `cuerpo=moon`).
+- No hay `node`. Python con numpy, Playwright + Chromium e imageio-ffmpeg en `.venv`.
+- El panel del navegador integrado debe estar VISIBLE para que la animación 3D avance (si está oculto, el viaje no termina).
 
-## Hecho en esta sesión
-1. **Pasada de calidad** (primera petición): vista móvil arreglada (barra superior en una fila, globo encuadrado sobre la hoja inferior, `viewer.shiftY`, `_dist()` en `js/scene.js`), botón ✕ pegajoso, telemetría estable, descenso del LM interrumpido queda posado (`js/vuelo.js`: `alPosar`, `interrumpir`), textos.
-2. **Gráficos de resultados con datos reales del PDS** (sin fuentes nuevas, sin capas `*_aprox`, sin estimaciones):
-   - `js/analitica.js`: percentil/cuantil/histograma ponderados por área, `perfilLatitud`, `destino`, `ventana`, `corte`, `sombreado`, `pendienteCeldas`, `exageracionRelieve`, `medirTodo`. Contrastado con numpy.
-   - `js/graficos/`: `base.js` (utilidades), `relieve.js` (miniaturas), `chispa.js` (percentil en tarjetas), `panel.js` (controlador de `#analisis`), `matriz.js`, `distribucion.js`, `latitud.js`, `dispersion.js`, `especifico.js` (panel de comparación), `entorno.js`, `corte.js` (ficha).
-   - CSS: `css/graficos.css` y `css/g-*.css` (enlazados en `index.html`).
-   - Integración en `js/main.js`: `barraNota`, `pintarMiniaturas`, `abrirComparativa`, `graficosFicha`, `chispasFicha`; `js/capas.js` → `medirSitios` añade `capa/valor/derivada`.
-3. **Media de zona ponderada por área** (`js/capas.js` → `Capa.zona` y `Capa.pendiente`, peso cos(lat)). Shackleton: pendiente 17,5° → 14,9°, elevación +3 m → −292 m (coincide con numpy). Cambia ligeramente la puntuación: en Luna/minería Shackleton pasa por delante de la Cresta (55 y 55).
-4. **Cohete más realista** (`js/saturno5.js`, `js/vuelo.js`): pintura con desgaste/remaches/AO pintada y rugosidad, escarcha en tanques de LOX que se desprende al despegar, toberas con tubos y brillo interior, penachos con ruido y vaina de hollín del F-1, retrocohetes/ullage con llama, sombras del Sol solo para vehículo y plataforma (cámara de sombras que sigue al cohete, `Vuelo._sombras/_sol`), Sol fijo en el marco de LC-39A hasta p≈0,33, vapor de venteo y placas de hielo, brazos de la torre en celosía, nube de separación del S-IC. Humo: corregido el canal (salían discos de borde duro) y la deriva de la estela (iba en unidades de mundo). Coste medido ≈ +0,4 ms/fotograma por las sombras.
-   - Pasada de mini detalles (15-11): partículas como cuadriláteros instanciados (los puntos se topaban en 511 px), humo de la trinchera blanco-gris sin rotación ni cortes contra el suelo, plataforma y humo que se desvanecen (p 0,108–0,136), cielo que se oscurece antes de volverse transparente (sin estrellas de día), nube de separación del S-IC a escala del vehículo, escarcha como alphaMap real con huecos en banderas/«USA», etapas soltadas que se encogen en vez de desaparecer, polvo del LM (Luna: láminas radiales rasantes; Marte: nube ocre), LM apoyado en el relieve real de la malla (`_sueloLM`) con sombra de contacto y sin salto de tamaño al soltarse.
+## Qué hay hecho (resumen)
+1. **Calidad general y móvil:** barra superior en una fila, globo encuadrado sobre la hoja inferior, ✕ fijo, telemetría estable, descenso del LM interrumpible.
+2. **Gráficos con datos reales del PDS** (`js/analitica.js`, `js/graficos/*`): miniaturas de relieve, barra medido/estimado, panel «Compare with measured data» (matriz, distribución, latitud, dispersión, composición/temperatura), ficha con mapa del entorno, perfil y percentiles. Media de zona ponderada por área (`Capa.zona`, `Capa.pendiente`).
+3. **Entrenamiento en la Tierra = sección principal:** botón destacado arriba (`ctaEntreno`, `ctaResultados`, `css/entreno.css`); panel compacto en una sola historia (`js/graficos/tierra-{panel,cara,clima,alternativas,datos}.js`): lugar recomendado con nombre e imagen CMR → «Same kind of ground» (mapas realistas `realista.js`, relieve SRTMGL30 en `base-planetaria/web/data/tierra/`) → «When to go» (NASA POWER en vivo, aprobado por el usuario) → «Other places» → «What you would train» → plegado «Places found by NASA terrain data» (motor precalculado en `base-planetaria/web/data/analogos/`, `js/graficos/analogo.js`, comparación detallada `js/comparacion.js`).
+4. **Textos para público general:** título + frase + gráfico; lo técnico tras «Learn more» (`figura()`/`masInfo()` en `js/graficos/base.js`).
+5. **Saturno V realista y mini detalles** (`js/saturno5.js`, `js/vuelo.js`): materiales, escarcha, motores, penachos, sombras, humo blanco, polvo del LM (Luna láminas rasantes, Marte nube ocre), LM apoyado en el relieve.
+6. **Publicación:** `bash tools/publicar.sh` → `publicar/` (≈200 MB, ignorada por git). Fuera de localhost no se llama al motor local (`MOTOR_LOCAL`, `js/api.js`).
+7. **Vídeo de 30 s:** `video/landfall_30s_voz.mp4` (y sin voz `video/landfall_30s.mp4`; los MP4 están en `.gitignore`). Scripts en `tools/video/` (`grabar.py` → `planeta.py` → `montar.py` → `voz.py`); guion de la locución en `video/guion_locucion.md`; locución aprobada: ElevenLabs «Hale» (ruta por defecto en `tools/video/locucion.py`).
+8. Análogo del Teide renombrado a «Teide, Tenerife» · «Canary Islands, Spain».
 
-## Pendiente
-- **Revisión adversarial del código** (workflow `wf_713bd211-d7a`): no había devuelto hallazgos al cerrar. Si llega, aplicar los confirmados. Puntos que ya se sabían flojos: muchas paradas de tabulador en los gráficos, textos de pie largos/técnicos copiados de metadatos en `especifico.js`, texto pequeño de SVG a 320 px, el gráfico de latitud de `mars_inercia` se aplasta por las franjas polares.
-- Los pies de los gráficos dicen «media de las celdas»; ahora es media **ponderada por área**: actualizar esos textos (`matriz.js`, `distribucion.js`, `latitud.js`, `dispersion.js`, `especifico.js`) y la tabla del README.
-- Los «Datos de referencia (estimación)» escritos a mano en `js/data.js` contradicen lo medido (Shackleton pendiente ~12° frente a 14,9°; Taurus-Littrow < 5° frente a 12,8° de LOLA). Sin tocar: decisión del usuario.
-- Meridiani cae en el borde entre dos celdas GRS de 5°: el valor depende del redondeo (se usa la celda del este).
-- Panel «Nuestro grupo» sigue vacío (faltan los datos del equipo).
-- Ideas de los jueces de diseño sin hacer: eje en °C en el gráfico de temperaturas, escala vertical común en los perfiles, hoja móvil ampliable, columna de calidad/cobertura (`*_disparos`).
-- Cualquier gráfico que necesite datos nuevos (curva diurna completa de Diviner, iluminación polar, radiación, hielo SWIM/SHARAD) requiere **preguntar antes** al usuario.
-- **Sin commit.** Ojo al hacerlo: hay carpetas enormes sin seguimiento (`base-planetaria/datos_pds/…`, ~3 GB); no usar `git add -A`.
+## Pendiente conocido
+- Cuatro detalles del cohete que quedaron a medias (se paró al agente): flames F-1 como columnas planas, rectángulo naranja de la llama bajo la plataforma, el LM no proyecta sombra solar, tono azulado del suelo de Marte de cerca.
+- `REVISION_PENDIENTE.md`: aplicados todos (15-11-2026, sin commitear; ver su cabecera). También corregidos: TypeError al pulsar «Slope» en la matriz de Marte (cabeceras con `data-an-capa`), «Purpose chart» tapando el entrenamiento (se pliega al abrirlo) y cuña negra de la foto Landsat (cmr.js elige la escena de mayor cobertura).
+- Duplicado sin usar: `base-planetaria/web/data/tierra/motor/` (la web usa `analogos/`; `publicar.sh` ya lo excluye).
+- «Datos de referencia (estimación)» escritos a mano en `js/data.js` contradicen lo medido (Shackleton, Taurus-Littrow). Decisión del usuario.
+- Recuentos distintos para el mismo lugar entre la comparación detallada y el panel (dos métodos del motor).
+- Panel «Our team» vacío.
+- Los 3 avisos 404 de `assets/*.glb` (modelos opcionales de Blender) son inofensivos.
 
 ## Reglas del usuario
-- Gráficos solo con datos reales que ya tiene el código; no inventar valores ni umbrales; preguntar antes de añadir otra base de datos.
-- Interfaz y comentarios en español.
-
-## Revisión del código (llegó al cerrar)
-Los hallazgos confirmados, con su arreglo exacto, están en `REVISION_PENDIENTE.md`. No están aplicados.
-
-## Publicar en topgit.earth
-- `bash tools/publicar.sh` crea `publicar/` (≈171 MB, solo lo que usa la web; ignorada por git). Subir su CONTENIDO a la raíz del alojamiento.
-- En la web publicada no se llama al motor local (`MOTOR_LOCAL` en `js/api.js`) y su sección no aparece en el panel de entrenamiento.
-- Probado: `publicar/` servida aparte carga todo; solo fallan los `assets/*.glb` opcionales (también fallan en local).
-- Live Server de VS Code tiene la recarga automática desactivada (`.vscode/settings.json`, `"**"`) porque varias sesiones editaban a la vez.
-
-## Entrenamiento en la Tierra (centro del proyecto)
-- Datos nuevos: relieve SRTMGL30 + agua SRTMSWBD por análogo en `base-planetaria/web/data/tierra/` (script `base-planetaria/tools/construir_tierra_web.py`); clima NASA POWER en vivo (aprobado por el usuario) en `js/graficos/tierra-datos.js`.
-- Panel: `js/graficos/tierra-{panel,cara,clima,alternativas}.js`, `css/g-tierra.css`. Secciones: cara a cara (relieve a la misma escala + perfil), clima por meses, comparar alternativas, programa.
-- OTRA SESIÓN hizo en paralelo «Earth analogs found in NASA data» (`js/graficos/analogo.js`, `base-planetaria/web/data/analogos/`), que va arriba del panel. Hay duplicado: `tierra/motor/` (21 JSON del motor, `precalcular_motor_web.py`) NO lo usa la web; decidir con esa sesión cuál carpeta queda y borrar la otra.
-- Concordia: sin relieve (SRTMGL30 no cubre al sur de 60°S).
-- Botón de entrenamiento destacado arriba (ficha y panel de resultados: `ctaEntreno`, `ctaResultados` en js/main.js, `css/entreno.css`). Mapas de entrenamiento con vista «Realistic» por defecto (`js/graficos/realista.js`: Blue Marble / LROC / Viking reproyectados + sombreado).
-- Textos simplificados para público general: cada gráfico muestra título + frase + gráfico; el detalle técnico va tras «Learn more» (figura()/masInfo() en js/graficos/base.js).
-- Panel de entrenamiento COMPACTO (una sola historia): tarjeta del lugar con nombre (rankAnalogs n.º 1, imagen CMR, chips, globo) → «Same kind of ground» (solo mapas) → «When to go» (temperatura + meses despejados + frase) → «Other places» (lista corta) → «What you would train» → plegado «Places found by NASA terrain data» (motor; su ficha se construye al abrirlo). Modo `compacto: true` en tierra-cara/clima/alternativas; el resto tras «Learn more». Medido: Marte 136 palabras / 5 gráficos, Luna 158 / 5.
+- Solo datos reales que ya tiene el código; no inventar valores ni umbrales; preguntar antes de añadir otra fuente de datos.
+- Corregir solo cuando el usuario lo pida (para la auditoría).
+- No usar `git add -A` sin revisar tamaños; nada de archivos > 100 MB en git.

@@ -1,6 +1,12 @@
-# Revisión del código de los gráficos: hallazgos confirmados (sin aplicar)
+# Revisión del código de los gráficos: hallazgos confirmados
 
-Cada hallazgo fue confirmado por un verificador independiente leyendo el código. Ninguno está aplicado todavía.
+**Estado (15-11-2026): APLICADOS todos** (sin commitear), con los textos visibles en inglés. Excepciones:
+- «y/e Inercia» (dispersión) y «coordenadas con punto/coma»: ya no aplican (la interfaz está en inglés y `nf` usa punto).
+- Sin probar en dispositivo real: lectura táctil del perfil (corte.js) y salto del panel al repintar la dispersión en Safari/iOS.
+- No se añadió el ResizeObserver opcional para repintar al girar el móvil.
+Las instrucciones de abajo se conservan como referencia; sus números de línea ya no coinciden.
+
+Cada hallazgo fue confirmado por un verificador independiente leyendo el código.
 
 
 ## [alta] Neutrones de Marte: el panel dice «claro = más hidrógeno» y la matriz pinta justo lo contrario

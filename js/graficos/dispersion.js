@@ -18,7 +18,7 @@
 // ============================================================================
 import { RADIO_ZONA } from '../capas.js';
 import { cuantil } from '../analitica.js';
-import { esc, nf, pct, lineal, marcas, decimalesDe, tip, conTip, tipHtml, tabla, figura, leyenda, nombreCorto, fuenteDe, masAltoQue } from './base.js';
+import { esc, nf, pct, lineal, marcas, decimalesDe, tip, conTip, tipHtml, tabla, figura, leyenda, nombreCorto, fuenteDe, masAltoQue, nombreDe, unaParada } from './base.js';
 
 const MARGEN = 0.08;                                   // aire alrededor de los datos, como fracción de su extensión
 const R = 9, R_HIT = 14;                               // radio del círculo y de su zona de acierto (≥ 24 px de diámetro)
@@ -26,8 +26,7 @@ const ANCHO = { min: 340, max: 900, defecto: 520 };    // límites del viewBox (
 const ALTO = { min: 270, max: 420 };
 const CH = 5.6, CH_VAL = 6;                            // ancho medio estimado de un carácter a 10 px (normal y seminegrita)
 
-// «Máxima», «Mínima» y «Media» solo se entienden junto a su grupo: fuera del selector de capas se escriben completas
-const nombreDe = (def) => (def.grupo?.startsWith('Temperature') ? `${def.corto} temperature` : def.corto);
+// nombreDe (base.js): «Maximum», «Minimum» y «Mean» se escriben completas fuera del selector de capas
 const conUnidad = (def) => `${nombreDe(def)} (${def.unidad})`;
 const haySigma = (m) => m.sigma != null && m.sigma === m.sigma && m.sigma > 0;
 // La incertidumbre se escribe con los decimales de la capa; si así se quedara en cero, con los que hagan falta
@@ -142,7 +141,7 @@ function dibujo({ W, X, Y, pts, medX, medY, sel, cuerpo }) {
 
   const resto = P.filter((p) => !p.sel), elegido = P.find((p) => p.sel);
   const svg = `<svg class="g-svg g-ds-svg" viewBox="0 0 ${W} ${H}" role="group"
-      aria-label="${esc(`Scatter plot of the sites ${cuerpo.en}: ${nombreDe(X.def)} on the horizontal axis and ${nombreDe(Y.def)} on the vertical axis`)}">
+      aria-label="${esc(`Scatter plot of the sites ${cuerpo.en}: ${nombreDe(X.def)} on the horizontal axis and ${nombreDe(Y.def)} on the vertical axis. The arrow keys move through the sites`)}">
     ${rej}${ejes}${refs}
     ${resto.map(barras).join('')}${resto.map(punto).join('')}
     ${elegido ? barras(elegido) + punto(elegido) + etiqueta(elegido) : ''}
@@ -222,6 +221,8 @@ export function pintar(el, ctx) {
     if (!s) return;
     ctx.estado.y = s.value; tip(null); ctx.repintar();
   });
+
+  unaParada(el, 'g.g-ds-p');                                    // los emplazamientos: una sola parada del tabulador
 
   // Tooltip (cursor y foco): emplazamientos y líneas de mediana
   const porId = new Map(pts.map((p) => [p.s.id, p]));

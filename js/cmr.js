@@ -24,25 +24,30 @@ async function search(params) {
   return { entries: j.feed?.entry ?? [], hits: Number(r.headers.get('CMR-Hits') ?? 0) };
 }
 
-// Última escena despejada y COMPLETA: los metadatos UMM de HLS incluyen SPATIAL_COVERAGE (% de la tesela con datos)
+// Última escena despejada y COMPLETA: los metadatos UMM de HLS incluyen SPATIAL_COVERAGE (% de la tesela con datos).
+// Una tesela que no está entera trae en la vista previa una cuña negra sin dato (el borde de la pasada del satélite).
+// Por eso, entre las escenas despejadas que devuelve CMR (de la más reciente a la más antigua), gana la de MAYOR
+// cobertura y, a igual cobertura, la más reciente; el mínimo de 85 % sigue valiendo como suelo.
 async function bestImage(point) {
   const pick = async (sn) => {
     const u = new URL(CMR.replace('granules.json', 'granules.umm_json'));
     Object.entries({ short_name: sn, point, cloud_cover: `0,${CLEAR}`, page_size: 40, sort_key: '-start_date' })
       .forEach(([k, v]) => u.searchParams.set(k, v));
     const r = await fetch(u); if (!r.ok) return null;
+    let mejor = null;
     for (const it of (await r.json()).items ?? []) {
       const g = it.umm, attr = (n) => Number(g.AdditionalAttributes?.find((a) => a.Name === n)?.Values?.[0]);
       const src = g.RelatedUrls?.find((l) => l.Type === 'GET RELATED VISUALIZATION' && /^https:/.test(l.URL))?.URL;
-      if (src && attr('SPATIAL_COVERAGE') >= 85) {
-        return { src, date: new Date(g.TemporalExtent.RangeDateTime.BeginningDateTime), cloud: attr('CLOUD_COVERAGE'),
-          sensor: sn === 'HLSS30' ? 'Sentinel-2' : 'Landsat 8/9', id: g.GranuleUR };
+      const cob = attr('SPATIAL_COVERAGE');
+      if (src && cob >= 85 && !(mejor && mejor.cobertura >= cob)) {             // en orden de fecha: solo gana si cubre más
+        mejor = { src, date: new Date(g.TemporalExtent.RangeDateTime.BeginningDateTime), cloud: attr('CLOUD_COVERAGE'),
+          sensor: sn === 'HLSS30' ? 'Sentinel-2' : 'Landsat 8/9', id: g.GranuleUR, cobertura: cob };
       }
     }
-    return null;
+    return mejor;
   };
   const [l, s] = await Promise.all([pick('HLSL30').catch(() => null), pick('HLSS30').catch(() => null)]);
-  return [l, s].filter(Boolean).sort((a, b) => b.date - a.date)[0] ?? null;
+  return [l, s].filter(Boolean).sort((a, b) => b.cobertura - a.cobertura || b.date - a.date)[0] ?? null;
 }
 
 const browse = (e) => e?.links?.find((l) => l.rel?.includes('browse#'))?.href ?? null;

@@ -5,6 +5,7 @@ import { earthSiteData } from './cmr.js';
 import { abrirComparacion, fechaCorta } from './comparacion.js';
 import { CAPAS_GLOBO, RAMPAS, RADIO_KM, RADIO_ZONA, capa, pintarCapa, catalogo } from './capas.js';
 import * as flujo from './proposito.js';   // pasos 2-4 (propósito, subapartado, criterios) y panel de criterios
+import { plegar as plegarPerfil, desplegar as desplegarPerfil } from './perfil.js';   // gráfico de propósitos (#perfil)
 // Gráficos de los resultados con las capas reales del PDS (js/analitica.js, js/graficos/). El panel de comparación y los
 // gráficos de la ficha se cargan la primera vez que hacen falta (import dinámico).
 import { medirTodo, exageracionRelieve, pendienteCeldas, percentil } from './analitica.js';
@@ -224,10 +225,16 @@ async function pintarMiniaturas() {
 // ---- panel «Comparar con datos medidos» (js/graficos/panel.js) -----------
 let panelP = null;
 const panelGraficos = () => (panelP ??= import('./graficos/panel.js').then((m) => { m.iniciar(); return m; }).catch((e) => { panelP = null; throw e; }));
+// El cuerpo y la lista se leen ANTES de esperar la carga del módulo: si la misión se reinicia mientras tanto, no se abre.
+// abrir() se espera para que sus fallos lleguen al catch (y al aviso). selectSite deja el foco en el cierre de la ficha.
 async function abrirComparativa(sel = null, origen = document.activeElement) {
-  if (!sites.length) return;
-  try { (await panelGraficos()).abrir({ body: mission.body, sitios: sites, sel, alVerFicha: selectSite, origen }); }
-  catch (e) { console.error('Panel de comparación', e); toast('The data comparison could not be opened'); }
+  const body = mission.body, lista = sites, id = runId;
+  if (!body || !lista.length) return;
+  try {
+    const p = await panelGraficos();
+    if (id !== runId || mission.body !== body) return;
+    await p.abrir({ body, sitios: lista, sel, alVerFicha: selectSite, origen });
+  } catch (e) { console.error('Panel de comparación', e); toast('The data comparison could not be opened'); }
 }
 $('#btn-comparar').onclick = () => abrirComparativa(current?.id ?? null, $('#btn-comparar'));
 // Escape con el panel de comparación abierto lo cierra a él (y devuelve el foco), no a la ficha que queda debajo.
@@ -249,10 +256,12 @@ async function selectSite(id) {
   tipGrafico(null);                                              // la lectura del mapa de la ficha anterior no debe quedarse en pantalla
   current = s; flujo.alSeleccionar(s);   // el gráfico de propósitos pasa al reparto de este lugar
   document.querySelectorAll('#res-list li').forEach((li) => li.classList.toggle('sel', li.dataset.id === id));
-  $('#training').hidden = true; viewer.clearAnalogs();
+  $('#training').hidden = true; viewer.clearAnalogs(); restaurarPerfil();
   $('#layers').hidden = !viewer.bodies[mission.body]?.surfaceMat;   // por si se llega desde el entrenamiento (gráfico → «Ver en el mapa»)
   renderDetail(s); $('#results').hidden = true; $('#detail').hidden = false;
   $('#detail').scrollTop = 0;                                    // con el panel ya visible: oculto, el navegador ignora el desplazamiento
+  // el elemento que tenía el foco (fila de la lista, botón del panel de comparación) acaba de ocultarse: el foco pasa a la ficha
+  $('#detail-close').focus({ preventScroll: true });
   await viewer.focusSite(s);
 }
 
@@ -309,7 +318,7 @@ function renderDetail(s) {
     ${Object.keys(s.real ?? {}).length ? '<p class="small muted"><abbr class="pds">PDS</abbr> = computed from measured data (hover to see the formula). The rest are demonstration estimates.</p>' : ''}
     ${s.medidas?.length ? `<h4>All NASA PDS measurements <span class="muted">(mean within a ≈ ${zonaKm()} km radius)</span></h4>
       <div class="facts">${s.medidas.map((m, i) => `<div class="fact"><small>${esc(m.nombre)} · ${esc(m.fuente)}</small><b>${esc(m.texto)}</b>${m.rango ? `<small class="rg">${esc(m.rango)}</small>` : ''}<span data-chispa="${i}"></span></div>`).join('')}</div>
-      <p class="small muted">The histogram of each measurement covers the whole surface ${esc(CUERPO[mission.body].de)} with published data, and the mark is this site: “higher than 90 %” (the 90th percentile) means that 90 % of that surface has an equal or lower value. It tells whether the value is low or high for that body, not whether it is good or bad.</p>
+      <p class="small muted">The histogram of each measurement covers the whole surface ${esc(CUERPO[mission.body].de)} with ${s.medidas.some((m) => m.derivada) ? 'data (the regional slope is not a published grid: it is derived from the MOLA elevation cell by cell)' : 'published data'}, and the mark is this site: “higher than 90 %” (the 90th percentile) means that 90 % of that surface has an equal or lower value. It tells whether the value is low or high for that body, not whether it is good or bad.</p>
       ${citas([...new Set(s.medidas.map((m) => m.cita).filter(Boolean))])}` : ''}
     <h4>Reference data <span class="muted">(estimate)</span></h4><div class="facts">${(s.facts || []).map(([l, v]) => `<div class="fact"><small>${esc(l)}</small><b>${esc(v)}</b></div>`).join('')}</div>
     ${s.pros?.length ? `<h4>Advantages</h4><ul class="pc">${s.pros.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>` : ''}
@@ -387,10 +396,12 @@ async function chispasFicha(s) {
 
 $('#detail-close').onclick = closeDetail;
 async function closeDetail() {
+  const id = current?.id;
   tipGrafico(null);
   $('#detail').hidden = true; $('#results').hidden = false; current = null;
   ctaResultados();
   document.querySelectorAll('#res-list li').forEach((li) => li.classList.remove('sel'));
+  if (id) document.querySelector(`#res-list li[data-id="${CSS.escape(id)}"]`)?.focus({ preventScroll: true });   // el foco vuelve a su fila
   await viewer.backToBody();
 }
 
@@ -400,8 +411,14 @@ async function closeDetail() {
 // o precalculado: js/api.js → analogosTierra): candidatos, ficha (js/graficos/analogo.js), NASA CMR e informe completo.
 let entreno = { run: 0, ficha: 0, site: null, r: null, sel: 0, vista: null };
 
+// El panel de la Tierra es ancho y ocupa el sitio del gráfico de propósitos (#perfil): al abrirlo, el gráfico se pliega
+// como con su botón, y al cerrarlo vuelve a abrirse si estaba abierto
+let perfilPlegado = false;
+function restaurarPerfil() { if (perfilPlegado) { perfilPlegado = false; desplegarPerfil(); } }
+
 async function openTraining(site) {
   $('#detail').hidden = true; $('#training').hidden = false; $('#layers').hidden = true; hideTip();
+  if (plegarPerfil()) perfilPlegado = true;
   const run = entreno.run + 1, body = mission.body;
   entreno = { run, ficha: entreno.ficha, site, r: null, sel: 0, vista: null };
   // Una sola historia: el lugar de entrenamiento con nombre (renderFamosos → js/graficos/tierra-panel.js) y, plegadas
@@ -646,7 +663,7 @@ async function renderCmr(a, id = 'cmr') {
 
 $('#training-close').onclick = closeTraining;
 async function closeTraining() {
-  const s = current; tipGrafico(null); $('#training').classList.remove('tr-min'); $('#training').hidden = true; viewer.clearAnalogs();
+  const s = current; tipGrafico(null); $('#training').classList.remove('tr-min'); $('#training').hidden = true; viewer.clearAnalogs(); restaurarPerfil();
   $('#layers').hidden = !viewer.bodies[mission.body]?.surfaceMat;
   if (s) { renderDetail(s); $('#detail').hidden = false; await viewer.backToBody(); await viewer.focusSite(s); }
 }
@@ -727,7 +744,7 @@ function resetMission() {
   viewer.clearSites(); viewer.clearAnalogs(); viewer.setIntro();
   if (layer) { viewer.setOverlay(mission.body, null); layer = null; } layerRun++; hideTip();
   ['#hud', '#flight', '#results', '#detail', '#training', '#layers', '#analisis'].forEach((s) => ($(s).hidden = true));
-  $('#setup').hidden = false; step = 1; maxStep = 1; mission.body = mission.objective = null; current = null;
+  $('#setup').hidden = false; step = 1; maxStep = 1; mission.body = mission.objective = null; current = null; perfilPlegado = false;
   flujo.alReiniciar(); renderSetup();
 }
 

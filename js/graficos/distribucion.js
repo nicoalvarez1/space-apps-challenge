@@ -7,18 +7,18 @@
 //
 //  De dónde sale cada número:
 //    · Barras     → js/analitica.js histograma(capa): fracción del área en cada intervalo (cada celda pesa el coseno de
-//                   su latitud). El eje va del percentil 0,5 al 99,5; las colas (h.colaBaja, h.colaAlta) se acumulan en
-//                   la primera y la última barra.
+//                   su latitud). Las barras van del percentil 0,5 al 99,5; las colas (h.colaBaja, h.colaAlta) se acumulan
+//                   en la primera y la última barra. El eje se alarga si algún emplazamiento cae fuera de las barras.
 //    · Puntos     → ctx.filas[].v[capa].media: media de las celdas con centro a menos de 0,5° de arco del emplazamiento
 //                   (Capa.zona); .pct es su percentil en la superficie; .min/.max, el rango entre esas celdas.
 //    · Nada más: aquí no hay umbrales, ni puntuación, ni valores escritos a mano. La posición vertical de los puntos
 //      no significa nada (solo se apilan para no taparse).
 // ============================================================================
-import { histograma, muestra } from '../analitica.js';
+import { histograma, muestra, cobertura } from '../analitica.js';
 import { RADIO_ZONA } from '../capas.js';
-import { esc, nf, pct, pctTxt, masAltoQue, lineal, marcas, decimalesDe, conTip, tipHtml, tabla, figura, leyenda, nombreCorto, fuenteDe } from './base.js';
+import { esc, nf, pct, pctTxt, masAltoQue, lineal, marcas, decimalesDe, conTip, tipHtml, tabla, figura, leyenda, nombreCorto, fuenteDe, nombreDe, unaParada } from './base.js';
 
-const W = 460, M = { l: 40, r: 12, b: 36 };              // viewBox: ancho fijo; el alto depende de las filas de puntos
+const M = { l: 40, r: 12, b: 36 };                        // márgenes del viewBox; el ancho es el del contenedor y el alto depende de las filas de puntos
 const ALTO = 132;                                         // alto del histograma
 const ETIQUETA = 16;                                      // renglón de arriba para la etiqueta del destacado
 const R = 5, FILA = 12, HUECO = 11, FILAS_MAX = 4;        // puntos: radio, alto de fila, separación mínima y filas
@@ -33,24 +33,28 @@ function rotulador(def, ms) {
 }
 
 export function pintar(el, ctx) {
+  // viewBox ≈ píxeles reales (entre 280 y 560): en móvil el texto no se encoge por debajo de su tamaño
+  const W = Math.round(Math.min(560, Math.max(280, el.clientWidth || 460)));
   const k = ctx.cols.find((x) => x.def.id === ctx.capa);
   if (!k) { el.innerHTML = '<p class="g-vacio">Choose a layer to see how it is distributed over the surface.</p>'; return; }
-  const { def, capa: c } = k, cuerpo = ctx.cuerpo, h = histograma(c);
-  const titulo = `${def.corto}: common or rare ${cuerpo.en}?`;
+  const { def, capa: c } = k, cuerpo = ctx.cuerpo, h = histograma(c), nom = nombreDe(def);
+  const titulo = `${nom}: common or rare ${cuerpo.en}?`;
   if (h.lo !== h.lo || h.hi !== h.hi) {
     el.innerHTML = figura({ titulo, cuerpo: '<p class="g-vacio">This layer has no cell with data.</p>' });
     return;
   }
   const un = def.unidad === '°' ? '°' : ` ${def.unidad}`;
   const breve = (v) => def.breve(v).trim();               // las unidades largas se omiten en «breve» y dejan un espacio al final
-  const x = lineal(h.lo, h.hi, M.l, W - M.r);
+  // el eje cubre las barras y también a los emplazamientos que caen fuera de ellas: así cada punto está en su valor
+  const medias = ctx.filas.map((f) => f.v[def.id]?.media).filter((v) => v != null && v === v);
+  const x = lineal(Math.min(h.lo, ...medias), Math.max(h.hi, ...medias), M.l, W - M.r);
   const intervaloDe = (v) => Math.min(h.n - 1, Math.max(0, Math.floor((v - h.lo) / h.ancho)));   // igual que histograma()
 
-  // ---- emplazamientos: x = su media; los que caen fuera del eje se pegan al borde (y se dice en el tooltip)
+  // ---- emplazamientos: x = su media; los que caen fuera de las barras (colas de la superficie) se dicen en el tooltip
   const sin = ctx.filas.filter((f) => !f.v[def.id]);
   const pts = ctx.filas.filter((f) => f.v[def.id]).map((f) => {
     const v = f.v[def.id];
-    return { f, v, fuera: v.media < h.lo ? -1 : v.media > h.hi ? 1 : 0, x: x(Math.min(h.hi, Math.max(h.lo, v.media))), sel: f.sitio.id === ctx.sel, fila: 0 };
+    return { f, v, fuera: v.media < h.lo ? -1 : v.media > h.hi ? 1 : 0, x: x(v.media), sel: f.sitio.id === ctx.sel, fila: 0 };
   });
   // Apilado: cada punto va a la fila más baja en la que no toca a otro. El destacado elige primero (fila de abajo),
   // así su línea guía no cruza otros puntos. Si las cuatro filas están ocupadas, a la que menos tape.
@@ -70,26 +74,28 @@ export function pintar(el, ctx) {
   const cy = (p) => y0 - 6 - R - p.fila * FILA;
   const yMax = h.max * 100 || 1, y = lineal(0, yMax, y1, y0);
   const my = marcas(0, yMax, 3), dy = decimalesDe(my);
-  let mx = marcas(h.lo, h.hi, 5);
-  for (let n = 6; mx.length < 3 && n <= 9; n++) mx = marcas(h.lo, h.hi, n);   // con menos de tres marcas el eje no se lee
+  let mx = marcas(x.d[0], x.d[1], 5);
+  for (let n = 6; mx.length < 3 && n <= 9; n++) mx = marcas(x.d[0], x.d[1], n);   // con menos de tres marcas el eje no se lee
   const rot = rotulador(def, mx);
 
   // ---- columnas del histograma
-  const bw = (W - M.l - M.r) / h.n;
+  const bx = (b) => x(h.lo + b * h.ancho), bw = bx(1) - bx(0);
   const dBorde = Math.max((def.tick(1).split('.')[1] ?? '').length, Math.min(6, Math.max(0, 1 - Math.floor(Math.log10(h.ancho)))));
   const tramo = (b) => `From ${nf(h.lo + b * h.ancho, dBorde)} to ${nf(h.lo + (b + 1) * h.ancho, dBorde)}${un}`;
   const parte = (a) => `${nf(a * 100, a * 100 < 1 ? 2 : 1)} %`;
+  // la primera y la última barra acumulan las colas de la superficie (analitica.js → histograma)
+  const cola = (b) => (b === 0 && h.colaBaja > 0 ? ` Includes the ${nf(h.colaBaja * 100, 1)} % of the surface with lower values.` : '')
+    + (b === h.n - 1 && h.colaAlta > 0 ? ` Includes the ${nf(h.colaAlta * 100, 1)} % of the surface with higher values.` : '');
   const columnas = Array.from(h.area, (a, b) => {
     const alto = a > 0 ? Math.max(1, y1 - y(a * 100)) : 0;
-    return `<g class="g-di-col" data-b="${b}" data-clave="b${b}" tabindex="${b ? -1 : 0}" role="img" aria-label="${esc(`${tramo(b)}: ${parte(a)} of the surface`)}">
-      ${alto ? `<rect class="g-area" x="${f1(M.l + b * bw + 1)}" y="${f1(y1 - alto)}" width="${f1(bw - 2)}" height="${f1(alto)}"/>` : ''}
-      <rect class="g-hit" x="${f1(M.l + b * bw)}" y="${y0}" width="${f1(bw)}" height="${ALTO}"/></g>`;
+    return `<g class="g-di-col" data-b="${b}" data-clave="b${b}" tabindex="${b ? -1 : 0}" role="img" aria-label="${esc(`${tramo(b)}: ${parte(a)} of the surface.${cola(b)}`)}">
+      ${alto ? `<rect class="g-area" x="${f1(bx(b) + 1)}" y="${f1(y1 - alto)}" width="${f1(bw - 2)}" height="${f1(alto)}"/>` : ''}
+      <rect class="g-hit" x="${f1(bx(b))}" y="${y0}" width="${f1(bw)}" height="${ALTO}"/></g>`;
   }).join('');
   const tipColumna = (b) => {
     const dentro = pts.filter((p) => intervaloDe(p.v.media) === b).map((p) => nombreCorto(p.f.sitio.name));
     const nota = [
-      b === 0 && h.colaBaja > 0 ? `Includes the ${nf(h.colaBaja * 100, 1)} % of the surface with values below the axis.` : '',
-      b === h.n - 1 && h.colaAlta > 0 ? `Includes the ${nf(h.colaAlta * 100, 1)} % of the surface with values above the axis.` : '',
+      cola(b).trim(),
       dentro.length ? `Sites in this interval: ${dentro.join(', ')}.` : '',
     ].filter(Boolean).join(' ');
     return tipHtml(tramo(b), [['Share of the surface', parte(h.area[b])]], nota);
@@ -103,13 +109,13 @@ export function pintar(el, ctx) {
       aria-label="${esc(`${p.f.sitio.name}: ${def.fmt(p.v.media)}${percentilDe(p.v) ? `, ${percentilDe(p.v)} of the surface ${cuerpo.de}` : ''}`)}"
       cx="${f1(p.x)}" cy="${cy(p)}" r="${R}"/>`).join('');
   const tipSitio = new Map(pts.map((p) => {
-    const v = p.v, P = pct(v.pct), filas = [[def.corto, def.fmt(v.media)]];
+    const v = p.v, P = pct(v.pct), filas = [[nom, def.fmt(v.media)]];
     if (P != null) filas.push(['Higher than', `${pctTxt(v.pct)} % of the surface`]);
     if (v.n > 1) filas.push(['Across its cells', `${breve(v.min)} … ${breve(v.max)}`]);
     if (v.sigma != null) filas.push(['Published uncertainty', `± ${breve(v.sigma)}`]);
     const nota = [
-      p.fuera < 0 ? 'Among the lowest 0.5 % of the surface: the point is drawn at the edge.' : '',
-      p.fuera > 0 ? 'Among the highest 0.5 % of the surface: the point is drawn at the edge.' : '',
+      p.fuera < 0 ? 'Among the lowest 0.5 % of the surface: below the range of the bars (0.5th percentile of the surface).' : '',
+      p.fuera > 0 ? 'Among the highest 0.5 % of the surface: above the range of the bars (99.5th percentile of the surface).' : '',
       v.unica ? `No cell has its center within ${nf(RADIO_ZONA, 1)}°: this is the cell that contains the point.` : '',
     ].filter(Boolean).join(' ');
     return [p.f.sitio.id, tipHtml(p.f.sitio.name, filas, nota)];
@@ -126,21 +132,22 @@ export function pintar(el, ctx) {
   }
 
   const yM = (y0 + y1) / 2;
-  const svg = `<svg class="g-svg g-di-svg" viewBox="0 0 ${W} ${H}" role="group" aria-label="${esc(titulo)}">
+  const svg = `<svg class="g-svg g-di-svg" viewBox="0 0 ${W} ${H}" role="group" aria-label="${esc(`${titulo} The arrow keys move through the sites.`)}">
     ${my.map((v) => `<line class="g-rej" x1="${M.l}" x2="${W - M.r}" y1="${f1(y(v))}" y2="${f1(y(v))}"/>
       <text x="${M.l - 6}" y="${f1(y(v) + 3.5)}" text-anchor="end">${esc(nf(v, dy))}</text>`).join('')}
     <g class="g-di-cols" role="group" aria-label="Surface histogram: left and right arrows move through the intervals">${columnas}</g>
     <line class="g-eje" x1="${M.l}" x2="${W - M.r}" y1="${y1}" y2="${y1}"/>
     ${mx.map((v) => `<line class="g-eje" x1="${f1(x(v))}" x2="${f1(x(v))}" y1="${y1}" y2="${y1 + 4}"/>
       <text x="${f1(x(v))}" y="${y1 + 15}" text-anchor="middle">${esc(rot(v))}</text>`).join('')}
-    <text class="g-txt" x="${(M.l + W - M.r) / 2}" y="${H - 5}" text-anchor="middle">${esc(`${def.corto} (${def.unidad})`)}</text>
+    <text class="g-txt" x="${(M.l + W - M.r) / 2}" y="${H - 5}" text-anchor="middle">${esc(`${nom} (${def.unidad})`)}</text>
     <text class="g-txt" x="11" y="${yM}" text-anchor="middle" transform="rotate(-90 11 ${yM})">% of the surface</text>
     ${guia}${zonas}${puntos}${etiqueta}
   </svg>`;
 
   // ---- textos: leyenda, nota de los que no tienen dato, pie y tabla
+  const q = cobertura(c);                                       // Odyssey GRS no publica los polos: se dice cuánto queda fuera
   const ley = leyenda([
-    { clase: 'g-m-planeta', texto: `Surface ${cuerpo.de}` },
+    { clase: 'g-m-planeta', texto: q < 0.995 ? `Surface ${cuerpo.de} with data (${nf(q * 100)} % of the total)` : `Surface ${cuerpo.de}` },
     { clase: 'g-m-ctx', texto: 'Sites' },
     ...(s ? [{ clase: 'g-m-sel', texto: nombreCorto(s.f.sitio.name) }] : []),
   ]);
@@ -149,18 +156,18 @@ export function pintar(el, ctx) {
   const pie = [
     `<b>Source:</b> ${esc(fuenteDe(c))}.`,
     `<b>Bars:</b> histogram of the cells with data${m.paso > 1 ? ` (regular sample: one in every ${nf(m.paso * m.paso)})` : ''}, each weighted by its area, in ${nf(h.n)} equal intervals.`,
-    `The axis runs from the 0.5th to the 99.5th percentile of the surface; whatever falls outside (${nf(h.colaBaja * 100, 1)} % below and ${nf(h.colaAlta * 100, 1)} % above) is added to the end bars.`,
+    `The bars run from the 0.5th to the 99.5th percentile of the surface; whatever falls outside (${nf(h.colaBaja * 100, 1)} % below and ${nf(h.colaAlta * 100, 1)} % above) is added to the end bars.`,
     `<b>Points:</b> mean of the cells whose center lies within ${nf(RADIO_ZONA, 1)}° of arc of each site; its percentile is the share of the surface with an equal or lower cell value. The height of the points means nothing: they are stacked so they do not overlap.`,
     def.invertir ? `<b>How to read it:</b> ${esc(primeraFrase(def.por))}` : '',
-    k.derivada && c.meta.nota ? esc(c.meta.nota) : '',
+    c.meta.nota ? esc(c.meta.nota) : '',
   ].filter(Boolean).join(' ');
 
   const porValor = [...pts].sort((a, b) => b.v.media - a.v.media);
   const tablaHtml = tabla({
-    titulo: `${def.corto} at the sites ${cuerpo.en}, from high to low`,
-    cabeceras: ['Site', `${def.corto} (${def.unidad})`, 'Percentile on the surface'],
+    titulo: `${nom} at the sites ${cuerpo.en}, from high to low`,
+    cabeceras: ['Site', `${nom} (${def.unidad})`, 'Percentile on the surface'],
     filas: [
-      ...porValor.map((p) => [p.f.sitio.name, def.tick(p.v.media), pct(p.v.pct) ?? '—']),
+      ...porValor.map((p) => [p.f.sitio.name, def.tick(p.v.media), pctTxt(p.v.pct)]),
       ...sin.map((f) => [f.sitio.name, 'no data', '—']),
     ],
   });
@@ -172,6 +179,7 @@ export function pintar(el, ctx) {
 
   // Un solo conTip para puntos y columnas: dos escuchas sobre el mismo contenedor se ocultarían el tooltip el uno al otro
   conTip(el, '[data-sitio], .g-di-col', (t) => (t.dataset.sitio ? tipSitio.get(t.dataset.sitio) ?? null : tipColumna(Number(t.dataset.b))));
+  unaParada(el, 'circle[data-sitio]');                          // los emplazamientos: una sola parada del tabulador
 
   // Las columnas son una sola parada del tabulador; dentro se recorren con las flechas (si no, serían 20-40 paradas)
   el.addEventListener('keydown', (e) => {

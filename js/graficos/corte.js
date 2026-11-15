@@ -157,10 +157,13 @@ export function pintar(el, ctx) {
     filas: ks.map((k) => [nf(d[k], decT), ...series.map((s) => (s.celda[k] === s.celda[k] ? def.tick(s.celda[k]) : 'no data'))]),
   });
 
+  // Media de la zona medida (la «Elevation» de las mediciones de la ficha, Capa.zona): distinta de la celda del punto
+  const zona = ctx.fila?.v?.[def.id];
   const pie = `<b>Source:</b> ${esc(fuenteDe(c))} · ${esc(c.meta.nombre)}. Two ${esc(nf(2 * R))} km cross-sections through the site; each follows a great circle
     and has ${N} samples (one every ≈ ${esc(nf(paso, 1))} km). The line interpolates between cells only for drawing; the cursor, the label and the table give the value of the
     published cell. Band: measured area, ±${esc(nf(zonaKm, 1))} km (${esc(nf(RADIO_ZONA, 1))}° of arc). <b>Vertical exaggeration ×${esc(nf(exag, exag < 10 ? 1 : 0))}</b>: the vertical
     scale is stretched that many times relative to the horizontal.${zSitio === zSitio ? '' : ' The site’s cell has no data.'}${
+    zona && zSitio === zSitio ? ` The mean of the measured area (the “Elevation” among the site’s measurements) is ${esc(def.fmt(zona.media))}; the point’s label is its cell.` : ''}${
     Math.abs(sitio.lat) > 85 ? ' Near the pole, east and north refer to the site’s meridian.' : ''}`;
 
   // Los colores de las dos series salen de COLOR (base.js) y llegan al CSS como variables
@@ -207,7 +210,11 @@ export function pintar(el, ctx) {
     mover(k);
     return html(k);
   });
-  hit.addEventListener('pointerleave', ocultar);
+  // Con el dedo, la lectura se queda al levantarlo (como en el mapa del entorno); se va al tocar fuera (blur / focusout).
+  // El tercer escucha va sobre `el` y después de conTip: se ejecuta tras su tip(null) y repone el tooltip bajo el recuadro.
+  hit.addEventListener('pointerleave', (e) => { if (e.pointerType !== 'touch') ocultar(); });
+  hit.addEventListener('pointercancel', ocultar);              // el gesto pasó a ser desplazamiento vertical
+  el.addEventListener('pointerleave', (e) => { if (e.pointerType === 'touch' && visible) tipTeclado(actual); });
   hit.addEventListener('focus', () => { if (focoTeclado()) { mover(actual); tipTeclado(actual); } });
   hit.addEventListener('blur', ocultar);
   hit.addEventListener('keydown', (e) => {
