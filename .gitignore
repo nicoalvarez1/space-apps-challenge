@@ -7,6 +7,6 @@ base-planetaria/datos_pds/nasadem/
 base-planetaria/datos_pds/srtmswbd/
 publicar/
 video/tmp/
-video/*.mp4
+video/**/*.mp4
 base-planetaria/datos_pds/
 .DS_Store
