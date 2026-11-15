@@ -1,7 +1,7 @@
 // ============================================================================
 //  PROYECTOS  (menú lateral #cajon, como la lista de chats de Claude pero con «Nuevo proyecto»)
 //
-//  Cada proyecto es una base: destino, propósito, criterios, tripulación, reparto del gráfico y el lugar donde
+//  Cada proyecto es una base: destino, propósito, criterios, tripulación y el lugar donde
 //  se ha puesto la base. Se guardan en este navegador (localStorage); si no se puede guardar, la web funciona
 //  igual pero los proyectos se pierden al recargar. Las bases de todos los proyectos de un mismo cuerpo se ven a
 //  la vez en su mapa.

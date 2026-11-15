@@ -6,7 +6,6 @@ import { abrirComparacion, fechaCorta } from './comparacion.js';
 import { CAPAS_GLOBO, RAMPAS, RADIO_KM, RADIO_ZONA, LIMITES_NASA, capa, pintarCapa, catalogo } from './capas.js';
 import { buscarCandidatos, detallar, PASO as PASO_BARRIDO } from './barrido.js';   // más puntos, buscados en toda la superficie
 import * as flujo from './proposito.js';   // pasos 2-4 (propósito, subapartado, criterios) y panel de criterios
-import { plegar as plegarPerfil, desplegar as desplegarPerfil } from './perfil.js';   // gráfico de propósitos (#perfil)
 // Gráficos de los resultados con las capas reales del PDS (js/analitica.js, js/graficos/). El panel de comparación y los
 // gráficos de la ficha se cargan la primera vez que hacen falta (import dinámico).
 import { medirTodo, exageracionRelieve, pendienteCeldas, percentil } from './analitica.js';
@@ -338,9 +337,9 @@ $('#res-list').addEventListener('keydown', (e) => {               // la lista ta
 async function selectSite(id) {
   const s = sites.find((x) => x.id === id); if (!s) return;
   tipGrafico(null);                                              // la lectura del mapa de la ficha anterior no debe quedarse en pantalla
-  current = s; flujo.alSeleccionar(s);   // el gráfico de propósitos pasa al reparto de este lugar
+  current = s;
   document.querySelectorAll('#res-list li').forEach((li) => li.classList.toggle('sel', li.dataset.id === id));
-  $('#training').hidden = true; viewer.clearAnalogs(); viewer.quitarCandidato(); restaurarPerfil();
+  $('#training').hidden = true; viewer.clearAnalogs(); viewer.quitarCandidato();
   $('#layers').hidden = !viewer.bodies[mission.body]?.surfaceMat;   // por si se llega desde el entrenamiento (gráfico → «Ver en el mapa»)
   renderDetail(s); $('#results').hidden = true; $('#detail').hidden = false;
   $('#detail').scrollTop = 0;                                    // con el panel ya visible: oculto, el navegador ignora el desplazamiento
@@ -381,7 +380,7 @@ function ctaResultados() {
   if (!s) { cont.hidden = true; cont.innerHTML = ''; return; }
   cont.innerHTML = ctaEntreno('btn-train-res', s, { res: true }); cont.hidden = false;
   $('#btn-train-res').onclick = () => {
-    current = s; flujo.alSeleccionar(s);
+    current = s;
     document.querySelectorAll('#res-list li').forEach((li) => li.classList.toggle('sel', li.dataset.id === s.id));
     $('#results').hidden = true; openTraining(s);              // al volver («Back to the site») se abre la ficha de este lugar
   };
@@ -518,14 +517,9 @@ async function closeDetail() {
 // o precalculado: js/api.js → analogosTierra): candidatos, ficha (js/graficos/analogo.js), NASA CMR e informe completo.
 let entreno = { run: 0, ficha: 0, site: null, r: null, sel: 0, vista: null };
 
-// El panel de la Tierra es ancho y ocupa el sitio del gráfico de propósitos (#perfil): al abrirlo, el gráfico se pliega
-// como con su botón, y al cerrarlo vuelve a abrirse si estaba abierto
-let perfilPlegado = false;
-function restaurarPerfil() { if (perfilPlegado) { perfilPlegado = false; desplegarPerfil(); } }
 
 async function openTraining(site) {
   $('#detail').hidden = true; $('#training').hidden = false; $('#layers').hidden = true; hideTip();
-  if (plegarPerfil()) perfilPlegado = true;
   const run = entreno.run + 1, body = mission.body;
   entreno = { run, ficha: entreno.ficha, site, r: null, sel: 0, vista: null };
   // Una sola historia: el lugar de entrenamiento con nombre (renderFamosos → js/graficos/tierra-panel.js) y, plegadas
@@ -770,7 +764,7 @@ async function renderCmr(a, id = 'cmr') {
 
 $('#training-close').onclick = closeTraining;
 async function closeTraining() {
-  const s = current; tipGrafico(null); $('#training').classList.remove('tr-min'); $('#training').hidden = true; viewer.clearAnalogs(); restaurarPerfil();
+  const s = current; tipGrafico(null); $('#training').classList.remove('tr-min'); $('#training').hidden = true; viewer.clearAnalogs();
   $('#layers').hidden = !viewer.bodies[mission.body]?.surfaceMat;
   if (s) { renderDetail(s); $('#detail').hidden = false; await viewer.backToBody(); await viewer.focusSite(s); }
 }
@@ -851,7 +845,7 @@ function resetMission() {
   viewer.clearSites(); viewer.clearAnalogs(); viewer.setIntro();
   if (layer) { viewer.setOverlay(mission.body, null); layer = null; } layerRun++; hideTip();
   ['#hud', '#flight', '#results', '#detail', '#training', '#layers', '#analisis'].forEach((s) => ($(s).hidden = true));
-  $('#setup').hidden = false; step = 1; maxStep = 1; mission.body = mission.objective = null; current = null; perfilPlegado = false;
+  $('#setup').hidden = false; step = 1; maxStep = 1; mission.body = mission.objective = null; current = null;
   flujo.alReiniciar(); renderSetup();
 }
 

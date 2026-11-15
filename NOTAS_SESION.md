@@ -26,7 +26,7 @@ Web «Landfall» (NASA Space Apps 2026). Interfaz en inglés (otra sesión la tr
 
 ## Pendiente conocido
 - Cuatro detalles del cohete que quedaron a medias (se paró al agente): flames F-1 como columnas planas, rectángulo naranja de la llama bajo la plataforma, el LM no proyecta sombra solar, tono azulado del suelo de Marte de cerca.
-- `REVISION_PENDIENTE.md`: aplicados todos (15-11-2026, sin commitear; ver su cabecera). También corregidos: TypeError al pulsar «Slope» en la matriz de Marte (cabeceras con `data-an-capa`), «Purpose chart» tapando el entrenamiento (se pliega al abrirlo) y cuña negra de la foto Landsat (cmr.js elige la escena de mayor cobertura).
+- `REVISION_PENDIENTE.md`: aplicados todos (15-11-2026, sin commitear; ver su cabecera). También corregidos: TypeError al pulsar «Slope» en la matriz de Marte (cabeceras con `data-an-capa`), «Purpose chart» tapando el entrenamiento (luego el usuario pidió quitar ese gráfico: eliminado, js/perfil.js borrado) y cuña negra de la foto Landsat (cmr.js elige la escena de mayor cobertura).
 - Duplicado sin usar: `base-planetaria/web/data/tierra/motor/` (la web usa `analogos/`; `publicar.sh` ya lo excluye).
 - «Datos de referencia (estimación)» escritos a mano en `js/data.js` contradicen lo medido (Shackleton, Taurus-Littrow). Decisión del usuario.
 - Recuentos distintos para el mismo lugar entre la comparación detallada y el panel (dos métodos del motor).

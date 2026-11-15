@@ -16,7 +16,6 @@
 // ============================================================================
 import { BODIES, OBJECTIVES, DURATIONS } from './data.js';
 import { catalogo, capa, CAPAS_GLOBO, RADIO_KM } from './capas.js';
-import * as perfil from './perfil.js';
 import * as proyectos from './proyectos.js';
 
 export const PASOS = 3;            // 1 destino · 2 propósito (árbol propósito › tipo › criterios) · 3 tripulación
@@ -373,7 +372,7 @@ function escribirUrl(push) {
     pon('cuerpo', m.body); pon('proposito', est.proposito); pon('sub', est.sub); pon('criterios', listaCriterios());
     pon('objetivo', m.body ? m.objective : null); pon('tripulacion', m.body ? m.crew : null); pon('estancia', m.body ? m.duration : null);
     pon('modo', est.experto ? 'experto' : null); pon('vista', est.vista); pon('paso', est.vista === 'mision' && paso > 1 ? paso : null);
-    pon('reparto', est.vista === 'resultados' ? perfil.repartoTexto() : null);
+    pon('reparto', null);                                                   // parámetro del gráfico de propósitos, ya retirado: fuera de los enlaces antiguos
     // Cada proyecto guarda su estado (en este navegador). Se crea al empezar una misión.
     if (est.vista && !proyectos.activo()) proyectos.crear();
     pon('proyecto', proyectos.activo()?.id);
@@ -394,7 +393,6 @@ function aplicarUrl() {
   est.proposito = P?.id ?? null; est.sub = S?.id ?? null; est.off = new Set();
   if (S && q.has('criterios')) { const on = new Set(q.get('criterios').split(',')); visibles(S).forEach((f) => { if (!on.has(f.id)) est.off.add(f.id); }); }
   if (!proyectos.activar(q.get('proyecto'))) proyectos.desactivar();         // proyecto de la URL (o ninguno)
-  perfil.leerReparto(q.get('reparto'));
   m.objective = !m.body ? null : OBJECTIVES[q.get('objetivo')] ? q.get('objetivo') : (P?.objetivo_existente ?? null);
   const crew = $('#crew'), t = parseInt(q.get('tripulacion'), 10);
   if (t >= +crew.min && t <= +crew.max) m.crew = t;
@@ -492,7 +490,6 @@ export function alMostrarResultados(lista) {
   if (!P) { $('#res-criterios').hidden = true; return; }
   pintarResumenResultados();
   ctx.viewer.setBases?.(proyectos.bases(cuerpo()));
-  perfil.mostrar({ body: cuerpo(), mission: ctx.mission, sitios: lista });
   const pts = S.tipo === 'puntos' ? (S.puntos?.[cuerpo()] ?? []) : [];
   ctx.viewer.setPuntos?.(pts.map((p) => ({ id: p.id, lat: p.lat, lon: p.lon, label: `Point measurement · ${esc(p.nombre)}`, title: `Heat flow point measurement: ${p.nombre}. ${p.nota}` })));
   const turno = ++medicion;
@@ -515,18 +512,14 @@ export function alCambiarCapa(id) {
 
 export function alReiniciar() {
   cerrarDialogos();
-  $('#res-criterios').hidden = true; perfil.ocultar();
+  $('#res-criterios').hidden = true;
   sitios = []; valores = null; medicion++; capaGlobo = null;
   if (suspendido) return;                                                    // vuelta al asistente conservando las elecciones
   est.proposito = est.sub = null; est.off.clear(); filtros.clear();
-  perfil.leerReparto(null);                                                  // el gráfico del proyecto nuevo arranca con las barras iguales
   // «Nuevo proyecto»: un proyecto nuevo, salvo que el activo todavía esté vacío
   if (new URLSearchParams(proyectos.activo()?.q ?? '').has('cuerpo')) proyectos.crear();
   est.vista = 'mision';                                                      // abre el asistente, no la portada
 }
-
-// Se ha elegido un emplazamiento (lista, marcador del mapa o gráfico): el gráfico muestra su reparto
-export function alSeleccionar(s) { perfil.verSitio(s.id); }
 
 function ponerBase(id) {
   const s = sitios.find((x) => x.id === id);
@@ -807,11 +800,6 @@ export async function iniciar(c) {
     nuevo: () => $('#btn-new').click(),                                      // misma acción que «Nuevo proyecto» de la barra superior
     inicio: () => { if (enResultados()) { suspendido = true; ctx.reiniciar(); suspendido = false; } est.vista = null; ctx.setStep(1); ctx.render(); },
     cuerpo: (b) => BODIES[b]?.short,
-  });
-  perfil.iniciar({
-    propositos: (cfg?.propositos ?? []).map((p) => ({ id: p.id, nombre: p.nombre, inicial: p.inicial, objetivo: p.objetivo_existente })),
-    anunciar, seleccionar: (id) => ctx.seleccionar(id), ponerBase, hayProyecto: () => !!proyectos.activo(),
-    alCambiar: () => escribirUrl(false), marcar: (clase, id) => ctx.viewer.marcar?.(clase, id),
   });
   desdeHistorial = true;
   try {
