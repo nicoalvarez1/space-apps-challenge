@@ -149,7 +149,12 @@
       <p class="res-ley" id="res-leyenda" hidden><span><i class="med" aria-hidden="true"></i>measured by NASA</span><span><i class="est" aria-hidden="true"></i>estimated</span></p></div>
     <!-- Propósito y criterios activos (js/proposito.js) -->
     <div class="panel-foot crit-res" id="res-criterios" hidden></div>
-    <ol id="res-list"></ol>
+    <!-- La lista y, debajo, los puntos encontrados recorriendo toda la superficie con las capas del PDS (js/barrido.js →
+         js/main.js, pintarBarrido) se desplazan juntos -->
+    <div class="res-scroll">
+      <ol id="res-list"></ol>
+      <details class="an-plegable res-barrido" id="res-barrido" hidden><summary>More sites found by scanning NASA data</summary><div id="barrido-body" aria-live="polite"></div></details>
+    </div>
     <div class="panel-foot" id="res-layers"></div>
   </aside>
 

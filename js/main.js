@@ -1,9 +1,10 @@
-import { BODIES, OBJECTIVES, DURATIONS, METRICS, TRAIT_LABELS, SITES, ANALOGS } from './data.js';
+import { BODIES, OBJECTIVES, DURATIONS, METRICS, TRAIT_LABELS, SITES, ANALOGS, fueraDeLimites } from './data.js';
 import { fetchSites, fetchTraining, analogosTierra, comparacionTierra, analogosPrecalculados, indicePrecalculado, MOTOR_LOCAL } from './api.js';
 import { Viewer } from './scene.js';
 import { earthSiteData } from './cmr.js';
 import { abrirComparacion, fechaCorta } from './comparacion.js';
-import { CAPAS_GLOBO, RAMPAS, RADIO_KM, RADIO_ZONA, capa, pintarCapa, catalogo } from './capas.js';
+import { CAPAS_GLOBO, RAMPAS, RADIO_KM, RADIO_ZONA, LIMITES_NASA, capa, pintarCapa, catalogo } from './capas.js';
+import { buscarCandidatos, PASO as PASO_BARRIDO } from './barrido.js';   // más puntos, buscados en toda la superficie
 import * as flujo from './proposito.js';   // pasos 2-4 (propósito, subapartado, criterios) y panel de criterios
 import { plegar as plegarPerfil, desplegar as desplegarPerfil } from './perfil.js';   // gráfico de propósitos (#perfil)
 // Gráficos de los resultados con las capas reales del PDS (js/analitica.js, js/graficos/). El panel de comparación y los
@@ -185,7 +186,7 @@ function showResults() {
   $('#res-list').innerHTML = sites.map((s, i) => `
     <li data-id="${s.id}" style="--d:${i * 90}ms" tabindex="0">
       <span class="thumb"><canvas data-mini="${s.id}" width="96" height="96" aria-hidden="true"></canvas><span class="rk">${s.rank}</span></span>
-      <div class="nm"><b>${esc(s.name)}</b><small>${esc(s.region)}<span class="lv"></span></small>${barraNota(s)}</div>
+      <div class="nm"><b>${esc(s.name)}</b><small>${esc(s.region)}<span class="lv"></span></small>${barraNota(s)}${fueraDeLimites(s) ? '<small class="lim-nasa">Outside NASA’s preliminary limits</small>' : ''}</div>
       <span class="sc">${s.score}</span></li>`).join('');
   $('#res-layers').innerHTML = masInfo(`<p class="g-pie"><b>Layers:</b> ${b.layers.map(esc).join(' · ')}</p>`);   // la lista de capas, plegada
   $('#results').hidden = false;
@@ -202,6 +203,64 @@ function showResults() {
   ctaResultados();
   flujo.alMostrarResultados(sites);
   setTimeout(pintarMiniaturas, 400);                             // después de la animación de entrada de la lista
+  iniciarBarrido();
+}
+
+// ---- más puntos encontrados recorriendo toda la superficie (js/barrido.js) -------------------------------------
+// Plegado bajo la lista. Al abrirlo se recorre la superficie (la primera vez por cuerpo; luego sale de la caché) y se
+// listan los candidatos: solo coordenadas, la nota de los cuatro factores medidos, sus mediciones y el emplazamiento
+// de la lista más cercano. No entran en `sites` ni abren la ficha (que necesita los datos escritos a mano).
+let barridoAbierto = false, barridoRun = 0, barrido = null;
+function iniciarBarrido() {
+  const d = $('#res-barrido');
+  barrido = null; barridoRun++; $('#barrido-body').innerHTML = '';
+  d.hidden = false; d.open = barridoAbierto;
+  if (barridoAbierto) pintarBarrido();
+}
+$('#res-barrido').addEventListener('toggle', (e) => {
+  barridoAbierto = e.currentTarget.open;
+  if (barridoAbierto && !$('#barrido-body').innerHTML) pintarBarrido();   // vacío = todavía sin pedir para estos resultados
+});
+
+const FACTOR_TXT = (ks) => ks.map((k) => METRICS[k].short.toLowerCase()).join(', ');
+async function pintarBarrido() {
+  const run = ++barridoRun, body = mission.body, box = $('#barrido-body');
+  const estado = (p) => { if (run === barridoRun) box.innerHTML = `<p class="g-cargando" role="status">Scanning the whole surface with NASA data… ${Math.round(p * 100)} %</p>`; };
+  estado(0);
+  let r;
+  try { r = await buscarCandidatos(body, mission.objective, { crew: mission.crew, duration: mission.duration }, { alAvanzar: estado }); }
+  catch (e) { console.warn('Barrido no disponible', e); if (run === barridoRun) box.innerHTML = '<p class="g-vacio">The scan could not be completed: the NASA PDS layers are not available.</p>'; return; }
+  if (run !== barridoRun || mission.body !== body) return;
+  barrido = r;
+  const ks = r.factores, R = RADIO_KM[body], lim = LIMITES_NASA[body];
+  const pesos = ks.map((k) => `${METRICS[k].short.toLowerCase()} ${Math.round(r.pesos[k] * 100)} %`).join(', ');
+  box.innerHTML = `
+    <p class="g-pie">Points from a scan of the whole surface ${esc(CUERPO[body].de)} where the factors computed from NASA measurements (${FACTOR_TXT(ks)}) score highest with the weights of your objective. They are shown by their coordinates only.</p>
+    <p class="g-pie"><b>Score:</b> measured factors only (${FACTOR_TXT(ks)}), each scored by percentile in the NASA data. It is not comparable with the scores of the list above, which also include estimates.</p>
+    ${masInfo(`<p class="g-pie"><b>How they are found.</b> The surface is sampled every ${PASO_BARRIDO.toLocaleString('en-US')}° of latitude and longitude: twice the ${RADIO_ZONA.toLocaleString('en-US')}° radius (≈ ${zonaKm()} km) within which every site is measured, so at the equator neighbouring zones touch without overlapping (towards the poles, points of the same row get closer together).
+      Each point is measured like the sites of the list, with the same layers. Each factor is scored by percentile in the NASA data: the share of the surface ${esc(CUERPO[body].de)} whose value is worse than or equal to the point’s (area-weighted, among published cells), the same scoring as the list.
+      ${lim ? `Points outside NASA’s PRELIMINARY limits for human landing sites are skipped (${r.fuera.toLocaleString('en-US')} points): latitude “${esc(lim.textoLat)}” and elevation “${esc(lim.textoElev)}”, compared with the mean MOLA elevation within ≈ ${zonaKm()} km. Source: ${enlazar(`${lim.cita} ${lim.url}`)}` : ''}
+      Points where one of these factors has no data are skipped too (${r.validos.toLocaleString('en-US')} of ${r.puntos.toLocaleString('en-US')} points kept).</p>
+      <p class="g-pie">Score = weighted mean of the ${ks.length} measured factors with the weights of your objective (${pesos}). A point is a candidate when its score is at least that of its 8 neighbours on the grid (a local maximum: ${r.maximos.toLocaleString('en-US')} found); the ${r.candidatos.length} highest are shown, as many as the sites written for the list.</p>
+      <p class="g-pie">Solar, radiation, link and science are not included: they are estimates written for each site of the list and do not exist for an arbitrary point. The nearest listed site and its distance are measured along the surface (great circle on a sphere of ${R.toLocaleString('en-US')} km).
+      Scan time in this browser: ${(r.ms / 1000).toFixed(1)} s.</p>`)}
+    <ol class="bar-lista">${r.candidatos.map((c, i) => `
+      <li class="bar-c" data-barrido="${i}">
+        <div class="bar-cab"><span class="rk">${c.rank}</span>
+          <div class="nm"><b>Scan candidate · ${coord(c.lat, c.lon)}</b><small>Nearest listed site: ${esc(c.cercano.name)}, ${Math.round(c.cercano.km).toLocaleString('en-US')} km</small></div>
+          <span class="sc" title="Measured factors only (${FACTOR_TXT(ks)})">${c.score}</span></div>
+        <ul class="bar-med">${ks.filter((k) => c.metricas[k]).map((k) => `<li><span>${METRICS[k].icon} ${METRICS[k].short} <b>${c.metricas[k].v}</b></span><small>${esc(c.metricas[k].de)}</small></li>`).join('')}</ul>
+        <button type="button" class="btn ghost small-btn" data-barrido-ver="${i}">Show on the globe</button>
+        ${c.medidas.length ? masInfo(`<h4>All NASA PDS measurements <span class="muted">(mean within a ≈ ${zonaKm()} km radius)</span></h4>
+          <div class="facts">${c.medidas.map((m) => `<div class="fact"><small>${esc(m.nombre)} · ${esc(m.fuente)}</small><b>${esc(m.texto)}</b>${m.rango ? `<small class="rg">${esc(m.rango)}</small>` : ''}</div>`).join('')}</div>`) : ''}
+      </li>`).join('')}</ol>`;
+  box.querySelectorAll('[data-barrido-ver]').forEach((b) => (b.onclick = () => verCandidato(+b.dataset.barridoVer)));
+}
+
+function verCandidato(i) {
+  const c = barrido?.candidatos[i]; if (!c) return;
+  document.querySelectorAll('#barrido-body .bar-c').forEach((li) => li.classList.toggle('sel', +li.dataset.barrido === i));
+  viewer.verCandidato({ id: c.id, lat: c.lat, lon: c.lon, text: String(c.rank), label: `Scan candidate #${c.rank} · ${coord(c.lat, c.lon)}` });
 }
 
 // Miniatura del relieve real (LOLA / MOLA) alrededor de cada emplazamiento, en su fila de la lista. Todas usan la escala
@@ -256,7 +315,7 @@ async function selectSite(id) {
   tipGrafico(null);                                              // la lectura del mapa de la ficha anterior no debe quedarse en pantalla
   current = s; flujo.alSeleccionar(s);   // el gráfico de propósitos pasa al reparto de este lugar
   document.querySelectorAll('#res-list li').forEach((li) => li.classList.toggle('sel', li.dataset.id === id));
-  $('#training').hidden = true; viewer.clearAnalogs(); restaurarPerfil();
+  $('#training').hidden = true; viewer.clearAnalogs(); viewer.quitarCandidato(); restaurarPerfil();
   $('#layers').hidden = !viewer.bodies[mission.body]?.surfaceMat;   // por si se llega desde el entrenamiento (gráfico → «Ver en el mapa»)
   renderDetail(s); $('#results').hidden = true; $('#detail').hidden = false;
   $('#detail').scrollTop = 0;                                    // con el panel ya visible: oculto, el navegador ignora el desplazamiento
@@ -312,6 +371,18 @@ function fichasMedidas(s) {
   return ids.length ? `<details class="citas"><summary>Data behind these measurements (${ids.length})</summary>${ids.map((id) => fichaCapa(capasPortada[id], nombres(id))).join('')}</details>` : '';
 }
 
+// Frase de la ficha para un emplazamiento fuera de los límites PRELIMINARES de NASA (capas.js → LIMITES_NASA): el valor
+// medido, el límite (citado tal cual) y la fuente
+function limitesHtml(s) {
+  const L = LIMITES_NASA[mission.body];
+  if (!L || !fueraDeLimites(s)) return '';
+  const partes = s.limites.fallos.map((f) => (f.que === 'lat'
+    ? `latitude ${Math.abs(f.valor).toFixed(1)}°${f.valor >= 0 ? 'N' : 'S'} (limit: “${esc(L.textoLat)}”)`
+    : `mean MOLA elevation ${f.valor > 0 ? '+' : ''}${Math.round(f.valor).toLocaleString('en-US')} m within ≈ ${zonaKm()} km (limit: “${esc(L.textoElev)}”)`));
+  return `<p class="aviso-lim"><b>Outside NASA’s PRELIMINARY limits for human landing sites:</b> ${partes.join('; ')}.
+    <small>Source: ${enlazar(`${L.cita} ${L.url}`)}</small></p>`;
+}
+
 function renderDetail(s) {
   const bars = Object.entries(s.metrics).map(([k, v]) => [k, v, s.weights?.[k] ?? 0]).sort((a, b) => b[2] - a[2])
     .map(([k, v, w]) => `<div class="row"><span>${METRICS[k].icon} ${METRICS[k].short} <small>${Math.round(w * 100)}%</small>${s.real?.[k] ? ` <abbr class="pds" title="${esc(s.real[k])}">PDS</abbr>` : ''}</span>
@@ -324,7 +395,7 @@ function renderDetail(s) {
     <h4>Score by factor <span class="muted">(weight for your objective)</span></h4>
     ${radar(s.metrics)}
     <div class="bars">${bars}</div>
-    ${Object.keys(s.real ?? {}).length ? '<p class="small muted"><abbr class="pds">PDS</abbr> = computed from measured data (hover to see the formula). The rest are demonstration estimates.</p>' : ''}
+    ${Object.keys(s.real ?? {}).length ? '<p class="small muted"><abbr class="pds">PDS</abbr> = computed from measured data (hover to see how it is computed). The rest are demonstration estimates.</p>' : ''}
     ${s.medidas?.length ? `<h4>All NASA PDS measurements <span class="muted">(mean within a ≈ ${zonaKm()} km radius)</span></h4>
       <div class="facts">${s.medidas.map((m, i) => `<div class="fact"><small>${esc(m.nombre)} · ${esc(m.fuente)}</small><b>${esc(m.texto)}</b>${m.rango ? `<small class="rg">${esc(m.rango)}</small>` : ''}<span data-chispa="${i}"></span></div>`).join('')}</div>
       <p class="small muted">The histogram of each measurement covers the whole surface ${esc(CUERPO[mission.body].de)} with ${s.medidas.some((m) => m.derivada) ? 'data (the regional slope is not a published grid: it is derived from the MOLA elevation cell by cell)' : 'published data'}, and the mark is this site: “higher than 90 %” (the 90th percentile) means that 90 % of that surface has an equal or lower value. It tells whether the value is low or high for that body, not whether it is good or bad.</p>
@@ -340,6 +411,7 @@ function renderDetail(s) {
       <small>${esc(s.region)} · ${Math.abs(s.lat).toFixed(1)}°${s.lat >= 0 ? 'N' : 'S'} ${Math.abs(s.lon).toFixed(1)}°${s.lon >= 0 ? 'E' : 'W'}</small></div></div>
     ${ctaEntreno('btn-train', s)}
     <p class="desc">${esc(s.desc)}</p>
+    ${limitesHtml(s)}
     <section class="ficha-graf" id="ficha-graf" aria-label="Surroundings from measured data"><p class="g-cargando" role="status">Drawing the surroundings from the relief data…</p></section>
     ${clave.length ? `<h4>Key facts <span class="muted">(NASA measurements)</span></h4>
       <div class="facts ficha-clave">${clave.map((m, i) => `<div class="fact"><small>${esc(m.nombre)}</small><b>${esc(m.texto)}</b><small class="llano" data-llano="${i}"></small></div>`).join('')}</div>

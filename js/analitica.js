@@ -50,6 +50,17 @@ export function percentil(c, v) {
   return a ? m.acum[a - 1] / m.total : 0;
 }
 
+// Fracción (0…1) de la superficie con dato cuyo valor de celda es ESTRICTAMENTE menor que v (misma muestra y pesos).
+// 1 − fraccionMenor(c, v) es, exacta, la fracción con valor mayor o igual que v.
+export function fraccionMenor(c, v) {
+  if (v !== v) return NaN;
+  const m = muestra(c), n = m.v.length;
+  if (!n) return NaN;
+  let a = 0, b = n;                                           // primer índice con valor ≥ v
+  while (a < b) { const k = (a + b) >> 1; if (m.v[k] < v) a = k + 1; else b = k; }
+  return a ? m.acum[a - 1] / m.total : 0;
+}
+
 // Valor por debajo del cual queda la fracción q (0…1) de la superficie con dato
 export function cuantil(c, q) {
   const m = muestra(c), n = m.v.length;
@@ -270,6 +281,27 @@ export function pendienteCeldas(body) {
   return pendientes.get(body);
 }
 export const pendienteRegional = () => pendienteCeldas('mars');
+
+// Oscilación día-noche de la Luna en cada celda: máxima − mínima de Diviner (las dos rejillas son iguales). Es la misma
+// resta que puntúa el factor térmico de cada emplazamiento; aquí se hace en todas las celdas para tener su distribución.
+let oscilacion = null;                                          // Promise<Capa>
+export function oscilacionLuna() {
+  if (!oscilacion) {
+    oscilacion = Promise.all([capa('moon_tmax'), capa('moon_tmin')]).then(([mx, mn]) => {
+      if (mx.n !== mn.n || mx.w !== mn.w) throw new Error('Diviner: rejillas de máxima y mínima distintas');
+      const out = new Float32Array(mx.n * mx.w);
+      for (let i = 0; i < mx.n; i++) for (let j = 0; j < mx.w; j++) out[i * mx.w + j] = mx.celda(i, j) - mn.celda(i, j);   // NaN si falta alguna
+      return new Capa('moon_oscilacion', {
+        ...mx.meta, variable: 'oscilacion_dia_noche', unidades: 'K',
+        nombre: 'Day-night temperature swing (derived from Diviner maximum and minimum)',
+        tipo: 'float32', escala: 1, desplazamiento: 0, sin_dato: null, estadisticas: null,
+        nota: 'Derived in the browser: Diviner maximum minus minimum temperature, cell by cell.',
+      }, out);
+    });
+    oscilacion.catch(() => { oscilacion = null; });
+  }
+  return oscilacion;
+}
 
 // Exageración vertical del relieve sombreado, la misma para todos los emplazamientos de un cuerpo: la que hace que el
 // 10 % de la superficie con más pendiente entre celdas se vea a 45° o más. Así un llano se ve llano y una sierra,

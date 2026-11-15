@@ -286,14 +286,18 @@ export function scoreSites(bodyId, objectiveId, params, medidas = {}) {
         real[k] = r;
       }
       const s = { ...s0, metrics: { ...s0.metrics, ...Object.fromEntries(Object.entries(real).map(([k, r]) => [k, r.v])) },
-        real: Object.fromEntries(Object.entries(real).map(([k, r]) => [k, r.de])), medidas: med?.medidas ?? [] };
+        real: Object.fromEntries(Object.entries(real).map(([k, r]) => [k, r.de])), medidas: med?.medidas ?? [],
+        limites: med?.limites ?? null };   // límites PRELIMINARES de NASA (solo Marte, capas.js → LIMITES_NASA)
       const contrib = Object.fromEntries(Object.keys(w).map((k) => [k, s.metrics[k] * w[k]]));
       const score = Math.round(Object.values(contrib).reduce((a, b) => a + b, 0));
       return { ...s, score, weights: w, contrib, ...prosCons(s) };
     })
-    .sort((a, b) => b.score - a.score)
+    // los que no cumplen los límites de NASA van detrás; dentro de cada grupo, por puntuación (ninguno se quita)
+    .sort((a, b) => (fueraDeLimites(a) - fueraDeLimites(b)) || b.score - a.score)
     .map((s, i) => ({ ...s, rank: i + 1 }));
 }
+
+export const fueraDeLimites = (s) => (s.limites?.fallos?.length ? 1 : 0);
 
 const PRO = {
   solar: 'Excellent solar illumination', ice: 'Accessible water ice', terrain: 'Flat terrain, safe for landing',

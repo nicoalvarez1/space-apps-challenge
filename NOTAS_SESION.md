@@ -21,6 +21,7 @@ Web «Landfall» (NASA Space Apps 2026). Interfaz en inglés (otra sesión la tr
 5. **Saturno V realista y mini detalles** (`js/saturno5.js`, `js/vuelo.js`): materiales, escarcha, motores, penachos, sombras, humo blanco, polvo del LM (Luna láminas rasantes, Marte nube ocre), LM apoyado en el relieve.
 6. **Publicación:** `bash tools/publicar.sh` → `publicar/` (≈200 MB, ignorada por git). Fuera de localhost no se llama al motor local (`MOTOR_LOCAL`, `js/api.js`).
 7. **Vídeo de 30 s:** `video/landfall_30s_voz.mp4` (y sin voz `video/landfall_30s.mp4`; los MP4 están en `.gitignore`). Scripts en `tools/video/` (`grabar.py` → `planeta.py` → `montar.py` → `voz.py`); guion de la locución en `video/guion_locucion.md`; locución aprobada: ElevenLabs «Hale» (ruta por defecto en `tools/video/locucion.py`).
+9. **Puntuación sin escalas del equipo** (decisión del usuario, 15-11-2026): los 4 factores medidos (terrain, ice, thermal, resources) puntúan por percentil en los datos NASA de toda la superficie (`js/capas.js`); en Marte se aplican los límites PRELIMINARES de la NASA (±50° y ≤ +2 km MOLA, Bussey y Hoffman 2016, NTRS 20160002370): Arsia queda marcada y al final. En la Luna no hay límites aplicables a escala km. **Barrido** (`js/barrido.js`): «More sites found by scanning NASA data», máximos locales en rejilla de 1°, solo coordenadas.
 8. Análogo del Teide renombrado a «Teide, Tenerife» · «Canary Islands, Spain».
 
 ## Pendiente conocido

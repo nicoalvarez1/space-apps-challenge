@@ -43,15 +43,16 @@ Simplifications, for readability:
 
 ## Real PDS data in the app
 `js/capas.js` loads the grids in `base-planetaria/web/data/` (described in `capas.json`) directly in the browser:
-- **Score:** for each site, the cells within 0.5° of arc (≈ 15 km on the Moon, ≈ 30 km on Mars) are averaged and four factors are computed from measured data, with an explicit linear scale (shown when hovering over the `PDS` tag):
+- **Score:** for each site, the cells within 0.5° of arc (≈ 15 km on the Moon, ≈ 30 km on Mars) are averaged and four factors are computed from measured data. Each factor is a percentile in the NASA data: 100 × the share of the body’s surface whose value is worse than or equal to the site’s, using the area-weighted distribution of published cells that the charts use (`muestra()` / `percentil()` in `js/analitica.js`). The text shown when hovering over the `PDS` tag gives the value and the percentile.
 
   | Factor | Moon | Mars |
   |---|---|---|
-  | Terrain | LOLA slope: 25° → 0, 0° → 100 | MOLA regional slope (central differences, 15 km baseline): 5° → 0, 0° → 100 |
-  | Ice | Lunar Prospector hydrogen: 50 → 0, 150 ppm → 100 | GRS water equivalent: 2 % → 0, 7 % → 100 |
-  | Thermal | Diviner day-night swing (Tmax − Tmin): 300 K → 0, 0 K → 100 | TES thermal inertia: 50 → 0, 400 → 100 |
-  | Resources | Lunar Prospector FeO: 4 % → 0, 20 % → 100 | GRS iron: 11 % → 0, 18 % → 100 |
+  | Terrain | LOLA slope (lower is better) | MOLA regional slope (central differences, 15 km baseline; lower is better) |
+  | Ice | Lunar Prospector hydrogen (higher is better) | GRS water equivalent (higher is better) |
+  | Thermal | Diviner day-night swing (Tmax − Tmin, derived cell by cell in the browser; lower is better) | TES thermal inertia (higher is better) |
+  | Resources | Lunar Prospector FeO (higher is better) | GRS iron (higher is better) |
 
+  On Mars, sites outside NASA’s PRELIMINARY limits for human landing sites (Bussey and Hoffman 2016, NASA NTRS 20160002370: latitude “+/- 50 degrees”, elevation “no higher than +2 km (MOLA reference)”, compared with the zone-mean MOLA elevation) are flagged and listed after the others; none is removed. No limits are applied on the Moon.
   At lava tube sites the thermal factor remains the estimate (surface temperature does not describe the interior). **Solar, radiation, link and science remain demonstration estimates.**
 - **Site details panel:** a “NASA PDS measurements” section with the mean and range of each layer.
 - **Layers on the globe:** the “Data layers” panel, grouped by instrument (relief, temperature, composition). The layer tints the surface while keeping the relief and lighting; no data = gray. The color scale is piecewise linear between the 2nd, 25th, 50th, 75th and 98th percentiles of the surface (area-weighted), which are the legend ticks. The cursor reads the cell value, and each site shows its mean value in the active layer (markers and list). In fine grids each pixel takes the cell that contains it; in coarse grids (Odyssey GRS, 5°) and in the neutron map (2° equal-area blocks) the VIEW interpolates between cell or block centers so it does not look pixelated, but the cursor and the sites always use the published cell value. No data = hatching. The Mars poles for water, iron, silicon and chlorine have no published data (the Odyssey GRS team masked them: ice dilutes the signal). They are shown as an APPROXIMATION, with the same colors as the rest, “≈” in the cursor readout and never used in the scores (`mars_*_aprox` layers, `aprox` step of `base-planetaria/tools/construir_marte.py`): water by a regression of ln(H2O) against ln(epithermal neutron flux) fitted at mid-latitudes (R² 0.68; extrapolated at the south pole, where it probably underestimates the ice; low at the north pole because of the 2002 CO2 frost); iron, silicon and chlorine by harmonic interpolation from the measured edge (without ice dilution). In addition, for polar hydrogen there is the “Hydrogen (neutrons)” layer, the epithermal neutron flux from the Neutron Spectrometer (Feldman et al. 2002, 0.5°, fewer neutrons = more hydrogen).

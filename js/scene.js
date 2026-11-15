@@ -558,6 +558,21 @@ export class Viewer {
     if (list.length) this.markersOn = true;
   }
 
+  // Candidato del barrido de la superficie (js/barrido.js): un solo marcador, sin baliza ni ranking de la lista. La cámara
+  // mira al punto sin bajar el LM (el descenso es para los emplazamientos de la lista). p: { id, lat, lon, text, label }
+  async verCandidato(p) {
+    this.quitarCandidato();
+    this._addMarker({ id: p.id, label: p.label, lat: p.lat, lon: p.lon, body: this.current, cls: 'barrido', text: p.text });
+    this.markers.at(-1).el.classList.add('sel');
+    this.markersOn = true;
+    if (this.mode === 'orbit' && this.focusId !== this.current) await this._travel(this.current);
+    await this._lookAtSurface(this.current, p.lat, p.lon, 1.9);
+  }
+
+  quitarCandidato() {
+    this.markers = this.markers.filter((m) => { if (m.cls === 'barrido') { m.el.remove(); return false; } return true; });
+  }
+
   // Bases de los proyectos: bandera y nombre junto al marcador del emplazamiento. mapa: id del sitio → [nombres]
   setBases(mapa) {
     for (const m of this.markers) {

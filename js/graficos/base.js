@@ -20,7 +20,9 @@ export const pct = (p) => (p === p ? Math.round(p * 100) : null);
 // El mismo percentil para escribirlo: «<1» y «>99» en los extremos (0 y 100 darían a entender que no hay nada más allá)
 export const pctTxt = (p) => (p !== p ? '—' : p < 0.005 ? '<1' : p > 0.995 ? '>99' : String(Math.round(p * 100)));
 // El percentil dicho en llano para lo visible: «higher than 93 %» (la definición exacta va en «Learn more»)
-export const masAltoQue = (p) => (p == null || p !== p ? '' : `higher than ${pctTxt(p)} %`);
+// Igual que pctTxt pero para ir dentro de una frase («higher than over 99 %» en vez de «higher than >99 %»)
+export const pctFrase = (p) => (p !== p ? '—' : p < 0.005 ? 'under 1' : p > 0.995 ? 'over 99' : String(Math.round(p * 100)));
+export const masAltoQue = (p) => (p == null || p !== p ? '' : `higher than ${pctFrase(p)} %`);
 
 // ---------------------------------------------------------------------------
 //  Color

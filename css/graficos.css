@@ -178,3 +178,30 @@
 .g-ficha dd { margin: 0; overflow-wrap: anywhere; }
 .g-ficha a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
 @media (max-width: 480px) { .g-ficha dl { grid-template-columns: 1fr; } .g-ficha dd { margin-bottom: .3rem; } }
+
+/* ---------- más puntos encontrados por el barrido de la superficie (js/barrido.js) ---------- */
+/* En escritorio la lista se desplaza dentro del panel: el bloque va debajo de ella, en el mismo desplazamiento */
+.res-scroll { flex: 1; min-height: 0; overflow-y: auto; }
+.res-scroll > #res-list { overflow: visible; }
+.res-barrido { margin: .3rem .7rem .7rem; }
+.bar-lista { list-style: none; margin: .6rem 0 0; padding: 0; display: grid; gap: .5rem; }
+.bar-c { padding: .55rem .6rem; border: 1px solid var(--line); border-radius: 10px; }
+.bar-c.sel { border-color: rgba(93, 255, 208, .5); background: rgba(255, 255, 255, .04); }
+.bar-cab { display: flex; gap: .6rem; align-items: center; }
+.bar-c .rk, .bar-c:first-child .rk { width: 24px; height: 24px; font-size: .7rem; background: none; color: var(--accent); border: 2px solid var(--accent); }
+.bar-med { list-style: none; margin: .45rem 0; padding: 0; display: grid; gap: .25rem; }
+.bar-med li { font-size: .72rem; }
+.bar-med li span b { font-family: var(--mono); color: var(--accent); margin-left: .2rem; }
+.bar-med li small { display: block; color: var(--mute); font-size: .62rem; line-height: 1.35; }
+.bar-c .g-mas .facts { margin-top: .3rem; }
+/* marcador del candidato en el globo: aro del color de énfasis (los de la lista son discos llenos) */
+.marker.barrido .m-dot { background: #060a18; color: var(--accent); box-shadow: 0 0 0 2px var(--accent), 0 0 18px rgba(93, 255, 208, .7); }
+.marker.barrido .m-label { opacity: 1; transform: none; }
+@media (max-width: 800px) { .res-scroll { overflow: visible; } .res-barrido { margin: .3rem .5rem .6rem; } }
+
+/* ---------- límites PRELIMINARES de NASA para aterrizajes humanos en Marte (capas.js → LIMITES_NASA) ---------- */
+#res-list li .lim-nasa { display: block; margin-top: .25rem; color: var(--gold); font-size: .64rem; }
+.aviso-lim { margin: .4rem 0 .8rem; padding: .45rem .7rem; border-left: 2px solid var(--gold); background: rgba(255, 200, 87, .06); font-size: .76rem; line-height: 1.45; color: #c6cde4; }
+.aviso-lim b { color: var(--gold); font-weight: 600; }
+.aviso-lim small { display: block; margin-top: .25rem; color: var(--mute); font-size: .64rem; overflow-wrap: anywhere; }
+.aviso-lim a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }

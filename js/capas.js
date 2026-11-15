@@ -8,6 +8,8 @@
 //   medirSitios(...)    → mediciones alrededor de cada emplazamiento + puntuaciones 0-100 derivadas
 //   pintarCapa(capa)    → lienzo equirectangular coloreado para proyectarlo sobre el globo
 
+import { pctFrase, CUERPO } from './graficos/base.js';
+
 const DIR = 'base-planetaria/web/data/';
 const TIPOS = { int16: Int16Array, uint16: Uint16Array, uint8: Uint8Array, float32: Float32Array };
 const DEG = Math.PI / 180;
@@ -282,10 +284,17 @@ export function pintarCapa(c, rampa, { invertir = false, bloques = false, aprox 
 
 // ---------------------------------------------------------------------------
 //  Mediciones por emplazamiento y puntuaciones derivadas
-//  Cada puntuación es una escala lineal explícita entre dos umbrales (0 → 100), recortada.
+//  Cada puntuación es un percentil en los datos de NASA: la parte de la superficie del cuerpo cuyo valor es PEOR o
+//  igual que el del emplazamiento, × 100. «Peor» sigue el sentido de cada factor (menos pendiente, más hidrógeno…).
+//  La distribución es la misma que usan los gráficos (js/analitica.js → muestra/percentil: celdas publicadas con dato,
+//  cada una pesa cos(latitud)). Sin escalas ni umbrales escritos a mano.
+//    - más es mejor:   P(valor ≤ v)
+//    - menos es mejor: P(valor ≥ v) = 1 − P(valor < v)   (exacto, de la misma muestra ordenada)
+//  El texto `de` (de dónde sale la cifra) se escribe solo cuando se lee: el barrido de js/barrido.js puntúa decenas de
+//  miles de puntos y solo muestra unos pocos.
 // ---------------------------------------------------------------------------
-const lin = (v, cero, cien) => Math.round(Math.max(0, Math.min(1, (v - cero) / (cien - cero))) * 100);
-
+// Cada factor: dist = capa (o capa derivada) de la que sale la distribución de la superficie; menor = menos es mejor;
+// valor(m) = el valor del emplazamiento a partir de sus mediciones (undefined = sin dato); txt(v) = el valor escrito.
 const PLAN = {
   moon: {
     medidas: [
@@ -299,11 +308,11 @@ const PLAN = {
       ['tmed', 'moon_tmedia', 'Mean temp.', kelvin, 'Diviner'],
     ],
     metricas: {
-      terrain: (m) => m.pend && { v: lin(m.pend.media, 25, 0), de: `LOLA mean slope ${nf(m.pend.media, 1)}° · scale 25° → 0, 0° → 100` },
-      ice: (m) => m.h && { v: lin(m.h.media, 50, 150), de: `Lunar Prospector hydrogen ${nf(m.h.media, 0)} ppm · scale 50 ppm → 0, 150 ppm → 100` },
-      thermal: (m) => m.tmax && m.tmin && { v: lin(m.tmax.media - m.tmin.media, 300, 0),
-        de: `Diviner day-night swing ${nf(m.tmax.media - m.tmin.media, 0)} K · scale 300 K → 0, 0 K → 100` },
-      resources: (m) => m.feo && { v: lin(m.feo.media, 4, 20), de: `Lunar Prospector FeO ${nf(m.feo.media, 1)} % · scale 4 % → 0, 20 % → 100` },
+      terrain: { dist: 'moon_pendiente', menor: true, valor: (m) => m.pend?.media, txt: (v) => `LOLA mean slope ${nf(v, 1)}°` },
+      ice: { dist: 'moon_h', valor: (m) => m.h?.media, txt: (v) => `Lunar Prospector hydrogen ${nf(v, 0)} ppm` },
+      // la oscilación de cada celda (máxima − mínima) se deriva en el navegador: js/analitica.js → oscilacionLuna
+      thermal: { dist: 'moon_oscilacion', menor: true, valor: (m) => (m.tmax && m.tmin ? m.tmax.media - m.tmin.media : undefined), txt: (v) => `Diviner day-night swing ${nf(v, 0)} K` },
+      resources: { dist: 'moon_feo', valor: (m) => m.feo?.media, txt: (v) => `Lunar Prospector FeO ${nf(v, 1)} %` },
     },
   },
   mars: {
@@ -318,36 +327,132 @@ const PLAN = {
       ['th', 'mars_th', 'Thorium', U(2, 'ppm'), 'Odyssey GRS'],
     ],
     metricas: {
-      terrain: (m) => m.pend && { v: lin(m.pend.media, 5, 0), de: `MOLA regional slope ${nf(m.pend.media, 1)}° · scale 5° → 0, 0° → 100` },
-      ice: (m) => m.h2o && { v: lin(m.h2o.media, 2, 7), de: `GRS water equivalent ${nf(m.h2o.media, 1)} % · scale 2 % → 0, 7 % → 100` },
-      thermal: (m) => m.inercia && { v: lin(m.inercia.media, 50, 400), de: `TES thermal inertia ${nf(m.inercia.media, 0)} · scale 50 → 0, 400 → 100 (more inertia = smaller day-night swing)` },
-      resources: (m) => m.fe && { v: lin(m.fe.media, 11, 18), de: `GRS iron ${nf(m.fe.media, 1)} % · scale 11 % → 0, 18 % → 100` },
+      // la pendiente regional de cada celda se deriva de MOLA con la misma fórmula: js/analitica.js → pendienteCeldas
+      terrain: { dist: 'mars_pend', menor: true, valor: (m) => m.pend?.media, txt: (v) => `MOLA regional slope ${nf(v, 1)}°` },
+      ice: { dist: 'mars_h2o', valor: (m) => m.h2o?.media, txt: (v) => `GRS water equivalent ${nf(v, 1)} %` },
+      thermal: { dist: 'mars_inercia', valor: (m) => m.inercia?.media, txt: (v) => `TES thermal inertia ${nf(v, 0)} J m⁻² K⁻¹ s⁻½` },
+      resources: { dist: 'mars_fe', valor: (m) => m.fe?.media, txt: (v) => `GRS iron ${nf(v, 1)} %` },
     },
   },
 };
 
+// ---------------------------------------------------------------------------
+//  Límites de NASA (solo Marte). Bussey y Hoffman (2016), diapositiva 9, textual: «Preliminary latitude boundaries set
+//  at +/- 50 degrees» y «Preliminary elevation boundary set at no higher than +2 km (MOLA reference)». Son límites
+//  PRELIMINARES para lugares de aterrizaje humano. La elevación que se compara es la media de zona de MOLA (la misma
+//  «Elevation» de la ficha). En la Luna no se aplica ninguno: los límites de pendiente de NASA se miden a la escala del
+//  módulo o del metro y la capa de LOLA de la web es kilométrica.
+// ---------------------------------------------------------------------------
+export const LIMITES_NASA = {
+  mars: {
+    latMax: 50, elevMax: 2000,
+    textoLat: '+/- 50 degrees', textoElev: 'no higher than +2 km (MOLA reference)',
+    cita: 'Bussey, B. and Hoffman, S. J. (2016). Human Mars Landing Site and Impacts on Mars Surface Operations. IEEE Aerospace Conference, Big Sky, Montana, 5–11 March 2016. NASA NTRS 20160002370.',
+    url: 'https://ntrs.nasa.gov/citations/20160002370',
+  },
+};
+
+// → null (el cuerpo no tiene límites) o { fallos: [{ que: 'lat' | 'elev', valor, limite }], sinDato: bool }
+export function limitesDe(body, lat, m) {
+  const L = LIMITES_NASA[body]; if (!L) return null;
+  const fallos = [];
+  if (Math.abs(lat) > L.latMax) fallos.push({ que: 'lat', valor: lat, limite: L.latMax });
+  const e = m.elev?.media;
+  if (e != null && e > L.elevMax) fallos.push({ que: 'elev', valor: e, limite: L.elevMax });
+  return { fallos, sinDato: e == null };
+}
+
 export const CAPAS_ANALISIS = Object.fromEntries(Object.entries(PLAN).map(([b, p]) => [b, [...new Set(p.medidas.map((x) => x[1]))]]));
 
-// → { [site.id]: { medidas: [{ nombre, texto, rango, fuente, cita }], metricas: { terrain: { v, de }, … } } }
-export async function medirSitios(body, sitios) {
-  const plan = PLAN[body], ids = CAPAS_ANALISIS[body];
+// Factores que se puntúan con mediciones del PDS en cada cuerpo: { moon: ['terrain', 'ice', 'thermal', 'resources'], … }
+export const FACTORES_MEDIDOS = Object.fromEntries(Object.entries(PLAN).map(([b, p]) => [b, Object.keys(p.metricas)]));
+
+// Capas de análisis de un cuerpo ya cargadas: { [id]: Capa }. Las que fallan se omiten (con aviso).
+export async function capasAnalisis(body) {
+  const ids = CAPAS_ANALISIS[body];
   const cargadas = await Promise.allSettled(ids.map(capa)), capas = {};
   cargadas.forEach((r, i) => { if (r.status === 'fulfilled') capas[ids[i]] = r.value; else console.warn('Capa no disponible', ids[i], r.reason); });
   if (!Object.keys(capas).length) throw new Error('Ninguna capa disponible');
+  return capas;
+}
+
+// Distribuciones de la superficie con las que se puntúa cada factor: { percentil, fraccionMenor, capas: { factor: Capa } }.
+// js/analitica.js importa este módulo, así que se carga con import() dinámico (al pedirlo, no al arrancar).
+const distribuciones = new Map();
+export function distribucionesDe(body) {
+  if (!distribuciones.has(body)) {
+    const p = (async () => {
+      const A = await import('./analitica.js');
+      const derivadas = { mars_pend: () => A.pendienteCeldas('mars'), moon_oscilacion: () => A.oscilacionLuna() };
+      const fs = Object.entries(PLAN[body].metricas), capas = {};
+      const r = await Promise.allSettled(fs.map(([, d]) => (derivadas[d.dist] ?? (() => capa(d.dist)))()));
+      r.forEach((x, i) => { if (x.status === 'fulfilled') capas[fs[i][0]] = x.value; else console.warn('Distribución no disponible', fs[i][1].dist, x.reason); });
+      // la muestra ordenada se prepara ya (la primera vez cuesta; luego cada percentil es una búsqueda binaria)
+      for (const c of Object.values(capas)) A.muestra(c);
+      return { percentil: A.percentil, fraccionMenor: A.fraccionMenor, capas };
+    })();
+    distribuciones.set(body, p);
+    p.catch(() => distribuciones.delete(body));
+  }
+  return distribuciones.get(body);
+}
+
+// Una medición del PLAN en un punto: media de zona o, en Marte, pendiente regional (null = sin dato)
+const medir = (body, c, lat, lon, modo) => (modo === 'pendiente' ? c.pendiente(lat, lon, RADIO_KM[body]) : c.zona(lat, lon));
+
+// Puntuaciones 0-100 de los factores medidos a partir de las mediciones { clave: zona } y de las distribuciones
+// (distribucionesDe): { terrain: { v, de }, … }. Sin distribuciones no hay puntuación.
+export function metricasDe(body, m, D) {
+  const metricas = {};
+  if (!D) return metricas;
+  for (const [k, d] of Object.entries(PLAN[body].metricas)) {
+    const v = d.valor(m), c = D.capas[k];
+    if (v == null || v !== v || !c) continue;
+    const p = d.menor ? 1 - D.fraccionMenor(c, v) : D.percentil(c, v);
+    if (p !== p) continue;
+    metricas[k] = { v: Math.round(p * 100),
+      get de() { return `${d.txt(v)} · ${d.menor ? 'lower' : 'higher'} than ${pctFrase(p)} % of the surface ${CUERPO[body].de} (area-weighted percentile among published cells)`; } };
+  }
+  return metricas;
+}
+
+// Claves de medición que leen las puntuaciones (p. ej. Luna: pend, h, tmax, tmin, feo) y, si el cuerpo tiene límites de
+// NASA, la elevación. Las de las puntuaciones se averiguan llamando a las mismas funciones del PLAN con un objeto que
+// apunta qué claves se piden: así no se repite la lista a mano.
+const clavesUsadas = {};
+export function clavesMetricas(body) {
+  if (!clavesUsadas[body]) {
+    const usadas = new Set(), espia = new Proxy({}, { get: (_, k) => { usadas.add(k); return { media: 1 }; } });
+    for (const d of Object.values(PLAN[body].metricas)) d.valor(espia);
+    if (LIMITES_NASA[body]) usadas.add('elev');
+    clavesUsadas[body] = PLAN[body].medidas.filter((x) => usadas.has(x[0]));
+  }
+  return clavesUsadas[body];
+}
+
+// Solo las mediciones que usan las puntuaciones y los límites, sin formatear (para recorrer muchos puntos: js/barrido.js)
+export function medirPunto(body, capas, lat, lon) {
+  const m = {};
+  for (const [clave, id, , , , modo] of clavesMetricas(body)) { const c = capas[id]; if (c) m[clave] = medir(body, c, lat, lon, modo); }
+  return m;
+}
+
+// → { [site.id]: { medidas: [{ nombre, texto, rango, fuente, cita }], metricas: { terrain: { v, de }, … }, limites } }
+export async function medirSitios(body, sitios) {
+  const plan = PLAN[body], capas = await capasAnalisis(body);
+  const D = await distribucionesDe(body).catch((e) => { console.warn('Distribuciones no disponibles: sin puntuaciones medidas', e); return null; });
   const out = {};
   for (const s of sitios) {
     const m = {}, medidas = [];
     for (const [clave, id, nombre, fmt, fuente, modo] of plan.medidas) {
       const c = capas[id]; if (!c) continue;
-      const z = modo === 'pendiente' ? c.pendiente(s.lat, s.lon, RADIO_KM[body]) : c.zona(s.lat, s.lon);
+      const z = medir(body, c, s.lat, s.lon, modo);
       m[clave] = z;
       // capa / valor / derivada: para situar la medición en la distribución de la superficie (js/analitica.js, js/graficos/)
       medidas.push({ nombre, fuente, cita: c.meta.fuente?.cita, capa: id, valor: z ? z.media : null, derivada: modo ?? null, texto: z ? fmt(z.media) : 'No data',
         rango: z && z.n > 1 && !modo ? `${fmt(z.min)} … ${fmt(z.max)}` : z && modo ? `max. ${fmt(z.max)}` : z?.unica ? `${c.meta.resolucion.split(' (')[0]} cell` : '' });
     }
-    const metricas = {};
-    for (const [k, f] of Object.entries(plan.metricas)) { const r = f(m); if (r) metricas[k] = r; }
-    out[s.id] = { medidas, metricas };
+    out[s.id] = { medidas, metricas: metricasDe(body, m, D), limites: limitesDe(body, s.lat, m) };
   }
   return out;
 }
