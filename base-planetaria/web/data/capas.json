@@ -4,7 +4,7 @@
   "mars_elev": {
    "cuerpo": "mars",
    "variable": "elevacion",
-   "nombre": "Elevación sobre el areoide",
+   "nombre": "Elevation above the areoid",
    "unidades": "m",
    "archivo": "mola_elev_8ppd.bin",
    "escala": 1,
@@ -15,9 +15,9 @@
    "lon_centro_0": 0.0625,
    "dlon": 0.125,
    "lon_ciclica": true,
-   "resolucion": "0,125° (≈7,4 km en el ecuador)",
-   "procesado": "Elevación = radio medio (MEGR) − radio del areoide (MEGA), ambos a 1/16°. Media de cada bloque 2×2 → 1/8°, redondeada al metro (mitades al par). Fila 0 = 90°N, columna 0 = 0°E; lat = 90 − (i+0,5)/8; lon = (j+0,5)/8.",
-   "nota": "No es idéntica a MEGT (topografía MEDIANA oficial): MEGR es la MEDIA del radio en la celda. Comparación a 1/8°: |dif| mediana 1.5 m, p99 35.2 m, máx 535.0 m (en escarpes).",
+   "resolucion": "0.125° (≈7.4 km at the equator)",
+   "procesado": "Elevation = mean radius (MEGR) − areoid radius (MEGA), both at 1/16°. Mean of each 2×2 block → 1/8°, rounded to the meter (halves to even). Row 0 = 90°N, column 0 = 0°E; lat = 90 − (i+0.5)/8; lon = (j+0.5)/8.",
+   "nota": "Not identical to MEGT (official MEDIAN topography): MEGR is the MEAN radius in the cell. Comparison at 1/8°: |diff| median 1.5 m, p99 35.2 m, max 535.0 m (on scarps).",
    "comparacion_megt": {
     "celdas_16ppd_iguales_pct": 15.44,
     "dif_16ppd_min_m": -1102,
@@ -62,8 +62,8 @@
   "mars_disparos": {
    "cuerpo": "mars",
    "variable": "disparos",
-   "nombre": "Disparos MOLA en la celda",
-   "unidades": "disparos (tope 255)",
+   "nombre": "MOLA shots in the cell",
+   "unidades": "shots (capped at 255)",
    "archivo": "mola_disparos_8ppd.bin",
    "escala": 1,
    "desplazamiento": 0,
@@ -73,8 +73,8 @@
    "lon_centro_0": 0.0625,
    "dlon": 0.125,
    "lon_ciclica": true,
-   "resolucion": "0,125° (≈7,4 km en el ecuador)",
-   "procesado": "Suma de MEGC (disparos por celda de 1/16°) en cada bloque 2×2; se guarda con tope 255. 0 = la elevación de la celda es interpolada (ningún disparo).",
+   "resolucion": "0.125° (≈7.4 km at the equator)",
+   "procesado": "Sum of MEGC (shots per 1/16° cell) in each 2×2 block; stored capped at 255. 0 = the cell elevation is interpolated (no shots).",
    "fuente": {
     "mision": "Mars Global Surveyor · MOLA",
     "dataset": "MGS-M-MOLA-5-MEGDR-L3-V1.0",
@@ -107,8 +107,8 @@
   "mars_h2o": {
    "cuerpo": "mars",
    "variable": "agua",
-   "nombre": "Agua equivalente (H2O) en el primer metro",
-   "unidades": "% en peso",
+   "nombre": "Water equivalent (H2O) in the top meter",
+   "unidades": "wt %",
    "archivo": "grs_h2o_5deg.bin",
    "escala": 1,
    "desplazamiento": 0,
@@ -118,8 +118,8 @@
    "lon_centro_0": -177.5,
    "dlon": 5.0,
    "lon_ciclica": true,
-   "resolucion": "5° × 5° (≈300 km), suavizado con ventana de 10°",
-   "procesado": "Copia de la columna CONCENTRATION de la tabla PDS (9999.999 = sin dato → NaN). La tabla ya viene suavizada con una ventana de 10° y rebineada a 5°. Sin interpolar.",
+   "resolucion": "5° × 5° (≈300 km), smoothed with a 10° window",
+   "procesado": "Copy of the CONCENTRATION column of the PDS table (9999.999 = no data → NaN). The table is already smoothed with a 10° window and rebinned to 5°. Not interpolated.",
    "fuente": {
     "mision": "2001 Mars Odyssey · Gamma Ray Spectrometer",
     "dataset": "ODY-M-GRS-5-ELEMENTS-V1.0",
@@ -133,7 +133,7 @@
     "md5_originales": {
      "h2o_sr_5x5.tab": "238AC1207D8F085FB4EA3B2F4B3B018D"
     },
-    "cita": "Boynton, W. V. et al. (2007), Concentration of H, Si, Cl, K, Fe, and Th in the low- and mid-latitude regions of Mars, J. Geophys. Res., 112, E12S99, doi:10.1029/2007JE002887. Datos: ODY-M-GRS-5-ELEMENTS-V1.0, NASA PDS."
+    "cita": "Boynton, W. V. et al. (2007), Concentration of H, Si, Cl, K, Fe, and Th in the low- and mid-latitude regions of Mars, J. Geophys. Res., 112, E12S99, doi:10.1029/2007JE002887. Data: ODY-M-GRS-5-ELEMENTS-V1.0, NASA PDS."
    },
    "tipo": "float32",
    "filas": 36,
@@ -152,8 +152,8 @@
   "mars_h2o_sigma": {
    "cuerpo": "mars",
    "variable": "agua_sigma",
-   "nombre": "Incertidumbre de Agua equivalente (H2O) en el primer metro",
-   "unidades": "% en peso",
+   "nombre": "Uncertainty of water equivalent (H2O) in the top meter",
+   "unidades": "wt %",
    "archivo": "grs_h2o_sigma_5deg.bin",
    "escala": 1,
    "desplazamiento": 0,
@@ -163,8 +163,8 @@
    "lon_centro_0": -177.5,
    "dlon": 5.0,
    "lon_ciclica": true,
-   "resolucion": "5° × 5° (≈300 km), suavizado con ventana de 10°",
-   "procesado": "Columna SIGMA WITH CFS (error con factores de corrección) de la misma tabla.",
+   "resolucion": "5° × 5° (≈300 km), smoothed with a 10° window",
+   "procesado": "SIGMA WITH CFS column (error with correction factors) of the same table.",
    "fuente": {
     "mision": "2001 Mars Odyssey · Gamma Ray Spectrometer",
     "dataset": "ODY-M-GRS-5-ELEMENTS-V1.0",
@@ -178,7 +178,7 @@
     "md5_originales": {
      "h2o_sr_5x5.tab": "238AC1207D8F085FB4EA3B2F4B3B018D"
     },
-    "cita": "Boynton, W. V. et al. (2007), Concentration of H, Si, Cl, K, Fe, and Th in the low- and mid-latitude regions of Mars, J. Geophys. Res., 112, E12S99, doi:10.1029/2007JE002887. Datos: ODY-M-GRS-5-ELEMENTS-V1.0, NASA PDS."
+    "cita": "Boynton, W. V. et al. (2007), Concentration of H, Si, Cl, K, Fe, and Th in the low- and mid-latitude regions of Mars, J. Geophys. Res., 112, E12S99, doi:10.1029/2007JE002887. Data: ODY-M-GRS-5-ELEMENTS-V1.0, NASA PDS."
    },
    "tipo": "float32",
    "filas": 36,
@@ -197,8 +197,8 @@
   "mars_fe": {
    "cuerpo": "mars",
    "variable": "hierro",
-   "nombre": "Hierro (Fe)",
-   "unidades": "% en peso",
+   "nombre": "Iron (Fe)",
+   "unidades": "wt %",
    "archivo": "grs_fe_5deg.bin",
    "escala": 1,
    "desplazamiento": 0,
@@ -208,8 +208,8 @@
    "lon_centro_0": -177.5,
    "dlon": 5.0,
    "lon_ciclica": true,
-   "resolucion": "5° × 5° (≈300 km), suavizado con ventana de 10°",
-   "procesado": "Copia de la columna CONCENTRATION de la tabla PDS (9999.999 = sin dato → NaN). La tabla ya viene suavizada con una ventana de 10° y rebineada a 5°. Sin interpolar.",
+   "resolucion": "5° × 5° (≈300 km), smoothed with a 10° window",
+   "procesado": "Copy of the CONCENTRATION column of the PDS table (9999.999 = no data → NaN). The table is already smoothed with a 10° window and rebinned to 5°. Not interpolated.",
    "fuente": {
     "mision": "2001 Mars Odyssey · Gamma Ray Spectrometer",
     "dataset": "ODY-M-GRS-5-ELEMENTS-V1.0",
@@ -223,7 +223,7 @@
     "md5_originales": {
      "fe_sr_5x5.tab": "64D15CABD88C6FA3D2ED6463129253DE"
     },
-    "cita": "Boynton, W. V. et al. (2007), Concentration of H, Si, Cl, K, Fe, and Th in the low- and mid-latitude regions of Mars, J. Geophys. Res., 112, E12S99, doi:10.1029/2007JE002887. Datos: ODY-M-GRS-5-ELEMENTS-V1.0, NASA PDS."
+    "cita": "Boynton, W. V. et al. (2007), Concentration of H, Si, Cl, K, Fe, and Th in the low- and mid-latitude regions of Mars, J. Geophys. Res., 112, E12S99, doi:10.1029/2007JE002887. Data: ODY-M-GRS-5-ELEMENTS-V1.0, NASA PDS."
    },
    "tipo": "float32",
    "filas": 36,
@@ -242,8 +242,8 @@
   "mars_fe_sigma": {
    "cuerpo": "mars",
    "variable": "hierro_sigma",
-   "nombre": "Incertidumbre de Hierro (Fe)",
-   "unidades": "% en peso",
+   "nombre": "Uncertainty of iron (Fe)",
+   "unidades": "wt %",
    "archivo": "grs_fe_sigma_5deg.bin",
    "escala": 1,
    "desplazamiento": 0,
@@ -253,8 +253,8 @@
    "lon_centro_0": -177.5,
    "dlon": 5.0,
    "lon_ciclica": true,
-   "resolucion": "5° × 5° (≈300 km), suavizado con ventana de 10°",
-   "procesado": "Columna SIGMA WITH CFS (error con factores de corrección) de la misma tabla.",
+   "resolucion": "5° × 5° (≈300 km), smoothed with a 10° window",
+   "procesado": "SIGMA WITH CFS column (error with correction factors) of the same table.",
    "fuente": {
     "mision": "2001 Mars Odyssey · Gamma Ray Spectrometer",
     "dataset": "ODY-M-GRS-5-ELEMENTS-V1.0",
@@ -268,7 +268,7 @@
     "md5_originales": {
      "fe_sr_5x5.tab": "64D15CABD88C6FA3D2ED6463129253DE"
     },
-    "cita": "Boynton, W. V. et al. (2007), Concentration of H, Si, Cl, K, Fe, and Th in the low- and mid-latitude regions of Mars, J. Geophys. Res., 112, E12S99, doi:10.1029/2007JE002887. Datos: ODY-M-GRS-5-ELEMENTS-V1.0, NASA PDS."
+    "cita": "Boynton, W. V. et al. (2007), Concentration of H, Si, Cl, K, Fe, and Th in the low- and mid-latitude regions of Mars, J. Geophys. Res., 112, E12S99, doi:10.1029/2007JE002887. Data: ODY-M-GRS-5-ELEMENTS-V1.0, NASA PDS."
    },
    "tipo": "float32",
    "filas": 36,
@@ -287,8 +287,8 @@
   "mars_si": {
    "cuerpo": "mars",
    "variable": "silicio",
-   "nombre": "Silicio (Si)",
-   "unidades": "% en peso",
+   "nombre": "Silicon (Si)",
+   "unidades": "wt %",
    "archivo": "grs_si_5deg.bin",
    "escala": 1,
    "desplazamiento": 0,
@@ -298,8 +298,8 @@
    "lon_centro_0": -177.5,
    "dlon": 5.0,
    "lon_ciclica": true,
-   "resolucion": "5° × 5° (≈300 km), suavizado con ventana de 10°",
-   "procesado": "Copia de la columna CONCENTRATION de la tabla PDS (9999.999 = sin dato → NaN). La tabla ya viene suavizada con una ventana de 10° y rebineada a 5°. Sin interpolar.",
+   "resolucion": "5° × 5° (≈300 km), smoothed with a 10° window",
+   "procesado": "Copy of the CONCENTRATION column of the PDS table (9999.999 = no data → NaN). The table is already smoothed with a 10° window and rebinned to 5°. Not interpolated.",
    "fuente": {
     "mision": "2001 Mars Odyssey · Gamma Ray Spectrometer",
     "dataset": "ODY-M-GRS-5-ELEMENTS-V1.0",
@@ -313,7 +313,7 @@
     "md5_originales": {
      "si_sr_5x5.tab": "27B771512B484BC800A182CDA23E00A6"
     },
-    "cita": "Boynton, W. V. et al. (2007), Concentration of H, Si, Cl, K, Fe, and Th in the low- and mid-latitude regions of Mars, J. Geophys. Res., 112, E12S99, doi:10.1029/2007JE002887. Datos: ODY-M-GRS-5-ELEMENTS-V1.0, NASA PDS."
+    "cita": "Boynton, W. V. et al. (2007), Concentration of H, Si, Cl, K, Fe, and Th in the low- and mid-latitude regions of Mars, J. Geophys. Res., 112, E12S99, doi:10.1029/2007JE002887. Data: ODY-M-GRS-5-ELEMENTS-V1.0, NASA PDS."
    },
    "tipo": "float32",
    "filas": 36,
@@ -332,8 +332,8 @@
   "mars_si_sigma": {
    "cuerpo": "mars",
    "variable": "silicio_sigma",
-   "nombre": "Incertidumbre de Silicio (Si)",
-   "unidades": "% en peso",
+   "nombre": "Uncertainty of silicon (Si)",
+   "unidades": "wt %",
    "archivo": "grs_si_sigma_5deg.bin",
    "escala": 1,
    "desplazamiento": 0,
@@ -343,8 +343,8 @@
    "lon_centro_0": -177.5,
    "dlon": 5.0,
    "lon_ciclica": true,
-   "resolucion": "5° × 5° (≈300 km), suavizado con ventana de 10°",
-   "procesado": "Columna SIGMA WITH CFS (error con factores de corrección) de la misma tabla.",
+   "resolucion": "5° × 5° (≈300 km), smoothed with a 10° window",
+   "procesado": "SIGMA WITH CFS column (error with correction factors) of the same table.",
    "fuente": {
     "mision": "2001 Mars Odyssey · Gamma Ray Spectrometer",
     "dataset": "ODY-M-GRS-5-ELEMENTS-V1.0",
@@ -358,7 +358,7 @@
     "md5_originales": {
      "si_sr_5x5.tab": "27B771512B484BC800A182CDA23E00A6"
     },
-    "cita": "Boynton, W. V. et al. (2007), Concentration of H, Si, Cl, K, Fe, and Th in the low- and mid-latitude regions of Mars, J. Geophys. Res., 112, E12S99, doi:10.1029/2007JE002887. Datos: ODY-M-GRS-5-ELEMENTS-V1.0, NASA PDS."
+    "cita": "Boynton, W. V. et al. (2007), Concentration of H, Si, Cl, K, Fe, and Th in the low- and mid-latitude regions of Mars, J. Geophys. Res., 112, E12S99, doi:10.1029/2007JE002887. Data: ODY-M-GRS-5-ELEMENTS-V1.0, NASA PDS."
    },
    "tipo": "float32",
    "filas": 36,
@@ -377,8 +377,8 @@
   "mars_cl": {
    "cuerpo": "mars",
    "variable": "cloro",
-   "nombre": "Cloro (Cl)",
-   "unidades": "% en peso",
+   "nombre": "Chlorine (Cl)",
+   "unidades": "wt %",
    "archivo": "grs_cl_5deg.bin",
    "escala": 1,
    "desplazamiento": 0,
@@ -388,8 +388,8 @@
    "lon_centro_0": -177.5,
    "dlon": 5.0,
    "lon_ciclica": true,
-   "resolucion": "5° × 5° (≈300 km), suavizado con ventana de 10°",
-   "procesado": "Copia de la columna CONCENTRATION de la tabla PDS (9999.999 = sin dato → NaN). La tabla ya viene suavizada con una ventana de 10° y rebineada a 5°. Sin interpolar.",
+   "resolucion": "5° × 5° (≈300 km), smoothed with a 10° window",
+   "procesado": "Copy of the CONCENTRATION column of the PDS table (9999.999 = no data → NaN). The table is already smoothed with a 10° window and rebinned to 5°. Not interpolated.",
    "fuente": {
     "mision": "2001 Mars Odyssey · Gamma Ray Spectrometer",
     "dataset": "ODY-M-GRS-5-ELEMENTS-V1.0",
@@ -403,7 +403,7 @@
     "md5_originales": {
      "cl_sr_5x5.tab": "7131A9C41B33816F7EA645ECFB7DC454"
     },
-    "cita": "Boynton, W. V. et al. (2007), Concentration of H, Si, Cl, K, Fe, and Th in the low- and mid-latitude regions of Mars, J. Geophys. Res., 112, E12S99, doi:10.1029/2007JE002887. Datos: ODY-M-GRS-5-ELEMENTS-V1.0, NASA PDS."
+    "cita": "Boynton, W. V. et al. (2007), Concentration of H, Si, Cl, K, Fe, and Th in the low- and mid-latitude regions of Mars, J. Geophys. Res., 112, E12S99, doi:10.1029/2007JE002887. Data: ODY-M-GRS-5-ELEMENTS-V1.0, NASA PDS."
    },
    "tipo": "float32",
    "filas": 36,
@@ -422,8 +422,8 @@
   "mars_cl_sigma": {
    "cuerpo": "mars",
    "variable": "cloro_sigma",
-   "nombre": "Incertidumbre de Cloro (Cl)",
-   "unidades": "% en peso",
+   "nombre": "Uncertainty of chlorine (Cl)",
+   "unidades": "wt %",
    "archivo": "grs_cl_sigma_5deg.bin",
    "escala": 1,
    "desplazamiento": 0,
@@ -433,8 +433,8 @@
    "lon_centro_0": -177.5,
    "dlon": 5.0,
    "lon_ciclica": true,
-   "resolucion": "5° × 5° (≈300 km), suavizado con ventana de 10°",
-   "procesado": "Columna SIGMA WITH CFS (error con factores de corrección) de la misma tabla.",
+   "resolucion": "5° × 5° (≈300 km), smoothed with a 10° window",
+   "procesado": "SIGMA WITH CFS column (error with correction factors) of the same table.",
    "fuente": {
     "mision": "2001 Mars Odyssey · Gamma Ray Spectrometer",
     "dataset": "ODY-M-GRS-5-ELEMENTS-V1.0",
@@ -448,7 +448,7 @@
     "md5_originales": {
      "cl_sr_5x5.tab": "7131A9C41B33816F7EA645ECFB7DC454"
     },
-    "cita": "Boynton, W. V. et al. (2007), Concentration of H, Si, Cl, K, Fe, and Th in the low- and mid-latitude regions of Mars, J. Geophys. Res., 112, E12S99, doi:10.1029/2007JE002887. Datos: ODY-M-GRS-5-ELEMENTS-V1.0, NASA PDS."
+    "cita": "Boynton, W. V. et al. (2007), Concentration of H, Si, Cl, K, Fe, and Th in the low- and mid-latitude regions of Mars, J. Geophys. Res., 112, E12S99, doi:10.1029/2007JE002887. Data: ODY-M-GRS-5-ELEMENTS-V1.0, NASA PDS."
    },
    "tipo": "float32",
    "filas": 36,
@@ -467,8 +467,8 @@
   "mars_k": {
    "cuerpo": "mars",
    "variable": "potasio",
-   "nombre": "Potasio (K)",
-   "unidades": "% en peso",
+   "nombre": "Potassium (K)",
+   "unidades": "wt %",
    "archivo": "grs_k_5deg.bin",
    "escala": 1,
    "desplazamiento": 0,
@@ -478,8 +478,8 @@
    "lon_centro_0": -177.5,
    "dlon": 5.0,
    "lon_ciclica": true,
-   "resolucion": "5° × 5° (≈300 km), suavizado con ventana de 10°",
-   "procesado": "Copia de la columna CONCENTRATION de la tabla PDS (9999.999 = sin dato → NaN). La tabla ya viene suavizada con una ventana de 10° y rebineada a 5°. Sin interpolar.",
+   "resolucion": "5° × 5° (≈300 km), smoothed with a 10° window",
+   "procesado": "Copy of the CONCENTRATION column of the PDS table (9999.999 = no data → NaN). The table is already smoothed with a 10° window and rebinned to 5°. Not interpolated.",
    "fuente": {
     "mision": "2001 Mars Odyssey · Gamma Ray Spectrometer",
     "dataset": "ODY-M-GRS-5-ELEMENTS-V1.0",
@@ -493,7 +493,7 @@
     "md5_originales": {
      "k_sr_5x5.tab": "28CB993610B22B7737E6617CB977E024"
     },
-    "cita": "Boynton, W. V. et al. (2007), Concentration of H, Si, Cl, K, Fe, and Th in the low- and mid-latitude regions of Mars, J. Geophys. Res., 112, E12S99, doi:10.1029/2007JE002887. Datos: ODY-M-GRS-5-ELEMENTS-V1.0, NASA PDS."
+    "cita": "Boynton, W. V. et al. (2007), Concentration of H, Si, Cl, K, Fe, and Th in the low- and mid-latitude regions of Mars, J. Geophys. Res., 112, E12S99, doi:10.1029/2007JE002887. Data: ODY-M-GRS-5-ELEMENTS-V1.0, NASA PDS."
    },
    "tipo": "float32",
    "filas": 36,
@@ -512,8 +512,8 @@
   "mars_k_sigma": {
    "cuerpo": "mars",
    "variable": "potasio_sigma",
-   "nombre": "Incertidumbre de Potasio (K)",
-   "unidades": "% en peso",
+   "nombre": "Uncertainty of potassium (K)",
+   "unidades": "wt %",
    "archivo": "grs_k_sigma_5deg.bin",
    "escala": 1,
    "desplazamiento": 0,
@@ -523,8 +523,8 @@
    "lon_centro_0": -177.5,
    "dlon": 5.0,
    "lon_ciclica": true,
-   "resolucion": "5° × 5° (≈300 km), suavizado con ventana de 10°",
-   "procesado": "Columna SIGMA (la columna SIGMA WITH CFS no aplica a este elemento) de la misma tabla.",
+   "resolucion": "5° × 5° (≈300 km), smoothed with a 10° window",
+   "procesado": "SIGMA column (the SIGMA WITH CFS column does not apply to this element) of the same table.",
    "fuente": {
     "mision": "2001 Mars Odyssey · Gamma Ray Spectrometer",
     "dataset": "ODY-M-GRS-5-ELEMENTS-V1.0",
@@ -538,7 +538,7 @@
     "md5_originales": {
      "k_sr_5x5.tab": "28CB993610B22B7737E6617CB977E024"
     },
-    "cita": "Boynton, W. V. et al. (2007), Concentration of H, Si, Cl, K, Fe, and Th in the low- and mid-latitude regions of Mars, J. Geophys. Res., 112, E12S99, doi:10.1029/2007JE002887. Datos: ODY-M-GRS-5-ELEMENTS-V1.0, NASA PDS."
+    "cita": "Boynton, W. V. et al. (2007), Concentration of H, Si, Cl, K, Fe, and Th in the low- and mid-latitude regions of Mars, J. Geophys. Res., 112, E12S99, doi:10.1029/2007JE002887. Data: ODY-M-GRS-5-ELEMENTS-V1.0, NASA PDS."
    },
    "tipo": "float32",
    "filas": 36,
@@ -557,7 +557,7 @@
   "mars_th": {
    "cuerpo": "mars",
    "variable": "torio",
-   "nombre": "Torio (Th)",
+   "nombre": "Thorium (Th)",
    "unidades": "ppm",
    "archivo": "grs_th_5deg.bin",
    "escala": 1,
@@ -568,8 +568,8 @@
    "lon_centro_0": -177.5,
    "dlon": 5.0,
    "lon_ciclica": true,
-   "resolucion": "5° × 5° (≈300 km), suavizado con ventana de 10°",
-   "procesado": "Copia de la columna CONCENTRATION de la tabla PDS (9999.999 = sin dato → NaN). La tabla ya viene suavizada con una ventana de 10° y rebineada a 5°. Sin interpolar.",
+   "resolucion": "5° × 5° (≈300 km), smoothed with a 10° window",
+   "procesado": "Copy of the CONCENTRATION column of the PDS table (9999.999 = no data → NaN). The table is already smoothed with a 10° window and rebinned to 5°. Not interpolated.",
    "fuente": {
     "mision": "2001 Mars Odyssey · Gamma Ray Spectrometer",
     "dataset": "ODY-M-GRS-5-ELEMENTS-V1.0",
@@ -583,7 +583,7 @@
     "md5_originales": {
      "th_sr_5x5.tab": "AFD5AC10830A27559451480663790E80"
     },
-    "cita": "Boynton, W. V. et al. (2007), Concentration of H, Si, Cl, K, Fe, and Th in the low- and mid-latitude regions of Mars, J. Geophys. Res., 112, E12S99, doi:10.1029/2007JE002887. Datos: ODY-M-GRS-5-ELEMENTS-V1.0, NASA PDS."
+    "cita": "Boynton, W. V. et al. (2007), Concentration of H, Si, Cl, K, Fe, and Th in the low- and mid-latitude regions of Mars, J. Geophys. Res., 112, E12S99, doi:10.1029/2007JE002887. Data: ODY-M-GRS-5-ELEMENTS-V1.0, NASA PDS."
    },
    "tipo": "float32",
    "filas": 36,
@@ -602,7 +602,7 @@
   "mars_th_sigma": {
    "cuerpo": "mars",
    "variable": "torio_sigma",
-   "nombre": "Incertidumbre de Torio (Th)",
+   "nombre": "Uncertainty of thorium (Th)",
    "unidades": "ppm",
    "archivo": "grs_th_sigma_5deg.bin",
    "escala": 1,
@@ -613,8 +613,8 @@
    "lon_centro_0": -177.5,
    "dlon": 5.0,
    "lon_ciclica": true,
-   "resolucion": "5° × 5° (≈300 km), suavizado con ventana de 10°",
-   "procesado": "Columna SIGMA (la columna SIGMA WITH CFS no aplica a este elemento) de la misma tabla.",
+   "resolucion": "5° × 5° (≈300 km), smoothed with a 10° window",
+   "procesado": "SIGMA column (the SIGMA WITH CFS column does not apply to this element) of the same table.",
    "fuente": {
     "mision": "2001 Mars Odyssey · Gamma Ray Spectrometer",
     "dataset": "ODY-M-GRS-5-ELEMENTS-V1.0",
@@ -628,7 +628,7 @@
     "md5_originales": {
      "th_sr_5x5.tab": "AFD5AC10830A27559451480663790E80"
     },
-    "cita": "Boynton, W. V. et al. (2007), Concentration of H, Si, Cl, K, Fe, and Th in the low- and mid-latitude regions of Mars, J. Geophys. Res., 112, E12S99, doi:10.1029/2007JE002887. Datos: ODY-M-GRS-5-ELEMENTS-V1.0, NASA PDS."
+    "cita": "Boynton, W. V. et al. (2007), Concentration of H, Si, Cl, K, Fe, and Th in the low- and mid-latitude regions of Mars, J. Geophys. Res., 112, E12S99, doi:10.1029/2007JE002887. Data: ODY-M-GRS-5-ELEMENTS-V1.0, NASA PDS."
    },
    "tipo": "float32",
    "filas": 36,
@@ -647,7 +647,7 @@
   "mars_inercia": {
    "cuerpo": "mars",
    "variable": "inercia_termica",
-   "nombre": "Inercia térmica nocturna (TES)",
+   "nombre": "Nighttime thermal inertia (TES)",
    "unidades": "J m⁻² K⁻¹ s⁻¹ᐟ²",
    "archivo": "tes_inercia_noche_4ppd.bin",
    "escala": 1,
@@ -658,9 +658,9 @@
    "lon_centro_0": -179.875,
    "dlon": 0.25,
    "lon_ciclica": true,
-   "resolucion": "0,25° (≈15 km en el ecuador)",
-   "procesado": "Media, en cada bloque 5×5 del mapa de 1/20°, de los píxeles MEDIDOS (máscara de interpolación ≠ 0 e inercia > 0). Bloques sin ningún píxel medido = sin dato.",
-   "nota": "Rango derivado 5–5000; el mapa usa temperaturas nocturnas de 3 años marcianos (1999–2004). En latitudes polares el valor está afectado por hielos estacionales (ver DATASET.CAT).",
+   "resolucion": "0.25° (≈15 km at the equator)",
+   "procesado": "Mean, in each 5×5 block of the 1/20° map, of the MEASURED pixels (interpolation mask ≠ 0 and inertia > 0). Blocks without any measured pixel = no data.",
+   "nota": "Derived range 5–5000; the map uses nighttime temperatures from 3 Mars years (1999–2004). At polar latitudes the value is affected by seasonal ices (see DATASET.CAT).",
    "fuente": {
     "mision": "Mars Global Surveyor · TES",
     "dataset": "MGS-M-TES-5-TIMAP-V1.0",
@@ -678,7 +678,7 @@
      "global_ti_night_2007.img": "0CB2BA2BC40DE8749E798853E66063C3",
      "global_ti_msk_night_2007.img": "E6C1DE6B7E8A87A20345F720154240A8"
     },
-    "cita": "Putzig, N. E. y Mellon, M. T. (2007), Apparent thermal inertia and the surface heterogeneity of Mars, Icarus, 191, 68–94. Datos: MGS-M-TES-5-TIMAP-V1.0, NASA PDS."
+    "cita": "Putzig, N. E. and Mellon, M. T. (2007), Apparent thermal inertia and the surface heterogeneity of Mars, Icarus, 191, 68–94. Data: MGS-M-TES-5-TIMAP-V1.0, NASA PDS."
    },
    "tipo": "int16",
    "filas": 720,
@@ -697,7 +697,7 @@
   "moon_elev": {
    "cuerpo": "moon",
    "variable": "elevacion",
-   "nombre": "Altura sobre la esfera de 1737,4 km",
+   "nombre": "Height above the 1737.4 km sphere",
    "unidades": "m",
    "archivo": "lola_elev_8ppd.bin",
    "escala": 1,
@@ -708,9 +708,9 @@
    "lon_centro_0": 0.0625,
    "dlon": 0.125,
    "lon_ciclica": true,
-   "resolucion": "0,125° (≈3,8 km en el ecuador)",
-   "procesado": "Altura = DN × 0,5 m (SCALING_FACTOR de la etiqueta) respecto a una esfera de 1737,4 km. Media de cada bloque 2×2 de 1/16° → 1/8°, redondeada al metro. Fila 0 = 90°N, columna 0 = 0°E; lat = 90 − (i+0,5)/8; lon = (j+0,5)/8.",
-   "nota": "Es altura respecto a una esfera, no respecto al geoide lunar. La etiqueta declara MINIMUM/MAXIMUM -18150/21580 DN, pero el archivo (MD5 verificado) contiene -17963/21371 DN.",
+   "resolucion": "0.125° (≈3.8 km at the equator)",
+   "procesado": "Height = DN × 0.5 m (label SCALING_FACTOR) relative to a 1737.4 km sphere. Mean of each 2×2 block of 1/16° → 1/8°, rounded to the meter. Row 0 = 90°N, column 0 = 0°E; lat = 90 − (i+0.5)/8; lon = (j+0.5)/8.",
+   "nota": "This is height relative to a sphere, not to the lunar geoid. The label declares MINIMUM/MAXIMUM -18150/21580 DN, but the file (MD5 verified) contains -17963/21371 DN.",
    "extremos_16ppd": {
     "dn_min_archivo": -17963,
     "dn_max_archivo": 21371,
@@ -755,8 +755,8 @@
   "moon_disparos": {
    "cuerpo": "moon",
    "variable": "disparos",
-   "nombre": "Disparos LOLA en la celda",
-   "unidades": "disparos (tope 255)",
+   "nombre": "LOLA shots in the cell",
+   "unidades": "shots (capped at 255)",
    "archivo": "lola_disparos_8ppd.bin",
    "escala": 1,
    "desplazamiento": 0,
@@ -766,8 +766,8 @@
    "lon_centro_0": 0.0625,
    "dlon": 0.125,
    "lon_ciclica": true,
-   "resolucion": "0,125° (≈3,8 km en el ecuador)",
-   "procesado": "Suma de LDEC_16 (disparos por celda de 1/16°) en cada bloque 2×2; tope 255. 0 = altura interpolada.",
+   "resolucion": "0.125° (≈3.8 km at the equator)",
+   "procesado": "Sum of LDEC_16 (shots per 1/16° cell) in each 2×2 block; capped at 255. 0 = interpolated height.",
    "fuente": {
     "mision": "Lunar Reconnaissance Orbiter · LOLA",
     "dataset": "LRO-L-LOLA-4-GDR-V1.0",
@@ -800,7 +800,7 @@
   "moon_pendiente": {
    "cuerpo": "moon",
    "variable": "pendiente_lola",
-   "nombre": "Pendiente bidireccional LOLA",
+   "nombre": "LOLA bidirectional slope",
    "unidades": "°",
    "archivo": "lola_pendiente_8ppd.bin",
    "escala": 0.01,
@@ -811,9 +811,9 @@
    "lon_centro_0": 0.0625,
    "dlon": 0.125,
    "lon_ciclica": true,
-   "resolucion": "0,125° (≈3,8 km en el ecuador)",
-   "procesado": "Valor físico = DN × 0.0015 + 45.0 (etiqueta); -32768 = sin dato. Media de las celdas válidas de cada bloque 2×2 de 1/16° → 1/8°. Guardado como entero = valor × 100.",
-   "nota": "La etiqueta describe el producto como pendiente «a partir de un ajuste plano a tres disparos sucesivos» con base variable de 30 a 120 m, y en la descripción de la imagen cita «a baseline of 240 meters»: la propia etiqueta no es consistente; se toma como pendiente a escala de decenas–centenas de metros. Datos de 2009–2011 (hasta la fase LRO_SM_17).",
+   "resolucion": "0.125° (≈3.8 km at the equator)",
+   "procesado": "Physical value = DN × 0.0015 + 45.0 (label); -32768 = no data. Mean of the valid cells of each 2×2 block of 1/16° → 1/8°. Stored as integer = value × 100.",
+   "nota": "The label describes the product as slope “from a plane fit to three successive shots” with a variable baseline of 30 to 120 m, and the image description cites “a baseline of 240 meters”: the label itself is inconsistent; it is taken as slope at the scale of tens to hundreds of meters. Data from 2009–2011 (up to phase LRO_SM_17).",
    "fuente": {
     "mision": "Lunar Reconnaissance Orbiter · LOLA",
     "dataset": "LRO-L-LOLA-4-GDR-V1.0",
@@ -846,7 +846,7 @@
   "moon_rugosidad": {
    "cuerpo": "moon",
    "variable": "rugosidad_lola",
-   "nombre": "Rugosidad LOLA (desviación típica de alturas)",
+   "nombre": "LOLA roughness (standard deviation of heights)",
    "unidades": "m",
    "archivo": "lola_rugosidad_8ppd.bin",
    "escala": 0.001,
@@ -857,9 +857,9 @@
    "lon_centro_0": 0.0625,
    "dlon": 0.125,
    "lon_ciclica": true,
-   "resolucion": "0,125° (≈3,8 km en el ecuador)",
-   "procesado": "Valor físico = DN × 0.001 + 0.0 (etiqueta); -32768 = sin dato. Media de las celdas válidas de cada bloque 2×2 de 1/16° → 1/8°. Guardado como entero = valor × 1000.",
-   "nota": "Desviación típica residual de alturas tras ajustar un plano a 5–15 retornos de tres disparos sucesivos (base 30–120 m). Datos de 2009–2011.",
+   "resolucion": "0.125° (≈3.8 km at the equator)",
+   "procesado": "Physical value = DN × 0.001 + 0.0 (label); -32768 = no data. Mean of the valid cells of each 2×2 block of 1/16° → 1/8°. Stored as integer = value × 1000.",
+   "nota": "Residual standard deviation of heights after fitting a plane to 5–15 returns from three successive shots (30–120 m baseline). Data from 2009–2011.",
    "fuente": {
     "mision": "Lunar Reconnaissance Orbiter · LOLA",
     "dataset": "LRO-L-LOLA-4-GDR-V1.0",
@@ -892,7 +892,7 @@
   "moon_h": {
    "cuerpo": "moon",
    "variable": "hidrogeno",
-   "nombre": "Hidrógeno (espectrómetro de neutrones)",
+   "nombre": "Hydrogen (neutron spectrometer)",
    "unidades": "ppm",
    "archivo": "lp_hidrogeno_05deg.bin",
    "escala": 1,
@@ -903,12 +903,12 @@
    "lon_centro_0": -179.75,
    "dlon": 0.5,
    "lon_ciclica": true,
-   "resolucion": "0,5° (≈15 km); huella real del instrumento mayor",
-   "procesado": "Copia de la tabla ASCII publicada (última columna), reordenada con el norte en la fila 0. Se comprobó que coincide con la versión binaria .dat (valor × 10) con diferencia ≤ 1 unidad.",
-   "nota": "Producto especial del equipo de Lunar Prospector alojado en el PDS Geosciences Node: la propia página advierte de que NO es un archivo PDS revisado por pares. Contiene 4180 celdas con valor negativo (no físico) y 1 celda con desbordamiento de formato («***», se deja sin dato). La fuente avisa: las abundancias «no son necesariamente fiables en regiones con mucho torio y tierras raras».",
+   "resolucion": "0.5° (≈15 km); the instrument’s actual footprint is larger",
+   "procesado": "Copy of the published ASCII table (last column), reordered with north in row 0. It was checked to match the binary .dat version (value × 10) with a difference ≤ 1 unit.",
+   "nota": "Special product of the Lunar Prospector team hosted at the PDS Geosciences Node: the page itself warns that it is NOT a peer-reviewed PDS archive. It contains 4180 cells with negative (non-physical) values and 1 cell with a format overflow (“***”, left as no data). The source warns that the abundances “are not necessarily reliable in regions with high thorium and rare earth elements”.",
    "fuente": {
-    "mision": "Lunar Prospector · espectrómetros de neutrones y rayos gamma",
-    "dataset": "Productos especiales (no archivo PDS)",
+    "mision": "Lunar Prospector · neutron and gamma-ray spectrometers",
+    "dataset": "Special products (not a PDS archive)",
     "productos": [
      "hydrogenhd.txt",
      "hydrogenhd.dat"
@@ -938,8 +938,8 @@
   "moon_feo": {
    "cuerpo": "moon",
    "variable": "feo",
-   "nombre": "Óxido de hierro FeO (espectrómetro gamma)",
-   "unidades": "% en peso",
+   "nombre": "Iron oxide FeO (gamma-ray spectrometer)",
+   "unidades": "wt %",
    "archivo": "lp_feo_05deg.bin",
    "escala": 1,
    "desplazamiento": 0,
@@ -949,12 +949,12 @@
    "lon_centro_0": -179.75,
    "dlon": 0.5,
    "lon_ciclica": true,
-   "resolucion": "0,5° (≈15 km); huella real del instrumento mayor",
-   "procesado": "Copia de la tabla ASCII publicada (última columna), reordenada con el norte en la fila 0. Se comprobó que coincide con la versión binaria .dat (valor × 10) con diferencia ≤ 1 unidad.",
-   "nota": "Producto especial del equipo de Lunar Prospector alojado en el PDS Geosciences Node: la propia página advierte de que NO es un archivo PDS revisado por pares.",
+   "resolucion": "0.5° (≈15 km); the instrument’s actual footprint is larger",
+   "procesado": "Copy of the published ASCII table (last column), reordered with north in row 0. It was checked to match the binary .dat version (value × 10) with a difference ≤ 1 unit.",
+   "nota": "Special product of the Lunar Prospector team hosted at the PDS Geosciences Node: the page itself warns that it is NOT a peer-reviewed PDS archive.",
    "fuente": {
-    "mision": "Lunar Prospector · espectrómetros de neutrones y rayos gamma",
-    "dataset": "Productos especiales (no archivo PDS)",
+    "mision": "Lunar Prospector · neutron and gamma-ray spectrometers",
+    "dataset": "Special products (not a PDS archive)",
     "productos": [
      "ironhd.txt",
      "ironhd.dat"
@@ -984,7 +984,7 @@
   "moon_tmax": {
    "cuerpo": "moon",
    "variable": "temp_max",
-   "nombre": "Temperatura bolométrica máxima de la curva diurna",
+   "nombre": "Maximum bolometric temperature of the diurnal curve",
    "unidades": "K",
    "archivo": "diviner_temp_max_05deg.bin",
    "escala": 0.1,
@@ -995,9 +995,9 @@
    "lon_centro_0": -179.75,
    "dlon": 0.5,
    "lon_ciclica": true,
-   "resolucion": "0,5° (≈15 km en el ecuador)",
-   "procesado": "Temperatura de brillo bolométrica media (tbol) de observaciones nadir 2009-07-05 → 2015-04-01, agrupada por la fuente en celdas de 0,5° y 96 intervalos de 0,25 h de hora local. Máximo de tbol entre los intervalos horarios con dato.",
-   "nota": "Solo una parte de los 96 intervalos horarios tiene observaciones en cada celda (ver capa de nº de intervalos): la máxima y la mínima son las de los intervalos observados. A 0,5° no se resuelven sombras permanentes individuales.",
+   "resolucion": "0.5° (≈15 km at the equator)",
+   "procesado": "Mean bolometric brightness temperature (tbol) from nadir observations 2009-07-05 → 2015-04-01, binned by the source into 0.5° cells and 96 local-time intervals of 0.25 h. Maximum tbol among the local-time intervals with data.",
+   "nota": "Only some of the 96 local-time intervals have observations in each cell (see the number-of-intervals layer): the maximum and minimum are those of the observed intervals. At 0.5°, individual permanent shadows are not resolved.",
    "fuente": {
     "mision": "Lunar Reconnaissance Orbiter · Diviner",
     "dataset": "LRO-L-DLRE-5-GCP-V1.0",
@@ -1028,7 +1028,7 @@
      "global_cumul_avg_cyl_70n80n_002.tab": "C132354928AD9B09A3DA974B6AF9F215",
      "global_cumul_avg_cyl_80n90n_002.tab": "396E9215AB3925B3B1FACF6D487050C4"
     },
-    "cita": "Williams, J.-P. et al. (2017), The global surface temperatures of the Moon as measured by the Diviner Lunar Radiometer Experiment, Icarus, 283, 300–325. Datos: LRO-L-DLRE-5-GCP-V1.0, NASA PDS."
+    "cita": "Williams, J.-P. et al. (2017), The global surface temperatures of the Moon as measured by the Diviner Lunar Radiometer Experiment, Icarus, 283, 300–325. Data: LRO-L-DLRE-5-GCP-V1.0, NASA PDS."
    },
    "tipo": "int16",
    "filas": 360,
@@ -1047,7 +1047,7 @@
   "moon_tmin": {
    "cuerpo": "moon",
    "variable": "temp_min",
-   "nombre": "Temperatura bolométrica mínima de la curva diurna",
+   "nombre": "Minimum bolometric temperature of the diurnal curve",
    "unidades": "K",
    "archivo": "diviner_temp_min_05deg.bin",
    "escala": 0.1,
@@ -1058,9 +1058,9 @@
    "lon_centro_0": -179.75,
    "dlon": 0.5,
    "lon_ciclica": true,
-   "resolucion": "0,5° (≈15 km en el ecuador)",
-   "procesado": "Temperatura de brillo bolométrica media (tbol) de observaciones nadir 2009-07-05 → 2015-04-01, agrupada por la fuente en celdas de 0,5° y 96 intervalos de 0,25 h de hora local. Mínimo de tbol entre los intervalos horarios con dato.",
-   "nota": "Solo una parte de los 96 intervalos horarios tiene observaciones en cada celda (ver capa de nº de intervalos): la máxima y la mínima son las de los intervalos observados. A 0,5° no se resuelven sombras permanentes individuales.",
+   "resolucion": "0.5° (≈15 km at the equator)",
+   "procesado": "Mean bolometric brightness temperature (tbol) from nadir observations 2009-07-05 → 2015-04-01, binned by the source into 0.5° cells and 96 local-time intervals of 0.25 h. Minimum tbol among the local-time intervals with data.",
+   "nota": "Only some of the 96 local-time intervals have observations in each cell (see the number-of-intervals layer): the maximum and minimum are those of the observed intervals. At 0.5°, individual permanent shadows are not resolved.",
    "fuente": {
     "mision": "Lunar Reconnaissance Orbiter · Diviner",
     "dataset": "LRO-L-DLRE-5-GCP-V1.0",
@@ -1091,7 +1091,7 @@
      "global_cumul_avg_cyl_70n80n_002.tab": "C132354928AD9B09A3DA974B6AF9F215",
      "global_cumul_avg_cyl_80n90n_002.tab": "396E9215AB3925B3B1FACF6D487050C4"
     },
-    "cita": "Williams, J.-P. et al. (2017), The global surface temperatures of the Moon as measured by the Diviner Lunar Radiometer Experiment, Icarus, 283, 300–325. Datos: LRO-L-DLRE-5-GCP-V1.0, NASA PDS."
+    "cita": "Williams, J.-P. et al. (2017), The global surface temperatures of the Moon as measured by the Diviner Lunar Radiometer Experiment, Icarus, 283, 300–325. Data: LRO-L-DLRE-5-GCP-V1.0, NASA PDS."
    },
    "tipo": "int16",
    "filas": 360,
@@ -1110,7 +1110,7 @@
   "moon_tmedia": {
    "cuerpo": "moon",
    "variable": "temp_media",
-   "nombre": "Temperatura bolométrica media diurna",
+   "nombre": "Mean diurnal bolometric temperature",
    "unidades": "K",
    "archivo": "diviner_temp_media_05deg.bin",
    "escala": 0.1,
@@ -1121,9 +1121,9 @@
    "lon_centro_0": -179.75,
    "dlon": 0.5,
    "lon_ciclica": true,
-   "resolucion": "0,5° (≈15 km en el ecuador)",
-   "procesado": "Temperatura de brillo bolométrica media (tbol) de observaciones nadir 2009-07-05 → 2015-04-01, agrupada por la fuente en celdas de 0,5° y 96 intervalos de 0,25 h de hora local. Integral de la poligonal periódica que une los intervalos con dato (interpolación lineal en hora local) dividida por 24 h. Solo es representativa si el hueco máximo sin datos es pequeño (ver capa de hueco).",
-   "nota": "Solo una parte de los 96 intervalos horarios tiene observaciones en cada celda (ver capa de nº de intervalos): la máxima y la mínima son las de los intervalos observados. A 0,5° no se resuelven sombras permanentes individuales.",
+   "resolucion": "0.5° (≈15 km at the equator)",
+   "procesado": "Mean bolometric brightness temperature (tbol) from nadir observations 2009-07-05 → 2015-04-01, binned by the source into 0.5° cells and 96 local-time intervals of 0.25 h. Integral of the periodic polyline joining the intervals with data (linear interpolation in local time) divided by 24 h. It is only representative if the largest data gap is small (see the gap layer).",
+   "nota": "Only some of the 96 local-time intervals have observations in each cell (see the number-of-intervals layer): the maximum and minimum are those of the observed intervals. At 0.5°, individual permanent shadows are not resolved.",
    "fuente": {
     "mision": "Lunar Reconnaissance Orbiter · Diviner",
     "dataset": "LRO-L-DLRE-5-GCP-V1.0",
@@ -1154,7 +1154,7 @@
      "global_cumul_avg_cyl_70n80n_002.tab": "C132354928AD9B09A3DA974B6AF9F215",
      "global_cumul_avg_cyl_80n90n_002.tab": "396E9215AB3925B3B1FACF6D487050C4"
     },
-    "cita": "Williams, J.-P. et al. (2017), The global surface temperatures of the Moon as measured by the Diviner Lunar Radiometer Experiment, Icarus, 283, 300–325. Datos: LRO-L-DLRE-5-GCP-V1.0, NASA PDS."
+    "cita": "Williams, J.-P. et al. (2017), The global surface temperatures of the Moon as measured by the Diviner Lunar Radiometer Experiment, Icarus, 283, 300–325. Data: LRO-L-DLRE-5-GCP-V1.0, NASA PDS."
    },
    "tipo": "int16",
    "filas": 360,
@@ -1173,8 +1173,8 @@
   "moon_t_nbins": {
    "cuerpo": "moon",
    "variable": "temp_n_intervalos",
-   "nombre": "Intervalos horarios con dato (de 96)",
-   "unidades": "intervalos",
+   "nombre": "Local-time intervals with data (of 96)",
+   "unidades": "intervals",
    "archivo": "diviner_temp_n_intervalos_05deg.bin",
    "escala": 1,
    "desplazamiento": 0,
@@ -1184,8 +1184,8 @@
    "lon_centro_0": -179.75,
    "dlon": 0.5,
    "lon_ciclica": true,
-   "resolucion": "0,5° (≈15 km en el ecuador)",
-   "procesado": "Temperatura de brillo bolométrica media (tbol) de observaciones nadir 2009-07-05 → 2015-04-01, agrupada por la fuente en celdas de 0,5° y 96 intervalos de 0,25 h de hora local. Número de intervalos de 0,25 h con tbol válido.",
+   "resolucion": "0.5° (≈15 km at the equator)",
+   "procesado": "Mean bolometric brightness temperature (tbol) from nadir observations 2009-07-05 → 2015-04-01, binned by the source into 0.5° cells and 96 local-time intervals of 0.25 h. Number of 0.25 h intervals with valid tbol.",
    "fuente": {
     "mision": "Lunar Reconnaissance Orbiter · Diviner",
     "dataset": "LRO-L-DLRE-5-GCP-V1.0",
@@ -1216,7 +1216,7 @@
      "global_cumul_avg_cyl_70n80n_002.tab": "C132354928AD9B09A3DA974B6AF9F215",
      "global_cumul_avg_cyl_80n90n_002.tab": "396E9215AB3925B3B1FACF6D487050C4"
     },
-    "cita": "Williams, J.-P. et al. (2017), The global surface temperatures of the Moon as measured by the Diviner Lunar Radiometer Experiment, Icarus, 283, 300–325. Datos: LRO-L-DLRE-5-GCP-V1.0, NASA PDS."
+    "cita": "Williams, J.-P. et al. (2017), The global surface temperatures of the Moon as measured by the Diviner Lunar Radiometer Experiment, Icarus, 283, 300–325. Data: LRO-L-DLRE-5-GCP-V1.0, NASA PDS."
    },
    "tipo": "uint8",
    "filas": 360,
@@ -1235,7 +1235,7 @@
   "moon_t_hueco": {
    "cuerpo": "moon",
    "variable": "temp_hueco",
-   "nombre": "Mayor hueco sin datos en la curva diurna",
+   "nombre": "Largest data gap in the diurnal curve",
    "unidades": "h",
    "archivo": "diviner_temp_hueco_05deg.bin",
    "escala": 0.25,
@@ -1246,8 +1246,8 @@
    "lon_centro_0": -179.75,
    "dlon": 0.5,
    "lon_ciclica": true,
-   "resolucion": "0,5° (≈15 km en el ecuador)",
-   "procesado": "Temperatura de brillo bolométrica media (tbol) de observaciones nadir 2009-07-05 → 2015-04-01, agrupada por la fuente en celdas de 0,5° y 96 intervalos de 0,25 h de hora local. Mayor racha de intervalos consecutivos sin dato (hora local cíclica) × 0,25 h. 24 h = celda sin ninguna observación.",
+   "resolucion": "0.5° (≈15 km at the equator)",
+   "procesado": "Mean bolometric brightness temperature (tbol) from nadir observations 2009-07-05 → 2015-04-01, binned by the source into 0.5° cells and 96 local-time intervals of 0.25 h. Longest run of consecutive intervals without data (cyclic local time) × 0.25 h. 24 h = cell without any observation.",
    "fuente": {
     "mision": "Lunar Reconnaissance Orbiter · Diviner",
     "dataset": "LRO-L-DLRE-5-GCP-V1.0",
@@ -1278,7 +1278,7 @@
      "global_cumul_avg_cyl_70n80n_002.tab": "C132354928AD9B09A3DA974B6AF9F215",
      "global_cumul_avg_cyl_80n90n_002.tab": "396E9215AB3925B3B1FACF6D487050C4"
     },
-    "cita": "Williams, J.-P. et al. (2017), The global surface temperatures of the Moon as measured by the Diviner Lunar Radiometer Experiment, Icarus, 283, 300–325. Datos: LRO-L-DLRE-5-GCP-V1.0, NASA PDS."
+    "cita": "Williams, J.-P. et al. (2017), The global surface temperatures of the Moon as measured by the Diviner Lunar Radiometer Experiment, Icarus, 283, 300–325. Data: LRO-L-DLRE-5-GCP-V1.0, NASA PDS."
    },
    "tipo": "uint8",
    "filas": 360,
@@ -1297,7 +1297,7 @@
   "moon_t_hmax": {
    "cuerpo": "moon",
    "variable": "temp_hora_max",
-   "nombre": "Hora local de la temperatura máxima",
+   "nombre": "Local time of the maximum temperature",
    "unidades": "h",
    "archivo": "diviner_temp_hora_max_05deg.bin",
    "escala": 1,
@@ -1308,8 +1308,8 @@
    "lon_centro_0": -179.75,
    "dlon": 0.5,
    "lon_ciclica": true,
-   "resolucion": "0,5° (≈15 km en el ecuador)",
-   "procesado": "Temperatura de brillo bolométrica media (tbol) de observaciones nadir 2009-07-05 → 2015-04-01, agrupada por la fuente en celdas de 0,5° y 96 intervalos de 0,25 h de hora local. Índice k del intervalo; hora local = (k + 0,5) × 0,25 h.",
+   "resolucion": "0.5° (≈15 km at the equator)",
+   "procesado": "Mean bolometric brightness temperature (tbol) from nadir observations 2009-07-05 → 2015-04-01, binned by the source into 0.5° cells and 96 local-time intervals of 0.25 h. Interval index k; local time = (k + 0.5) × 0.25 h.",
    "fuente": {
     "mision": "Lunar Reconnaissance Orbiter · Diviner",
     "dataset": "LRO-L-DLRE-5-GCP-V1.0",
@@ -1340,7 +1340,7 @@
      "global_cumul_avg_cyl_70n80n_002.tab": "C132354928AD9B09A3DA974B6AF9F215",
      "global_cumul_avg_cyl_80n90n_002.tab": "396E9215AB3925B3B1FACF6D487050C4"
     },
-    "cita": "Williams, J.-P. et al. (2017), The global surface temperatures of the Moon as measured by the Diviner Lunar Radiometer Experiment, Icarus, 283, 300–325. Datos: LRO-L-DLRE-5-GCP-V1.0, NASA PDS."
+    "cita": "Williams, J.-P. et al. (2017), The global surface temperatures of the Moon as measured by the Diviner Lunar Radiometer Experiment, Icarus, 283, 300–325. Data: LRO-L-DLRE-5-GCP-V1.0, NASA PDS."
    },
    "tipo": "uint8",
    "filas": 360,
@@ -1359,7 +1359,7 @@
   "moon_t_hmin": {
    "cuerpo": "moon",
    "variable": "temp_hora_min",
-   "nombre": "Hora local de la temperatura mínima",
+   "nombre": "Local time of the minimum temperature",
    "unidades": "h",
    "archivo": "diviner_temp_hora_min_05deg.bin",
    "escala": 1,
@@ -1370,8 +1370,8 @@
    "lon_centro_0": -179.75,
    "dlon": 0.5,
    "lon_ciclica": true,
-   "resolucion": "0,5° (≈15 km en el ecuador)",
-   "procesado": "Temperatura de brillo bolométrica media (tbol) de observaciones nadir 2009-07-05 → 2015-04-01, agrupada por la fuente en celdas de 0,5° y 96 intervalos de 0,25 h de hora local. Índice k del intervalo; hora local = (k + 0,5) × 0,25 h.",
+   "resolucion": "0.5° (≈15 km at the equator)",
+   "procesado": "Mean bolometric brightness temperature (tbol) from nadir observations 2009-07-05 → 2015-04-01, binned by the source into 0.5° cells and 96 local-time intervals of 0.25 h. Interval index k; local time = (k + 0.5) × 0.25 h.",
    "fuente": {
     "mision": "Lunar Reconnaissance Orbiter · Diviner",
     "dataset": "LRO-L-DLRE-5-GCP-V1.0",
@@ -1402,7 +1402,7 @@
      "global_cumul_avg_cyl_70n80n_002.tab": "C132354928AD9B09A3DA974B6AF9F215",
      "global_cumul_avg_cyl_80n90n_002.tab": "396E9215AB3925B3B1FACF6D487050C4"
     },
-    "cita": "Williams, J.-P. et al. (2017), The global surface temperatures of the Moon as measured by the Diviner Lunar Radiometer Experiment, Icarus, 283, 300–325. Datos: LRO-L-DLRE-5-GCP-V1.0, NASA PDS."
+    "cita": "Williams, J.-P. et al. (2017), The global surface temperatures of the Moon as measured by the Diviner Lunar Radiometer Experiment, Icarus, 283, 300–325. Data: LRO-L-DLRE-5-GCP-V1.0, NASA PDS."
    },
    "tipo": "uint8",
    "filas": 360,
@@ -1417,7 +1417,235 @@
     "media": 21.3174
    },
    "generado": "2026-11-14T11:38:00Z"
+  },
+  "mars_neutrones": {
+   "cuerpo": "mars",
+   "variable": "neutrones_epitermales",
+   "nombre": "Epithermal neutrons (hydrogen indicator)",
+   "unidades": "counts/s",
+   "archivo": "ns_epitermales_05deg.bin",
+   "escala": 1,
+   "desplazamiento": 0,
+   "sin_dato": null,
+   "lat_centro_0": 89.75,
+   "dlat": -0.5,
+   "lon_centro_0": -179.75,
+   "dlon": 0.5,
+   "lon_ciclica": true,
+   "resolucion": "0.5° (the detector’s actual footprint is ~600 km)",
+   "procesado": "Copy of the EPITHERMAL NEUTRON FLUX column of the published table; 0 counts/s = no observations → no data. Longitude 0–360°E converted to −180…180°E.",
+   "nota": "First 25.7 days of mapping (February–March 2002: northern winter). Over the north cap, seasonal CO2 frost masks part of the hydrogen signal, which is why the flux is high there. It is a neutron flux, not a concentration: it is not converted to % water.",
+   "fuente": {
+    "mision": "2001 Mars Odyssey · Neutron Spectrometer",
+    "dataset": "GRS Special Products (odyssey_grs_special)",
+    "productos": [
+     "NS_EPITHERMAL_020917.TAB"
+    ],
+    "urls": [
+     "https://pds-geosciences.wustl.edu/ody/urn-nasa-pds-odyssey_grs_special/data/ns_epithermal_020917.tab",
+     "https://pds-geosciences.wustl.edu/ody/urn-nasa-pds-odyssey_grs_special/data/ns_epithermal_020917.lbl"
+    ],
+    "md5_originales": {
+     "ns_epithermal_020917.tab": "FA09F309841C45834ECE663106AC37BA"
+    },
+    "cita": "Feldman, W. C. et al. (2002), Global distribution of neutrons from Mars: results from Mars Odyssey, Science, 297, 75–78."
+   },
+   "tipo": "float32",
+   "filas": 360,
+   "columnas": 720,
+   "bytes": 1036800,
+   "sha256": "a7f4244cd05ac07c51589d99570d63a36eb7953b6a4280ea751e6b2d4603ca80",
+   "estadisticas": {
+    "validos": 256320,
+    "total": 259200,
+    "min": 1.319,
+    "max": 12.415,
+    "media": 5.7231
+   },
+   "generado": "2026-11-14T20:04:53Z"
+  },
+  "mars_h2o_aprox": {
+   "cuerpo": "mars",
+   "variable": "agua_aprox",
+   "nombre": "Water equivalent (H2O) · APPROXIMATION at the poles",
+   "unidades": "wt %",
+   "archivo": "grs_h2o_aprox_5deg.bin",
+   "escala": 1,
+   "desplazamiento": 0,
+   "sin_dato": null,
+   "lat_centro_0": 87.5,
+   "dlat": -5.0,
+   "lon_centro_0": -177.5,
+   "dlon": 5.0,
+   "lon_ciclica": true,
+   "resolucion": "5° × 5°",
+   "aproximacion": true,
+   "metodo": "Regression fitted where both data sets exist (1508 cells of 5°): ln(H2O %) = 3.694 -1.221·ln(epithermal neutron flux, counts/s); R² = 0.68, standard error ×1.16. Applied to the mean flux of each masked cell.",
+   "nota": "Calibrated with fluxes of 4.2–11.3 counts/s; 531 polar cells are outside that range (extrapolation): at the south pole it probably UNDERESTIMATES the ice. At the north pole the neutrons are from the winter of 2002, with CO2 frost on top, and the approximation comes out low.",
+   "procesado": "Only cells that the GRS team left without data; the rest is NaN. Regression fitted where both data sets exist (1508 cells of 5°): ln(H2O %) = 3.694 -1.221·ln(epithermal neutron flux, counts/s); R² = 0.68, standard error ×1.16. Applied to the mean flux of each masked cell.",
+   "fuente": {
+    "mision": "Our own approximation from 2001 Mars Odyssey (GRS and Neutron Spectrometer)",
+    "dataset": "Derived from ODY-M-GRS-5-ELEMENTS-V1.0 and GRS Special Products (NS)",
+    "productos": [
+     "grs_h2o_5deg.bin",
+     "ns_epitermales_05deg.bin"
+    ],
+    "urls": [
+     "https://pds-geosciences.wustl.edu/ody/ody-m-grs-5-elements-v1/odgm_xxxx/data/smoothed/h2o_sr_5x5.tab",
+     "https://pds-geosciences.wustl.edu/ody/urn-nasa-pds-odyssey_grs_special/data/ns_epithermal_020917.tab"
+    ],
+    "md5_originales": {},
+    "cita": "Approximation computed in this project (tools/construir_marte.py, aprox step)."
+   },
+   "tipo": "float32",
+   "filas": 36,
+   "columnas": 72,
+   "bytes": 10368,
+   "sha256": "0152cf9e8f1e274d07c5f288db7e9490a64592ed3cefb3eca7b15984766ac1d8",
+   "estadisticas": {
+    "validos": 1084,
+    "total": 2592,
+    "min": 3.7962,
+    "max": 26.0792,
+    "media": 10.8708
+   },
+   "generado": "2026-11-14T20:18:47Z"
+  },
+  "mars_fe_aprox": {
+   "cuerpo": "mars",
+   "variable": "hierro_aprox",
+   "nombre": "Iron (Fe) · APPROXIMATION at the poles",
+   "unidades": "wt %",
+   "archivo": "grs_fe_aprox_5deg.bin",
+   "escala": 1,
+   "desplazamiento": 0,
+   "sin_dato": null,
+   "lat_centro_0": 87.5,
+   "dlat": -5.0,
+   "lon_centro_0": -177.5,
+   "dlon": 5.0,
+   "lon_ciclica": true,
+   "resolucion": "5° × 5°",
+   "aproximacion": true,
+   "metodo": "Harmonic interpolation (Laplace equation) from the edge of the measured area: a smooth continuation of the mid-latitude values. There is no measurement at the poles for this element.",
+   "nota": "It does not account for dilution by polar ice (which would lower the actual soil concentration). It is only a spatial continuation, not data.",
+   "procesado": "Only cells that the GRS team left without data; the rest is NaN. Harmonic interpolation (Laplace equation) from the edge of the measured area: a smooth continuation of the mid-latitude values. There is no measurement at the poles for this element.",
+   "fuente": {
+    "mision": "Our own approximation from 2001 Mars Odyssey (GRS and Neutron Spectrometer)",
+    "dataset": "Derived from ODY-M-GRS-5-ELEMENTS-V1.0",
+    "productos": [
+     "grs_fe_5deg.bin"
+    ],
+    "urls": [
+     "https://pds-geosciences.wustl.edu/ody/ody-m-grs-5-elements-v1/odgm_xxxx/data/smoothed/fe_sr_5x5.tab"
+    ],
+    "md5_originales": {},
+    "cita": "Approximation computed in this project (tools/construir_marte.py, aprox step)."
+   },
+   "tipo": "float32",
+   "filas": 36,
+   "columnas": 72,
+   "bytes": 10368,
+   "sha256": "8bc6aecc964054005bfb03b40d9e3ebe3e80b47ebed0d4174de85e55fa762ec8",
+   "estadisticas": {
+    "validos": 1084,
+    "total": 2592,
+    "min": 10.9298,
+    "max": 16.3297,
+    "media": 13.9471
+   },
+   "generado": "2026-11-14T20:18:47Z"
+  },
+  "mars_si_aprox": {
+   "cuerpo": "mars",
+   "variable": "silicio_aprox",
+   "nombre": "Silicon (Si) · APPROXIMATION at the poles",
+   "unidades": "wt %",
+   "archivo": "grs_si_aprox_5deg.bin",
+   "escala": 1,
+   "desplazamiento": 0,
+   "sin_dato": null,
+   "lat_centro_0": 87.5,
+   "dlat": -5.0,
+   "lon_centro_0": -177.5,
+   "dlon": 5.0,
+   "lon_ciclica": true,
+   "resolucion": "5° × 5°",
+   "aproximacion": true,
+   "metodo": "Harmonic interpolation (Laplace equation) from the edge of the measured area: a smooth continuation of the mid-latitude values. There is no measurement at the poles for this element.",
+   "nota": "It does not account for dilution by polar ice (which would lower the actual soil concentration). It is only a spatial continuation, not data.",
+   "procesado": "Only cells that the GRS team left without data; the rest is NaN. Harmonic interpolation (Laplace equation) from the edge of the measured area: a smooth continuation of the mid-latitude values. There is no measurement at the poles for this element.",
+   "fuente": {
+    "mision": "Our own approximation from 2001 Mars Odyssey (GRS and Neutron Spectrometer)",
+    "dataset": "Derived from ODY-M-GRS-5-ELEMENTS-V1.0",
+    "productos": [
+     "grs_si_5deg.bin"
+    ],
+    "urls": [
+     "https://pds-geosciences.wustl.edu/ody/ody-m-grs-5-elements-v1/odgm_xxxx/data/smoothed/si_sr_5x5.tab"
+    ],
+    "md5_originales": {},
+    "cita": "Approximation computed in this project (tools/construir_marte.py, aprox step)."
+   },
+   "tipo": "float32",
+   "filas": 36,
+   "columnas": 72,
+   "bytes": 10368,
+   "sha256": "e02248f6d4774c978afca98e9b004f86ed265eb39fcb71d76cf3a64374a07530",
+   "estadisticas": {
+    "validos": 1084,
+    "total": 2592,
+    "min": 18.7079,
+    "max": 21.8047,
+    "media": 20.4265
+   },
+   "generado": "2026-11-14T20:18:48Z"
+  },
+  "mars_cl_aprox": {
+   "cuerpo": "mars",
+   "variable": "cloro_aprox",
+   "nombre": "Chlorine (Cl) · APPROXIMATION at the poles",
+   "unidades": "wt %",
+   "archivo": "grs_cl_aprox_5deg.bin",
+   "escala": 1,
+   "desplazamiento": 0,
+   "sin_dato": null,
+   "lat_centro_0": 87.5,
+   "dlat": -5.0,
+   "lon_centro_0": -177.5,
+   "dlon": 5.0,
+   "lon_ciclica": true,
+   "resolucion": "5° × 5°",
+   "aproximacion": true,
+   "metodo": "Harmonic interpolation (Laplace equation) from the edge of the measured area: a smooth continuation of the mid-latitude values. There is no measurement at the poles for this element.",
+   "nota": "It does not account for dilution by polar ice (which would lower the actual soil concentration). It is only a spatial continuation, not data.",
+   "procesado": "Only cells that the GRS team left without data; the rest is NaN. Harmonic interpolation (Laplace equation) from the edge of the measured area: a smooth continuation of the mid-latitude values. There is no measurement at the poles for this element.",
+   "fuente": {
+    "mision": "Our own approximation from 2001 Mars Odyssey (GRS and Neutron Spectrometer)",
+    "dataset": "Derived from ODY-M-GRS-5-ELEMENTS-V1.0",
+    "productos": [
+     "grs_cl_5deg.bin"
+    ],
+    "urls": [
+     "https://pds-geosciences.wustl.edu/ody/ody-m-grs-5-elements-v1/odgm_xxxx/data/smoothed/cl_sr_5x5.tab"
+    ],
+    "md5_originales": {},
+    "cita": "Approximation computed in this project (tools/construir_marte.py, aprox step)."
+   },
+   "tipo": "float32",
+   "filas": 36,
+   "columnas": 72,
+   "bytes": 10368,
+   "sha256": "2def041ba5e1cc51e216f00174c44c9644143215110c5c9c7e1071b25d301346",
+   "estadisticas": {
+    "validos": 1084,
+    "total": 2592,
+    "min": 0.2513,
+    "max": 0.5168,
+    "media": 0.4076
+   },
+   "generado": "2026-11-14T20:18:48Z"
   }
  },
- "actualizado": "2026-11-14T11:38:00Z"
+ "actualizado": "2026-11-14T20:18:48Z"
 }

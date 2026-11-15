@@ -1,0 +1,29 @@
+/* ============================================================================
+   Gráficos de la «capa en detalle»: distribución (js/graficos/distribucion.js, prefijo g-di-) y latitud
+   (js/graficos/latitud.js, prefijo g-la-). Solo añade reglas sobre las clases comunes de css/graficos.css
+   (cárguese después de ese archivo).
+   ============================================================================ */
+
+/* ---------- distribución: columnas del histograma ---------- */
+/* Cada columna es un grupo (barra + zona de acierto de toda la altura): al pasar o al recibir el foco se aclara la
+   barra y se marca la columna. Texto y tooltip dan el valor; el cambio de tono solo dice «estás aquí». */
+.g-di-col { outline: none; }
+.g-di-col:hover .g-area, .g-di-col:focus-visible .g-area { fill: #56628a; }
+.g-di-col:hover .g-hit, .g-di-col:focus-visible .g-hit { fill: rgba(160, 190, 255, .07); }
+.g-di-col:focus-visible .g-hit { stroke: var(--g-eje); stroke-width: 1; }
+
+/* línea fina del emplazamiento destacado, de su etiqueta a la base del histograma */
+.g-di-guia { stroke: var(--g-enfasis); stroke-width: 1; pointer-events: none; }
+
+/* ---------- latitud: franjas (zonas de acierto de toda la altura) ---------- */
+.g-la-fr { outline: none; }
+.g-svg .g-la-fr:hover, .g-svg .g-la-fr:focus-visible { fill: rgba(160, 190, 255, .09); }
+.g-svg .g-la-fr:focus-visible { stroke: var(--g-eje); stroke-width: 1; }
+
+/* ---------- comunes a los dos ---------- */
+/* Etiqueta directa del destacado: halo del color del fondo para que se lea sobre barras, líneas y puntos.
+   No recibe el cursor (no tapa las marcas que tiene debajo). */
+.g-svg text.g-di-et, .g-svg text.g-la-et { paint-order: stroke; stroke: var(--g-superficie); stroke-width: 3px; stroke-linejoin: round; pointer-events: none; }
+
+/* nota bajo el gráfico: emplazamientos sin dato en la capa */
+.g-di-nota, .g-la-nota { margin: .3rem 0 0; font-size: .7rem; line-height: 1.45; color: var(--mute); }

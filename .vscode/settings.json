@@ -1,0 +1,21 @@
+{
+  // Live Server recarga la página cada vez que cambia un archivo del proyecto. Las descargas de datos
+  // (miles de teselas) y las cachés del motor no forman parte de la web: sin esto la página no para de recargarse.
+  // Varias sesiones de Claude editan el código a la vez: cada guardado recargaba la página y se perdía lo que se estaba
+  // haciendo. "**" desactiva la recarga automática: para ver los cambios, recarga a mano (Cmd+R).
+  "liveServer.settings.ignoreFiles": [
+    "**",
+    ".vscode/**",
+    "**/*.scss",
+    "**/*.sass",
+    "**/*.ts",
+    ".venv/**",
+    "**/__pycache__/**",
+    "base-planetaria/datos_pds/**",
+    "base-planetaria/similitud/**",
+    "base-planetaria/tools/**",
+    "tools/**",
+    "**/*.parcial",
+    "**/*.md"
+  ]
+}

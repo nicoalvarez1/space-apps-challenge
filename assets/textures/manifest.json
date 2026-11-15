@@ -11,6 +11,34 @@
     "lo": {
       "color": "moon_color_lo.jpg",
       "normal": "moon_normal_lo.jpg"
+    },
+    "polar": {
+      "lat0": 60.0,
+      "fade": [
+        64.0,
+        68.0
+      ],
+      "relieve": "LOLA LDEM_64",
+      "hi": {
+        "n": {
+          "color": "moon_polar_n_color_hi.jpg",
+          "normal": "moon_polar_n_normal_hi.jpg"
+        },
+        "s": {
+          "color": "moon_polar_s_color_hi.jpg",
+          "normal": "moon_polar_s_normal_hi.jpg"
+        }
+      },
+      "lo": {
+        "n": {
+          "color": "moon_polar_n_color_lo.jpg",
+          "normal": "moon_polar_n_normal_lo.jpg"
+        },
+        "s": {
+          "color": "moon_polar_s_color_lo.jpg",
+          "normal": "moon_polar_s_normal_lo.jpg"
+        }
+      }
     }
   },
   "mars": {
@@ -25,12 +53,40 @@
     "lo": {
       "color": "mars_color_lo.jpg",
       "normal": "mars_normal_lo.jpg"
+    },
+    "polar": {
+      "lat0": 60.0,
+      "fade": [
+        64.0,
+        68.0
+      ],
+      "relieve": "MOLA MEGDR polar 128 px/grado (megt_n_128_1, megt_s_128_1)",
+      "hi": {
+        "n": {
+          "color": "mars_polar_n_color_hi.jpg",
+          "normal": "mars_polar_n_normal_hi.jpg"
+        },
+        "s": {
+          "color": "mars_polar_s_color_hi.jpg",
+          "normal": "mars_polar_s_normal_hi.jpg"
+        }
+      },
+      "lo": {
+        "n": {
+          "color": "mars_polar_n_color_lo.jpg",
+          "normal": "mars_polar_n_normal_lo.jpg"
+        },
+        "s": {
+          "color": "mars_polar_s_color_lo.jpg",
+          "normal": "mars_polar_s_normal_lo.jpg"
+        }
+      }
     }
   },
   "credits": {
-    "moon": "NASA/GSFC/ASU · LRO LROC WAC color mosaic (SVS 4720) · LRO LOLA topography",
-    "mars": "NASA/JPL/USGS · Viking MDIM 2.1 · MGS MOLA topography",
-    "earth": "NASA Earth Observatory · Blue Marble NG · NASA/NOAA VIIRS Black Marble · NOAA ETOPO2 · NASA MODIS (GIBS)",
+    "moon": "NASA/GSFC/ASU · LRO LROC WAC color mosaic (SVS 4720) · LRO LOLA topography 64 ppd",
+    "mars": "NASA/JPL/USGS · Viking MDIM 2.1 · MGS MOLA topography 64 ppd",
+    "earth": "NASA Earth Observatory · Blue Marble NG · NASA/NOAA VIIRS Black Marble · NOAA ETOPO2 · NASA/NOAA VIIRS NOAA-20/21 (GIBS; clouds 2026-09-22, 2026-06-21, 2025-12-21)",
     "stars": "NASA/Goddard Space Flight Center Scientific Visualization Studio · Deep Star Maps 2020 (Hipparcos & Tycho-2)"
   },
   "earth": {

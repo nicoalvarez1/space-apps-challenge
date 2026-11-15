@@ -1,0 +1,18 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "web",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8080"],
+      "port": 8080
+    },
+    {
+      "name": "motor-similitud",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": ["-c", "cd base-planetaria && ../.venv/bin/python -m similitud servidor --puerto 8000"],
+      "port": 8000,
+      "url": "http://localhost:8000"
+    }
+  ]
+}

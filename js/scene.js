@@ -8,7 +8,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { moonTextures, marsTextures, earthTextures } from './textures.js';
-import { crearSaturnoV } from './saturno5.js';
+import { Vuelo } from './vuelo.js';
 
 export const CONFIG = {
   assets: {
@@ -60,6 +60,7 @@ export class Viewer {
     this.bodies = {}; this.markers = []; this.tween = null; this.current = null; this.mode = 'intro';
     this.markersOn = false; this.selected = null; this.focusId = 'earth';
     this.viewShift = 0;                                          // desplaza la Tierra a la derecha tras el asistente
+    this.viewShiftY = 0; this.shiftY = 0;                        // sube el encuadre (fracción del alto) cuando una hoja tapa la parte de abajo: lo fija js/main.js
     this.loader = new GLTFLoader();
     this.mixers = []; this.clock = new THREE.Clock();
     this.quality = this._detectQuality();
@@ -67,7 +68,8 @@ export class Viewer {
     this.manager.onProgress = (_u, done, total) => this.onProgress?.(Math.min(1, done / total));
     this.texLoader = new THREE.TextureLoader(this.manager);
     this.onProgress = null; this.manifest = null; this.credits = null;
-    this.rocket = this._makeRocket(); this.scene.add(this.rocket);   // cohete del viaje Tierra → Luna/Marte
+    this.vuelo = new Vuelo(this, { POS, latLonToLocal });          // Saturno V, plataforma, trayectoria y módulo lunar (js/vuelo.js)
+    this.rocket = this.vuelo.cohete;
     this.ready = this._init();
     this.worldsReady = this.ready.then(() => this.allReady);      // Tierra + Luna + Marte listos
     addEventListener('resize', () => this._resize()); this._resize();
@@ -184,18 +186,47 @@ export class Viewer {
         roughnessMap: rough, roughness: 1, metalness: 0,
         emissive: 0xffffff, emissiveMap: night, emissiveIntensity: 1.25,
       });
-      // las luces de las ciudades solo se ven en la cara nocturna
+      // Sombras de las nubes: para cada punto del suelo se sigue el rayo hacia el Sol hasta la capa de nubes
+      // (radio CLOUD_K·R) y se lee la nubosidad allí, girada igual que la capa. Las luces de las ciudades solo se ven
+      // en la cara nocturna y quedan tapadas por las nubes que tienen encima.
+      const CLOUD_K = 1.006;
+      body.cloudU = { uCloudMap: { value: clouds }, uCloudRot: { value: 0 }, uCloudK: { value: CLOUD_K },
+        uSunW: { value: this.sunDir }, uWorldToObj: { value: new THREE.Matrix3() } };
       mat.onBeforeCompile = (sh) => {
-        sh.fragmentShader = sh.fragmentShader.replace('#include <emissivemap_fragment>', `
+        Object.assign(sh.uniforms, body.cloudU);
+        sh.vertexShader = sh.vertexShader
+          .replace('#include <common>', '#include <common>\nvarying vec3 vObjPos;')
+          .replace('#include <begin_vertex>', '#include <begin_vertex>\nvObjPos = position;');
+        sh.fragmentShader = sh.fragmentShader
+          .replace('#include <common>', `#include <common>
+            varying vec3 vObjPos;
+            uniform sampler2D uCloudMap; uniform float uCloudRot, uCloudK; uniform vec3 uSunW; uniform mat3 uWorldToObj;
+            float cloudAt( vec3 q, float lod ) {               // nubosidad en la dirección q (sistema del objeto)
+              float c = cos( uCloudRot ), s = sin( uCloudRot );
+              vec3 r = vec3( c * q.x - s * q.z, q.y, s * q.x + c * q.z );   // deshace el giro de la capa de nubes
+              float phi = atan( r.z, -r.x ); if ( phi < 0.0 ) phi += 6.28318531;
+              return textureLod( uCloudMap, vec2( phi / 6.28318531, 1.0 - acos( clamp( r.y, -1.0, 1.0 ) ) / 3.14159265 ), lod ).r;
+            }`)
+          .replace('#include <map_fragment>', `#include <map_fragment>
+            vec3 eP = normalize( vObjPos ), eL = normalize( uWorldToObj * uSunW );
+            float ePL = dot( eP, eL );
+            float eT = -ePL + sqrt( max( ePL * ePL - 1.0 + uCloudK * uCloudK, 0.0 ) );
+            float eShadow = cloudAt( normalize( eP + eL * eT ), 2.5 ) * smoothstep( -0.05, 0.2, ePL );
+            diffuseColor.rgb *= 1.0 - 0.6 * eShadow;
+            float eOver = cloudAt( eP, 1.5 );`)
+          .replace('#include <emissivemap_fragment>', `
           #ifdef USE_EMISSIVEMAP
             vec4 emissiveColor = texture2D( emissiveMap, vEmissiveMapUv );
             float nightMask = 1.0 - smoothstep( -0.10, 0.08, dot( nonPerturbedNormal, directionalLights[0].direction ) );
-            totalEmissiveRadiance *= emissiveColor.rgb * nightMask;
+            totalEmissiveRadiance *= emissiveColor.rgb * nightMask * ( 1.0 - 0.85 * eOver );
           #endif`);
       };
-      pivot.add(new THREE.Mesh(new THREE.SphereGeometry(R, 128, 96), mat));
-      const cl = new THREE.Mesh(new THREE.SphereGeometry(R * 1.006, 96, 64), new THREE.MeshStandardMaterial({
-        color: 0xffffff, alphaMap: clouds, transparent: true, opacity: 0.92, depthWrite: false, roughness: 1, metalness: 0 }));
+      const earthMesh = new THREE.Mesh(new THREE.SphereGeometry(R, 128, 96), mat);
+      pivot.add(earthMesh); body.surfaceMesh = earthMesh;
+      // Capa de nubes: la nubosidad es la opacidad y también un relieve suave (las nubes gruesas sombrean sus bordes)
+      const cl = new THREE.Mesh(new THREE.SphereGeometry(R * CLOUD_K, 128, 96), new THREE.MeshStandardMaterial({
+        color: 0xffffff, alphaMap: clouds, bumpMap: clouds, bumpScale: 2.2, transparent: true, opacity: 1,
+        depthWrite: false, roughness: 0.95, metalness: 0 }));
       group.add(cl); body.clouds = cl;
       this._upload(color, night, normal, rough, clouds);
       return;
@@ -208,11 +239,25 @@ export class Viewer {
       map: color, normalMap: normal, normalScale: new THREE.Vector2(1, 1), roughness: id === 'moon' ? 0.97 : 0.92, metalness: 0,
       displacementMap: hmap, displacementScale: (m.hmax - m.hmin) * k, displacementBias: m.hmin * k,
     });
-    pivot.add(new THREE.Mesh(new THREE.SphereGeometry(R, 512, 256), mat));
-    this._overlayHook(body, mat);
+    const mesh = new THREE.Mesh(new THREE.SphereGeometry(R, 512, 256), mat);
+    pivot.add(mesh);
+    this._overlayHook(body, mat, await this._polarTextures(m), mesh);
     // radio local de la superficie (para colocar marcadores justo sobre el terreno)
     body.surfaceR = (lat, lon) => R + (m.hmin + sample(lat, lon) * (m.hmax - m.hmin)) * k;
     this._upload(color, normal, hmap);
+  }
+
+  // Casquetes polares (proyección azimutal equidistante desde 60°): evitan el estiramiento del mapa equirrectangular
+  // cerca de los polos. Color reproyectado del mismo mosaico y normales del DEM de 64 px/grado (tools/build_textures.py).
+  async _polarTextures(m) {
+    const p = m.polar?.[this.quality]; if (!p) return null;
+    try {
+      const [cn, cs, nn, ns] = await Promise.all([this._tex(p.n.color, { srgb: true }), this._tex(p.s.color, { srgb: true }),
+        this._tex(p.n.normal), this._tex(p.s.normal)]);
+      for (const x of [cn, cs, nn, ns]) x.wrapS = x.wrapT = THREE.ClampToEdgeWrapping;
+      this._upload(cn, cs, nn, ns);
+      return { cn, cs, nn, ns, cap: (90 - m.polar.lat0) * DEG, f0: m.polar.fade[0] * DEG, f1: m.polar.fade[1] * DEG };
+    } catch (e) { console.warn('Casquetes polares no disponibles', e); return null; }
   }
 
   _proceduralBody(body) {
@@ -234,15 +279,17 @@ export class Viewer {
   _atmosphere(R, color, scale, k) {
     const m = new THREE.ShaderMaterial({
       uniforms: { c: { value: new THREE.Color(color) }, sun: { value: this.sunDir }, k: { value: k },
-        edge: { value: Math.sqrt(1 - 1 / (scale * scale)) } },
-      vertexShader: `varying vec3 vW; varying vec3 vP;
-        void main(){ vW = normalize(mat3(modelMatrix) * normal); vec4 wp = modelMatrix * vec4(position, 1.0); vP = wp.xyz;
+        edge: { value: Math.sqrt(1 - 1 / (scale * scale)) }, rs: { value: R * scale } },
+      vertexShader: `varying vec3 vW; varying vec3 vP; varying vec3 vC;
+        void main(){ vW = normalize(mat3(modelMatrix) * normal); vec4 wp = modelMatrix * vec4(position, 1.0); vP = wp.xyz; vC = modelMatrix[3].xyz;
           gl_Position = projectionMatrix * viewMatrix * wp; }`,
-      fragmentShader: `varying vec3 vW; varying vec3 vP; uniform vec3 c; uniform vec3 sun; uniform float k; uniform float edge;
+      // dentro de la capa (cohete en ascenso u órbita baja) el halo se apaga: el cielo lo pone js/vuelo.js
+      fragmentShader: `varying vec3 vW; varying vec3 vP; varying vec3 vC; uniform vec3 c; uniform vec3 sun; uniform float k; uniform float edge; uniform float rs;
         void main(){ vec3 N = normalize(vW), V = normalize(cameraPosition - vP);
           float g = pow(clamp(-dot(N, V) / edge, 0.0, 1.0), 2.2);
           float day = smoothstep(-0.4, 0.45, dot(N, sun));
-          gl_FragColor = vec4(c, 1.0) * g * k * (0.06 + 0.94 * day); }`,
+          float fuera = smoothstep(rs * 0.99, rs * 1.03, length(cameraPosition - vC));
+          gl_FragColor = vec4(c, 1.0) * g * k * (0.06 + 0.94 * day) * fuera; }`,
       side: THREE.BackSide, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false,
     });
     return new THREE.Mesh(new THREE.SphereGeometry(R * scale, 96, 64), m);
@@ -272,16 +319,19 @@ export class Viewer {
 
   // ---------- cámara ----------
   _earthPose() { return { pos: new THREE.Vector3(7, 5, 19), target: POS.earth.clone() }; }
+  // Distancia de la cámara en radios del cuerpo. `mult` es la de una pantalla apaisada; en una vertical (móvil) manda la
+  // anchura y la cámara se aleja para que el cuerpo quepa entero: radio aparente ≈ 85 % del semiángulo horizontal.
+  _dist(mult) { return Math.max(mult, (2.84 / (this.camera.aspect || 1)) * (mult / 3.6)); }
   _orbitPose(id, dir = new THREE.Vector3(0.28, 0.22, 1)) {
     const b = this.bodies[id];
-    return { pos: POS[id].clone().add(dir.clone().normalize().multiplyScalar(b.R * 3.6)), target: POS[id].clone() };
+    return { pos: POS[id].clone().add(dir.clone().normalize().multiplyScalar(b.R * this._dist(3.6))), target: POS[id].clone() };
   }
 
   setIntro() {
     const p = this._earthPose(); this.camera.position.copy(p.pos); this.controls.target.copy(p.target);
     this.controls.enabled = false; this.controls.autoRotate = true; this.controls.autoRotateSpeed = 0.35; this.mode = 'intro';
     this.focusId = 'earth'; this._showOnly('earth');
-    if (this.rocket) this.rocket.visible = false;
+    this.vuelo?.reiniciar();
   }
 
   _showOnly(...ids) {
@@ -293,56 +343,23 @@ export class Viewer {
   }
 
   _run(dur, fn) {
+    this.vuelo?.interrumpir();                                   // un descenso del LM a medias queda posado en su emplazamiento
     this.controls.enabled = false; this.controls.autoRotate = false;
     return new Promise((res) => { this.tween = { t0: performance.now(), dur: dur * 1000, fn, res }; });
   }
 
-  // viaje Tierra -> cuerpo
-  async flyToBody(id, { duration = 7.5, onProgress } = {}) {
+  // viaje Tierra -> cuerpo: misión completa del Saturno V (js/vuelo.js); la cámara la dirige el propio vuelo
+  async flyToBody(id, { duration = 36, onProgress } = {}) {
     await this.ready; await this.loading[id];
     this.clearSites(); this.current = id; this.mode = 'flight'; this._showOnly(id);
-    const a = { pos: this.camera.position.clone(), target: this.controls.target.clone() };
-    const b = this._orbitPose(id);
-    const ctrl = a.pos.clone().lerp(b.pos, 0.5).add(new THREE.Vector3(-18, 22, 14));
-    const tmp = new THREE.Vector3(), ps = new THREE.Vector3(), ts = new THREE.Vector3();
+    const fin = this._orbitPose(id);
+    this.vuelo.preparar(id, duration, fin);
     await this._run(duration, (t) => {
-      const k = ease(t), kt = ease(Math.min(1, t * 1.15));
-      ps.copy(a.pos).multiplyScalar((1 - k) * (1 - k)).add(tmp.copy(ctrl).multiplyScalar(2 * (1 - k) * k)).add(tmp.copy(b.pos).multiplyScalar(k * k));
-      this.camera.position.copy(ps);
-      ts.lerpVectors(a.target, b.target, kt); this.camera.lookAt(ts); this.controls.target.copy(ts);
-      this._poseRocket(t, b.target);
-      onProgress?.(t, Math.max(0, 1 - k));
+      const r = this.vuelo.pose(t); this.rocketPhase = r.fase;
+      onProgress?.(t, r.resta);
     });
-    this.rocket.visible = false;
-    this._endOrbit(id, b);
-  }
-
-  // ---------- cohete del viaje ----------
-  // Saturno V a escala con sus etapas y separaciones (js/saturno5.js)
-  _makeRocket() { return crearSaturnoV(); }
-
-  // Coloca el cohete delante de la cámara (vista 3/4 trasera) durante el viaje. t = 0..1
-  //   0–0,16  sube desde abajo (lanzamiento)   ·   crucero   ·   0,78–1  se adelanta hacia el destino y se pierde de vista
-  _poseRocket(t, dest) {
-    const r = this.rocket, cam = this.camera, q = cam.quaternion, now = performance.now() / 1000;
-    const sm = (a, b, x) => { const u = Math.min(1, Math.max(0, (x - a) / (b - a))); return u * u * (3 - 2 * u); };
-    const enter = sm(0, 0.07, t), leave = sm(0.78, 1, t);
-    const wide = Math.min(1, cam.aspect / 1.6);                     // en pantallas estrechas se acerca al centro
-    const off = new THREE.Vector3(
-      0.7 * wide * (1 - leave),
-      -0.1 - (1 - enter) * 1.5 + Math.sin(now * 1.3) * 0.02 + leave * 0.1,
-      -(2.5 + leave * leave * 4.5));
-    r.position.copy(off).applyQuaternion(q).add(cam.position);
-    // proa hacia donde se ve el destino en pantalla (vista casi lateral, para que se vean las etapas)
-    const d = new THREE.Vector3().copy(dest).project(cam), s = new THREE.Vector3().copy(r.position).project(cam);
-    let nx = (d.x - s.x) * cam.aspect, ny = d.y - s.y; const nl = Math.hypot(nx, ny);
-    if (d.z > 1 || nl < 1e-4) { nx = -0.8; ny = 1.0; } else { nx *= 1.3 / nl; ny *= 1.3 / nl; }   // destino detrás de la cámara: rumbo por defecto
-    const nose = new THREE.Vector3(nx, ny, -1).normalize().applyQuaternion(q);
-    nose.lerp(new THREE.Vector3().copy(dest).sub(r.position).normalize(), leave).normalize();
-    r.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), nose);
-    const st = r.userData.actualizar(t, this.current === 'mars');    // etapas, separaciones y llamas según el instante
-    r.scale.setScalar(st.escala * (1 - 0.6 * leave)); this.rocketPhase = st.fase;
-    r.visible = t < 0.995;
+    this.vuelo.llegar();
+    this._endOrbit(id, fin);
   }
 
   _endOrbit(id, pose) {
@@ -374,6 +391,7 @@ export class Viewer {
   async focusSite(site) {
     this.selected = site.id; this._select(site.id);
     if (this.mode === 'orbit' && this.focusId !== this.current) await this._travel(this.current);
+    if (this.vuelo.puedeAterrizar(this.current)) return this.vuelo.aterrizar(site);   // el LM baja hasta el emplazamiento
     await this._lookAtSurface(this.current, site.lat, site.lon, 1.9);
   }
 
@@ -403,7 +421,7 @@ export class Viewer {
     this.markersOn = true;
     const a = { pos: this.camera.position.clone(), target: this.controls.target.clone() };
     const dir = latLonToLocal(analog.lat, analog.lon, 1).applyQuaternion(b.pivot.quaternion).normalize();
-    const to = { pos: POS.earth.clone().add(dir.clone().add(new THREE.Vector3(0, 0.1, 0)).normalize().multiplyScalar(b.R * 2.5)), target: POS.earth.clone() };
+    const to = { pos: POS.earth.clone().add(dir.clone().add(new THREE.Vector3(0, 0.1, 0)).normalize().multiplyScalar(b.R * this._dist(2.5))), target: POS.earth.clone() };
     const mid = a.pos.clone().lerp(to.pos, 0.5).add(new THREE.Vector3(0, 18, 20));
     const tmp = new THREE.Vector3(), ts = new THREE.Vector3();
     await this._run(5, (t) => {
@@ -420,18 +438,56 @@ export class Viewer {
     this.markers = this.markers.filter((m) => { if (m.cls === 'analog') { m.el.remove(); return false; } return true; });
   }
 
+  // Ventanas candidatas del motor científico (base-planetaria/similitud): un marcador numerado por rango.
+  // Se suman al análogo de demostración; clearAnalogs() los quita igual que a él.
+  showMotorAnalogs(list) {
+    this.markers = this.markers.filter((m) => { if (m.id?.startsWith('motor-')) { m.el.remove(); return false; } return true; });
+    for (const a of list) {
+      this._addMarker({ id: `motor-${a.rango}`, label: `#${a.rango} · worst percentile ${(100 * a.peor_percentil).toFixed(1)} %`,
+        lat: a.lat, lon: a.lon, body: 'earth', cls: 'analog', text: String(a.rango) });
+      const el = this.markers.at(-1).el;
+      el.classList.add('clic'); el.title = `Earth site #${a.rango}: click to see the detailed comparison`;
+    }
+    this.markersOn = true;
+  }
+
   // ---------- capas de datos sobre el globo ----------
   // La capa (lienzo equirectangular: x=0 ↔ 180°O, arriba = norte) sustituye al color de la superficie, pero
   // modulada por el brillo de la textura original y con la iluminación normal: los cráteres y el relieve
   // siguen leyéndose debajo del dato. Sin dato (alfa 0) = gris. Un poco de emisión mantiene legible la cara nocturna.
-  _overlayHook(body, mat) {
+  _overlayHook(body, mat, polar = null, mesh = null) {
     if (!this._blank) { this._blank = new THREE.DataTexture(new Uint8Array(4), 1, 1); this._blank.needsUpdate = true; }
     const u = { uOverlay: { value: this._blank }, uOverlayMix: { value: 0 } };
+    if (polar) Object.assign(u, { uPolCN: { value: polar.cn }, uPolCS: { value: polar.cs }, uPolNN: { value: polar.nn },
+      uPolNS: { value: polar.ns }, uPolCap: { value: polar.cap }, uPolF0: { value: polar.f0 }, uPolF1: { value: polar.f1 },
+      uPolNM: { value: mesh.normalMatrix } });
+    // u = 0,5 + 0,5·ρ·sen λ ; v = 0,5 ∓ 0,5·ρ·cos λ (− norte, + sur), ρ = colatitud / 30°. Se muestrean siempre los
+    // dos casquetes (sin ramas) para que las derivadas de las texturas sean correctas.
+    const polarColor = polar ? `
+          vec3 pDir = normalize( vObjDir );
+          float pLat = asin( clamp( abs( pDir.y ), 0.0, 1.0 ) );
+          float pW = smoothstep( uPolF0, uPolF1, pLat );
+          float pRho = ( 1.57079633 - pLat ) / uPolCap, pLon = atan( -pDir.z, pDir.x );
+          float pS = pRho * sin( pLon ), pC = pRho * cos( pLon );
+          vec2 pUvN = vec2( 0.5 + 0.5 * pS, 0.5 - 0.5 * pC ), pUvS = vec2( 0.5 + 0.5 * pS, 0.5 + 0.5 * pC );
+          float pIsN = step( 0.0, pDir.y );
+          diffuseColor.rgb = mix( diffuseColor.rgb, mix( texture2D( uPolCS, pUvS ).rgb, texture2D( uPolCN, pUvN ).rgb, pIsN ), pW );` : '';
     mat.onBeforeCompile = (sh) => {
       Object.assign(sh.uniforms, u);
+      if (polar) {
+        sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vObjDir;')
+          .replace('#include <begin_vertex>', '#include <begin_vertex>\nvObjDir = position;');
+        sh.fragmentShader = sh.fragmentShader
+          .replace('#include <common>', `#include <common>
+            varying vec3 vObjDir;
+            uniform sampler2D uPolCN, uPolCS, uPolNN, uPolNS; uniform float uPolCap, uPolF0, uPolF1; uniform mat3 uPolNM;`)
+          .replace('#include <normal_fragment_maps>', `#include <normal_fragment_maps>
+            vec3 pN = mix( texture2D( uPolNS, pUvS ).xyz, texture2D( uPolNN, pUvN ).xyz, pIsN ) * 2.0 - 1.0;
+            normal = normalize( mix( normal, normalize( uPolNM * pN ), pW ) );`);
+      }
       sh.fragmentShader = sh.fragmentShader
         .replace('#include <common>', '#include <common>\nuniform sampler2D uOverlay; uniform float uOverlayMix;')
-        .replace('#include <map_fragment>', `#include <map_fragment>
+        .replace('#include <map_fragment>', `#include <map_fragment>${polarColor}
           vec4 ovl = texture2D( uOverlay, vMapUv );
           float ovLum = dot( diffuseColor.rgb, vec3( 0.2126, 0.7152, 0.0722 ) );
           vec3 ovCol = mix( vec3( ovLum * 0.45 ), ovl.rgb * mix( 1.0, clamp( ovLum * 5.0, 0.3, 1.6 ), 0.6 ), ovl.a );
@@ -490,12 +546,47 @@ export class Viewer {
     this.markers = []; this.markersOn = false; this.selected = null;
   }
 
+  // Puntos de medida sobre el cuerpo actual (p. ej. flujo de calor): un marcador por punto, sin baliza ni ranking.
+  // list: [{ id, label (texto ya escapado), lat, lon }]. clearSites() también los quita.
+  setPuntos(list) {
+    this.clearPuntos();
+    for (const p of list) {
+      this._addMarker({ id: `punto-${p.id}`, label: p.label, lat: p.lat, lon: p.lon, body: this.current, cls: 'punto', text: '' });
+      this.markers.at(-1).el.title = p.title ?? '';
+    }
+    if (list.length) this.markersOn = true;
+  }
+
+  // Bases de los proyectos: bandera y nombre junto al marcador del emplazamiento. mapa: id del sitio → [nombres]
+  setBases(mapa) {
+    for (const m of this.markers) {
+      if (m.cls) continue;
+      const nombres = mapa.get(m.id) ?? [];
+      let b = m.el.querySelector('.m-base');
+      m.el.classList.toggle('base', nombres.length > 0);
+      if (!nombres.length) { b?.remove(); continue; }
+      if (!b) { b = document.createElement('span'); b.className = 'm-base'; m.el.appendChild(b); }
+      b.textContent = `🚩 ${nombres.join(' · ')}`;
+    }
+  }
+
+  // Marca un marcador con una clase (p. ej. «parecido» desde el gráfico); id null la quita de todos
+  marcar(clase, id) { for (const m of this.markers) m.el.classList.toggle(clase, id != null && m.id === id); }
+
+  clearPuntos() {
+    this.markers = this.markers.filter((m) => { if (m.cls === 'punto') { m.el.remove(); return false; } return true; });
+  }
+
   _addMarker({ id, label, lat, lon, body, rank, text, cls = '', delay = 0, score }, beacon = false) {
     const el = document.createElement('button');
     el.className = `marker ${cls} ${rank === 1 ? 'top' : ''}`; el.style.setProperty('--d', `${delay}ms`);
     el.innerHTML = `<span class="m-dot">${text}</span><span class="m-val"></span><span class="m-label">${label}${score != null ? ` <b>${score}</b>` : ''}</span>`;
     el.title = label;
-    el.addEventListener('click', (e) => { e.stopPropagation(); if (cls !== 'analog') this.onSiteClick?.(id); });
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (cls !== 'analog') this.onSiteClick?.(id);
+      else if (String(id).startsWith('motor-')) this.onMotorClick?.(id);
+    });
     this.layer.appendChild(el);
     const b = this.bodies[body], r = (b.surfaceR?.(lat, lon) ?? b.R) + b.R * 0.002;   // sobre el terreno real
     const local = latLonToLocal(lat, lon, r).applyQuaternion(b.pivot.quaternion);
@@ -518,7 +609,9 @@ export class Viewer {
     const v = new THREE.Vector3(), n = new THREE.Vector3(), c = new THREE.Vector3();
     for (const m of this.markers) {
       const b = this.bodies[m.body];
-      if (!(this.markersOn && this.mode !== 'flight' && b.group.visible && (this.focusId !== 'earth' || m.cls === 'analog'))) { m.el.style.display = 'none'; continue; }
+      const bajoLM = this.vuelo.lmModo === 'suelo' && m.id === this.selected;   // el LM posado ocupa el lugar del marcador
+      if (m.beacon) m.beacon.visible = !bajoLM;
+      if (bajoLM || !(this.markersOn && this.mode !== 'flight' && b.group.visible && (this.focusId !== 'earth' || m.cls === 'analog'))) { m.el.style.display = 'none'; continue; }
       v.copy(m.local); b.group.localToWorld(v);
       n.copy(v).sub(POS[m.body]); c.copy(cam).sub(v);
       const front = n.dot(c) > 0;
@@ -542,12 +635,19 @@ export class Viewer {
     this.sunDir.copy(off);
     this.sun.position.copy(this.controls.target).addScaledVector(off, 80); this.sun.target.position.copy(this.controls.target);
     const e = this.bodies.earth; if (e?.clouds) e.clouds.rotation.y += dt * 0.012;
-    if (this.rocket.visible) this.rocket.userData.parpadeo(performance.now() / 1000);   // parpadeo de las llamas
+    if (e?.cloudU) {
+      e.cloudU.uCloudRot.value = e.clouds.rotation.y;
+      e.surfaceMesh.updateWorldMatrix(true, false);
+      e.cloudU.uWorldToObj.value.setFromMatrix4(e.surfaceMesh.matrixWorld).invert();
+    }
+    this.vuelo.frame();                                         // vehículo en órbita, llamas, humo, cielo y plano cercano
     // En el asistente la tarjeta ocupa la izquierda: desplazamos el encuadre para que la Tierra quede a la derecha
     const w = this.canvas.clientWidth, h = this.canvas.clientHeight;
-    const goal = this.mode === 'intro' && w > 1000 ? 0.2 : 0;
-    this.viewShift += (goal - this.viewShift) * Math.min(1, dt * 2.5);
-    if (this.viewShift > 0.002) this.camera.setViewOffset(w, h, -w * this.viewShift, 0, w, h);
+    // y en móvil, con una hoja abierta abajo (resultados, ficha, entrenamiento), sube para que el globo quede en la parte visible
+    const goal = this.mode === 'intro' && w > 1000 ? 0.2 : 0, goalY = this.mode === 'intro' || this.mode === 'flight' ? 0 : this.shiftY, k = Math.min(1, dt * 2.5);
+    this.viewShift += (goal - this.viewShift) * k;
+    this.viewShiftY += (goalY - this.viewShiftY) * k;
+    if (this.viewShift > 0.002 || this.viewShiftY > 0.002) this.camera.setViewOffset(w, h, -w * this.viewShift, h * this.viewShiftY, w, h);
     else if (this.camera.view?.enabled) this.camera.clearViewOffset();
     this._updateMarkers();
     this.renderer.render(this.scene, this.camera);

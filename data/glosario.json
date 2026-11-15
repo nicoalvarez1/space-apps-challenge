@@ -1,0 +1,28 @@
+{
+  "esquema": 1,
+  "descripcion": "Glosario del flujo de propósitos. Cada definición está redactada a partir de la documentación de la fuente indicada («fuente» es un id de data/sources.json) y no añade valores. «nota» avisa cuando la documentación consultada no define el concepto.",
+  "terminos": [
+    { "id": "regolito", "termino": "Regolith", "definicion": "Layer of loose, unconsolidated material covering solid rock.", "fuente": "nasa_glosario_lunar" },
+    { "id": "inercia_termica", "termino": "Thermal inertia", "definicion": "Property of the ground that the TES instrument derives from the surface temperature measured from orbit. On this site it is used as an indicator of surface materials.", "nota": "The documentation consulted explains how the map is produced, but does not define the concept.", "fuente": "tes_timap" },
+    { "id": "cpr", "termino": "CPR (circular polarization ratio)", "definicion": "Final product of the Mini-RF radar. It compares the returned signal with the same sense of circular polarization as the transmitted one with the signal returned in the opposite sense.", "fuente": "mini_rf" },
+    { "id": "psr", "termino": "PSR (permanently shadowed region)", "definicion": "An area near the lunar poles that is always in shadow. The LOLA altimeter studies them to identify possible sites with surface ice.", "fuente": "lola_psr" },
+    { "id": "flujo_neutrones", "termino": "Neutron flux", "definicion": "A measure of the intensity of neutron radiation, determined by the rate at which neutrons flow. The LEND detector measures the neutron flux leaving the lunar surface.", "fuente": "nasa_glosario_lunar" },
+    { "id": "neutrones_epitermales", "termino": "Epithermal neutrons", "definicion": "Neutrons with an energy just above the thermal range.", "fuente": "nasa_glosario_lunar" },
+    { "id": "pendiente", "termino": "Slope", "definicion": "Inclination of the terrain. In the LOLA maps it is computed by fitting a plane to three consecutive laser shots.", "fuente": "lola_gdr_pendiente" },
+    { "id": "rugosidad", "termino": "Roughness", "definicion": "Irregularity of the terrain over short distances. In the LOLA maps it is the deviation of heights from a plane fitted to three consecutive laser shots.", "fuente": "lola_gdr_rugosidad" },
+    { "id": "dem", "termino": "DEM (digital elevation model)", "definicion": "A map that stores the terrain height at each point. LOLA produces a high-resolution global topographic model of the Moon.", "fuente": "lola_gdr_dem" },
+    { "id": "abundancia_rocas", "termino": "Rock abundance", "definicion": "Fraction of rock that Diviner estimates at each map point, assuming that each point is a mixture of rock and regolith.", "fuente": "diviner_ghrm" },
+    { "id": "anomalia_temperatura", "termino": "Temperature anomaly", "definicion": "Difference between the temperature Diviner measures at midnight (adjusted for slope) and the temperature a model predicts for typical regolith.", "fuente": "diviner_ghrm" },
+    { "id": "parametros_stokes", "termino": "Stokes parameters", "definicion": "Four values (S1 to S4) that describe the received radar signal. They are computed from calibrated Mini-RF data.", "fuente": "mini_rf" },
+    { "id": "rasgo_christiansen", "termino": "Christiansen feature (CF)", "definicion": "A feature of the infrared spectrum whose position Diviner maps in its level 3 products. On this site it is used as an indicator of mineral composition.", "nota": "The full definition in the source documentation has not been read.", "fuente": "diviner_gdr_l3" },
+    { "id": "iluminacion_media", "termino": "Average solar illumination", "definicion": "Average sunlight received by the lunar surface, computed with a model from LOLA topography over a lunar precession cycle of about 18.6 years.", "fuente": "lola_gdrvis" },
+    { "id": "visibilidad_tierra", "termino": "Earth visibility", "definicion": "Average visibility of Earth from the lunar surface. Earth is considered visible if any part of its disk is not blocked by the terrain.", "fuente": "pgda_69" },
+    { "id": "opacidad", "termino": "Opacity", "definicion": "A measure of how much dust or ice in the atmosphere blocks light. The MCS instrument provides it in vertical profiles.", "nota": "The source page could not be re-read on the day it was consulted; the definition follows the product description.", "fuente": "mcs" },
+    { "id": "volatiles", "termino": "Volatiles", "definicion": "Materials that evaporate quickly or readily turn into vapor.", "fuente": "nasa_glosario_lunar" },
+    { "id": "exosfera", "termino": "Exosphere", "definicion": "The outermost region of a planet’s atmosphere.", "fuente": "nasa_glosario_lunar" },
+    { "id": "sar", "termino": "SAR (synthetic aperture radar)", "definicion": "A type of radar that produces images. RADARSAT-1 acquires them by day or night and in any weather.", "fuente": "radarsat1" },
+    { "id": "zona_exploracion", "termino": "Exploration Zone", "definicion": "According to NASA, a region of Mars with a landing site, a habitation site and sites of scientific interest.", "fuente": "hls2" },
+    { "id": "delta_v", "termino": "ΔV (delta-v)", "definicion": "Change in velocity. It is one of the parameters NASA’s Trajectory Browser uses to search for trajectories, together with the launch window and the duration.", "fuente": "ames_dinamica" },
+    { "id": "spice", "termino": "SPICE", "definicion": "NASA system for mission geometry and navigation.", "fuente": "naif_spice" }
+  ]
+}

@@ -1,0 +1,36 @@
+/* ============================================================================
+   «El entorno del emplazamiento» (js/graficos/entorno.js): mapa local en la ficha de un emplazamiento.
+   Solo añade reglas con prefijo g-en-; lo común (g-fig, g-ctl, g-seg, g-tabla, g-tip…) viene de css/graficos.css.
+   ============================================================================ */
+
+/* ---------- mapa: lienzo cuadrado al 100 % del ancho y SVG superpuesto en la misma caja ---------- */
+.g-en-mapa { position: relative; aspect-ratio: 1; overflow: hidden; border: 1px solid var(--line); border-radius: 10px;
+  background: #0a0e1c; cursor: crosshair; touch-action: pan-y; -webkit-user-select: none; user-select: none; }
+.g-en-mapa:focus { outline: none; }
+.g-en-mapa:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.g-en-cv { display: block; width: 100%; height: 100%; }
+.g-en-svg { position: absolute; inset: 0; display: block; width: 100%; height: 100%; pointer-events: none; }
+
+/* trazos blancos finos con borde oscuro: se leen sobre cualquier color de la rampa (grosor en píxeles de pantalla) */
+.g-en-svg circle, .g-en-svg path { fill: none; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.g-en-halo circle, .g-en-halo path { stroke: rgba(4, 7, 18, .8); stroke-width: 3.5px; }
+.g-en-trazo circle, .g-en-trazo path { stroke: #fff; stroke-width: 1.25px; }
+/* viewBox de 100 unidades en ≈358 px de ficha: 3,2 unidades ≈ 11 px */
+.g-en-svg text { fill: #fff; font: 600 3.2px var(--font); font-variant-numeric: tabular-nums;
+  paint-order: stroke; stroke: rgba(4, 7, 18, .8); stroke-width: .9px; stroke-linejoin: round; }
+
+/* ---------- leyenda: degradado de la rampa, extremos de la imagen y de qué es la escala ---------- */
+.g-en-ley { margin-top: .45rem; }
+.g-en-barra { display: block; height: 8px; border-radius: 4px; }
+.g-en-ext { display: flex; justify-content: space-between; gap: .6rem; margin-top: .2rem;
+  font-family: var(--mono); font-size: .68rem; line-height: 1.4; color: #c6cde4; font-variant-numeric: tabular-nums; }
+.g-en-nota { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .1rem .8rem; margin-top: .1rem;
+  font-size: .68rem; line-height: 1.4; color: var(--mute); }
+.g-en-nota span { display: inline-flex; align-items: center; gap: .35rem; }
+/* muestra de «sin dato»: el mismo gris rayado que pinta js/graficos/relieve.js */
+.g-en-hueco { flex: none; width: 12px; height: 10px; border-radius: 2px;
+  background: repeating-linear-gradient(135deg, rgb(56, 60, 74) 0 2px, rgb(34, 38, 52) 2px 6px); }
+
+/* lectura con el teclado para lectores de pantalla (el tooltip visible es el compartido, .g-tip) */
+.g-en-vivo { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden;
+  clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0; }

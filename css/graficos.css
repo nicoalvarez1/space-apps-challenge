@@ -1,0 +1,133 @@
+/* ============================================================================
+   Gráficos de los resultados (js/graficos/*.js, js/analitica.js).
+   Solo añade reglas; usa las variables de css/style.css. Tema oscuro.
+   Normas: marcas finas, rejilla y ejes tenues y continuos, texto en colores de texto (nunca en el de la serie),
+   énfasis = el emplazamiento elegido en el acento y los demás en gris.
+   ============================================================================ */
+:root {
+  --g-enfasis: var(--accent);            /* emplazamiento elegido */
+  --g-contexto: #7c86a6;                 /* los demás emplazamientos */
+  --g-planeta: #3d4763;                  /* distribución de toda la superficie */
+  --g-rejilla: rgba(160, 190, 255, .10);
+  --g-eje: rgba(160, 190, 255, .28);
+  --g-superficie: #0a0e1c;               /* fondo de los paneles: separa marcas que se tocan */
+}
+
+/* ---------- envoltorio ---------- */
+.g-fig { min-width: 0; margin: 0; }
+.g-fig > figcaption { margin-bottom: .45rem; }
+.g-tit { display: block; font-size: .88rem; font-weight: 700; line-height: 1.3; }
+.g-sub { display: block; margin-top: .1rem; font-size: .74rem; line-height: 1.4; color: #c6cde4; }
+.g-pie { margin: .4rem 0 0; font-size: .66rem; line-height: 1.45; color: var(--mute); }
+.g-pie b { color: #c6cde4; font-weight: 600; }
+
+/* ---------- SVG ---------- */
+.g-svg { display: block; width: 100%; height: auto; overflow: visible; }
+.g-svg text { fill: var(--mute); font: 10px var(--font); font-variant-numeric: tabular-nums; }
+.g-svg text.g-txt { fill: #c6cde4; }                       /* etiquetas de categoría */
+.g-svg text.g-val { fill: var(--text); font-weight: 600; } /* valores directos */
+.g-rej { stroke: var(--g-rejilla); stroke-width: 1; }
+.g-eje { stroke: var(--g-eje); stroke-width: 1; }
+.g-area { fill: var(--g-planeta); }
+.g-linea { fill: none; stroke: var(--g-contexto); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.g-banda { fill: var(--g-planeta); opacity: .55; }
+.g-ref { stroke: #c6cde4; stroke-width: 1; }               /* línea de referencia (p. ej. mediana del planeta) */
+
+/* marcas de emplazamiento: gris, y el elegido en el acento, por encima, con anillo del color del fondo */
+.g-m { fill: var(--g-contexto); stroke: var(--g-superficie); stroke-width: 2; cursor: pointer; transition: fill .15s; }
+.g-m:hover, .g-m:focus-visible { fill: #fff; }
+.g-m.sel { fill: var(--g-enfasis); }
+.g-ml { stroke: var(--g-contexto); stroke-width: 2; stroke-linecap: round; fill: none; }     /* marca en forma de línea */
+.g-ml.sel { stroke: var(--g-enfasis); }
+[data-sitio] { cursor: pointer; }
+[data-sitio]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.g-svg [data-sitio]:focus { outline: none; }
+.g-svg [data-sitio]:focus-visible { outline: none; stroke: #fff; stroke-width: 2; }
+.g-hit { fill: transparent; stroke: none; }                 /* zona de acierto mayor que la marca */
+
+/* ---------- leyenda ---------- */
+.g-ley { display: flex; flex-wrap: wrap; gap: .25rem 1rem; margin: 0 0 .45rem; font-size: .72rem; color: #c6cde4; }
+.g-ley span { display: inline-flex; align-items: center; gap: .35rem; }
+.g-ley i { flex: none; width: 10px; height: 10px; border-radius: 50%; background: var(--g-contexto); }
+.g-ley i.g-m-sel { background: var(--g-enfasis); }
+.g-ley i.g-m-ctx { background: var(--g-contexto); }
+.g-ley i.g-m-planeta { border-radius: 2px; background: var(--g-planeta); }
+.g-ley i.g-m-linea { width: 14px; height: 2px; border-radius: 2px; background: var(--g-contexto); }
+.g-ley i.g-m-ref { width: 14px; height: 1px; border-radius: 0; background: #c6cde4; }
+
+/* ---------- tooltip compartido ---------- */
+.g-tip { position: fixed; left: 0; top: 0; z-index: 60; max-width: min(280px, calc(100vw - 16px)); pointer-events: none; padding: .4rem .6rem;
+  border: 1px solid var(--line); border-radius: 8px; background: #060a18f5; font-size: .74rem; line-height: 1.45; color: #c6cde4; }
+.g-tip-tit { display: block; margin-bottom: .1rem; color: var(--text); font-size: .78rem; }
+.g-tip-fila { display: flex; justify-content: space-between; gap: 1rem; }
+.g-tip-fila b { color: var(--text); font-family: var(--mono); font-weight: 600; white-space: nowrap; }
+.g-tip small { display: block; margin-top: .15rem; color: var(--mute); font-size: .66rem; }
+
+/* ---------- tabla alternativa ---------- */
+.g-tabla { margin-top: .45rem; }
+.g-tabla summary { display: inline-block; cursor: pointer; font-size: .72rem; color: var(--mute); text-decoration: underline; text-underline-offset: 3px; }
+.g-tabla summary:hover { color: var(--text); }
+.g-tabla[open] summary { margin-bottom: .4rem; }
+.g-tabla .tabla-scroll { max-height: 40vh; overflow: auto; }
+
+/* ---------- controles (una fila encima de lo que gobiernan) ---------- */
+.g-ctl { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .8rem; margin: 0 0 .5rem; font-size: .74rem; color: #c6cde4; }
+.g-ctl label { display: inline-flex; align-items: center; gap: .35rem; }
+.g-ctl select { max-width: 100%; padding: .25rem .5rem; border: 1px solid var(--line); border-radius: 8px; background: #0b1020; color: var(--text); font: inherit; }
+.g-seg { display: inline-flex; flex-wrap: wrap; gap: .3rem; }
+.g-seg button { padding: .22rem .65rem; border: 1px solid var(--line); border-radius: 99px; background: rgba(255, 255, 255, .04); color: #c6cde4; font-size: .72rem; }
+.g-seg button:hover { color: var(--text); border-color: rgba(93, 255, 208, .5); }
+.g-seg button[aria-pressed="true"] { background: var(--accent); color: #022; border-color: transparent; font-weight: 700; }
+
+/* ---------- estados ---------- */
+.g-cargando, .g-vacio { margin: .6rem 0; font-size: .78rem; color: var(--mute); }
+
+/* ---------- lista de resultados: miniatura del relieve real con el puesto encima ---------- */
+.res-acciones { padding: 0 1.2rem .6rem; }
+.res-acciones .btn { width: 100%; }
+#res-list li:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.thumb { position: relative; flex: none; width: 46px; height: 46px; border-radius: 10px; background: rgba(255, 255, 255, .05); }
+.thumb canvas { display: block; width: 100%; height: 100%; border-radius: 10px; opacity: 0; transition: opacity .5s; }
+.thumb.lista canvas { opacity: 1; }
+.thumb .rk { position: absolute; left: -6px; top: -6px; width: 22px; height: 22px; font-size: .68rem; box-shadow: 0 0 0 2px var(--g-superficie); }
+
+/* ---------- ficha: gráficos con datos medidos y chispa de distribución ---------- */
+.ficha-graf { display: grid; gap: 1.1rem; margin: 1rem 0 .4rem; }
+.ficha-graf:empty { display: none; }
+.chispa { display: flex; align-items: center; gap: .4rem; margin-top: .3rem; }
+.chispa svg { flex: none; width: 74px; height: 16px; overflow: visible; }
+.chispa-planeta rect { fill: var(--g-planeta); }
+.chispa-marca { stroke: var(--g-enfasis); stroke-width: 2.5; }
+.chispa-txt { font: .6rem var(--mono); color: var(--mute); white-space: nowrap; }
+.chispa-txt b { color: var(--text); font-size: .68rem; }
+#btn-comparar-ficha { margin: .5rem 0 .2rem; }
+
+/* ---------- panel «Comparar con datos medidos» ---------- */
+.about.analisis { width: min(1080px, calc(100% - 2rem)); background: #070a16; }
+.an-intro { margin: .2rem 0 .9rem; max-width: 80ch; font-size: .82rem; color: #c6cde4; }
+.an-rot { font: 700 .64rem var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--mute); }
+.an-sitios .g-seg button b { margin-right: .15rem; font-family: var(--mono); }
+.an-sec { margin-top: 1.1rem; padding-top: 1rem; border-top: 1px solid var(--line); }
+.an-por { margin: -.1rem 0 .8rem; max-width: 90ch; font-size: .76rem; color: #c6cde4; }
+.an-dos { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); gap: 1.4rem; margin-bottom: 1.3rem; }
+@media (max-width: 800px) { .about.analisis { width: calc(100% - 1.2rem); } .an-sitios .g-seg { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; } .an-sitios .g-seg button { flex: none; } }
+
+/* barra de la nota: parte calculada con mediciones (acento) y parte estimada (gris), con 2 px de hueco */
+#res-list li .mini { display: flex; gap: 2px; height: 4px; background: none; overflow: visible; }
+#res-list li .mini i { flex: none; border-radius: 2px; }
+#res-list li .mini i.est { background: var(--g-contexto); }
+.res-ley { display: flex; flex-wrap: wrap; gap: .1rem .9rem; margin: .5rem 0 0; font-size: .64rem; color: var(--mute); }
+.res-ley span { display: inline-flex; align-items: center; gap: .3rem; }
+.res-ley i { width: 12px; height: 4px; border-radius: 2px; background: var(--accent); }
+.res-ley i.est { background: var(--g-contexto); }
+
+/* mientras se dibujan el mapa y el perfil se reserva su alto: lo que hay debajo no salta al llegar los gráficos */
+.ficha-graf:has(> .g-cargando) { min-height: 36rem; align-content: start; }
+
+/* nada desborda a lo ancho: ni el panel de comparación ni la ficha (los hijos de rejilla/flex pueden encoger) */
+.about.analisis, #detail { overflow-x: hidden; }
+.analisis .g-ctl, .analisis .g-seg, .analisis .an-sec, .analisis [data-g], .ficha-graf, .ficha-graf > [data-g], .g-fig { min-width: 0; max-width: 100%; }
+.an-sitios .g-seg { flex: 1 1 100%; }
+.facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }   /* las tarjetas no ensanchan la ficha */
+.chispa { flex-wrap: wrap; row-gap: .1rem; }
+@media (max-width: 800px) { .about { z-index: 28; } }           /* por encima del botón de menú, que tapaba su esquina */

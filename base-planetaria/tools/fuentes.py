@@ -13,6 +13,7 @@ DIVINER = f"{GEO}/lro/urn-nasa-pds-lro_diviner_derived1"
 GRS = f"{GEO}/ody/ody-m-grs-5-elements-v1/odgm_xxxx"
 TES = f"{GEO}/mgs/mgs-m-tes-5-timap-v1/mgst_9001"
 LP = f"{GEO}/missions/lunarp/reduced"
+GRS_ESP = f"{GEO}/ody/urn-nasa-pds-odyssey_grs_special"
 
 # Listas de sumas publicadas por el PDS Geosciences Node (de aquí salen los MD5 de abajo).
 LISTAS_MD5 = {
@@ -75,6 +76,13 @@ GRUPOS: dict[str, dict] = {
             for e in ("h2o", "fe", "si", "cl", "k", "th") for x in ("lbl", "tab")
         ],
     },
+    "neutrones": {
+        "descripcion": "Mars Odyssey Neutron Spectrometer: flujo de neutrones epitermales 0,5° (tabla ASCII, 6,6 MB)",
+        "archivos": [
+            _f(f"{GRS_ESP}/data/ns_epithermal_020917.tab", "odyssey_ns/ns_epithermal_020917.tab", "FA09F309841C45834ECE663106AC37BA"),
+            _f(f"{GRS_ESP}/data/ns_epithermal_020917.lbl", "odyssey_ns/ns_epithermal_020917.lbl", "4CC33CCDC6F210FCCBA39245266DCBB3"),
+        ],
+    },
     "tes": {
         "descripcion": "MGS TES: inercia térmica nocturna 20 px/grado y máscara de interpolación (52 + 26 MB)",
         "archivos": [
@@ -100,6 +108,22 @@ GRUPOS: dict[str, dict] = {
             _f(f"{LOLA}/data/lola_gdr/cylindrical/img/ldrm_16.lbl", "lola_gdr/ldrm_16.lbl", "F421F15960640154F4F9E332C644687A"),
         ],
     },
+    "lola_polar": {
+        "descripcion": "LRO LOLA GDR polar 240 m/px, estereográfica polar 75°–90° S y N: altura y nº de disparos (4 × 29 MB)",
+        "archivos": [
+            _f(f"{LOLA}/data/lola_gdr/polar/img/{n}.{x}", f"lola_gdr_polar/{n}.{x}", m)
+            for n, x, m in (
+                ("ldem_75s_240m", "img", "A25251D480F26619BC7796E148644B7E"),
+                ("ldem_75s_240m", "lbl", "87488026FB326DDCF01C2D461DF10963"),
+                ("ldec_75s_240m", "img", "EE9988DB906D4A308D23FC06E78863F3"),
+                ("ldec_75s_240m", "lbl", "7790C32A4AE65F84C9CAA8282C3A1450"),
+                ("ldem_75n_240m", "img", "5A309B62C8168DE7B810C20DC630E97D"),
+                ("ldem_75n_240m", "lbl", "B5AEF3F8F2D5C383C802454858C55EB4"),
+                ("ldec_75n_240m", "img", "76995703FEBD822F59BB4ECA57EDAA1C"),
+                ("ldec_75n_240m", "lbl", "CF6F8E389EF000272C53214F549A5B77"),
+            )
+        ],
+    },
     "diviner": {
         "descripcion": "LRO Diviner GCP: temperatura de brillo por hora local, 0,5° (18 tablas ASCII de 156 MB = 2,8 GB)",
         "archivos": [_f(f"{DIVINER}/label/dlre_gcp.fmt", "diviner_gcp/dlre_gcp.fmt")] + [
@@ -120,6 +144,10 @@ GRUPOS: dict[str, dict] = {
     },
 }
 
+# Tierra (Earthdata, requiere Earthdata Login en ~/.netrc): SRTMGL30, 27 teselas. No va en GRUPOS porque
+# las URL se piden a CMR y la descarga necesita cookies de sesión:
+#   cd base-planetaria && python -m similitud descargar-tierra
+#
 # Los grupos que no son archivos sueltos se bajan con su propio script:
 #   Tierra (NASA POWER, almacén Zarr público + API):  tools/construir_tierra.py
 #   Marte, temperatura (MRO MCS DDR, lectura parcial): tools/construir_mcs.py

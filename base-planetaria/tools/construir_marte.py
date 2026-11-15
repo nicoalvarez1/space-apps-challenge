@@ -15,8 +15,8 @@ import sys
 
 import numpy as np
 
-from comun import DATOS, exigir, leer_etiqueta_pds3, limpio, numero, registrar_capa
-from fuentes import GRS, GRUPOS, MOLA, TES
+from comun import DATOS, WEB_DATOS, exigir, leer_etiqueta_pds3, limpio, numero, registrar_capa
+from fuentes import GRS, GRS_ESP, GRUPOS, MOLA, TES
 
 R_MARTE_M = 3_396_000.0  # A_AXIS_RADIUS de la etiqueta MEGDR (esfera de proyección)
 
@@ -219,7 +219,110 @@ def construir_tes() -> None:
     print(f"  bloques de 0,25° con algún píxel medido: {100 * float((cuenta > 0).mean()):.1f} %")
 
 
-PASOS = {"mola": construir_mola, "grs": construir_grs, "tes": construir_tes}
+# --------------------------------------------------------------------------- Neutron Spectrometer
+def construir_neutrones() -> None:
+    """Flujo de neutrones epitermales (Feldman et al. 2002). Es un indicador directo de hidrógeno en el primer metro:
+    menos neutrones epitermales = más hidrógeno (el agua los frena). A diferencia de las concentraciones GRS, que el
+    equipo enmascaró en los polos, este mapa cubre todo el planeta salvo el último medio grado alrededor de cada polo."""
+    print("[NS] flujo de neutrones epitermales 0,5°")
+    et = leer_etiqueta_pds3(DATOS / "odyssey_ns" / "ns_epithermal_020917.lbl")
+    exigir(int(numero(et["TABLE.ROWS"])) == 259200, "NS: nº de filas inesperado")
+    a = np.loadtxt(DATOS / "odyssey_ns" / "ns_epithermal_020917.tab", delimiter=",")
+    exigir(a.shape == (259200, 3), "NS: se esperaban 259200 filas × 3 columnas")
+    rej = np.full((360, 720), np.nan, "<f4")
+    i = np.rint((89.75 - a[:, 1]) / 0.5).astype(int)
+    j = np.rint((((a[:, 0] + 180) % 360) - 180 + 179.75) / 0.5).astype(int)     # columnas de −179,75° a +179,75°E
+    exigir(i.min() >= 0 and i.max() < 360 and j.min() >= 0 and j.max() < 720, "NS: celda fuera de rango")
+    exigir(len(set(zip(i.tolist(), j.tolist()))) == 259200, "NS: celdas repetidas")
+    rej[i, j] = np.where(a[:, 2] > 0, a[:, 2], np.nan)                            # 0 = sin observaciones
+    registrar_capa("mars_neutrones", rej, dict(
+        cuerpo="mars", variable="neutrones_epitermales", nombre="Neutrones epitermales (indicador de hidrógeno)",
+        unidades="cuentas/s", archivo="ns_epitermales_05deg.bin", escala=1, desplazamiento=0, sin_dato=None,
+        lat_centro_0=89.75, dlat=-0.5, lon_centro_0=-179.75, dlon=0.5, lon_ciclica=True,
+        resolucion="0,5° (la huella real del detector es de ~600 km)",
+        procesado="Copia de la columna EPITHERMAL NEUTRON FLUX de la tabla publicada; 0 cuentas/s = sin observaciones → sin dato. "
+                  "Longitud 0–360°E pasada a −180…180°E.",
+        nota="Primeros 25,7 días de cartografía (febrero–marzo de 2002: invierno en el norte). Sobre el casquete norte la "
+             "escarcha estacional de CO2 tapa parte de la señal del hidrógeno, por eso allí el flujo es alto. "
+             "Es un flujo de neutrones, no una concentración: no se convierte a % de agua.",
+        fuente={"mision": "2001 Mars Odyssey · Neutron Spectrometer", "dataset": "GRS Special Products (odyssey_grs_special)",
+                "productos": ["NS_EPITHERMAL_020917.TAB"],
+                "urls": [f"{GRS_ESP}/data/ns_epithermal_020917.tab", f"{GRS_ESP}/data/ns_epithermal_020917.lbl"],
+                "md5_originales": {"ns_epithermal_020917.tab": _md5("neutrones", "odyssey_ns/ns_epithermal_020917.tab")},
+                "cita": "Feldman, W. C. et al. (2002), Global distribution of neutrons from Mars: results from Mars Odyssey, "
+                        "Science, 297, 75–78."}))
+
+
+# --------------------------------------------------------------------------- APROXIMACIONES POLARES (autorizadas)
+# El equipo GRS enmascaró los polos para H2O, Fe, Si y Cl. A petición del usuario se rellenan SOLO esas celdas con
+# una APROXIMACIÓN, que se guarda en capas aparte (…_aprox), marcada como tal y nunca usada en las puntuaciones.
+GEO_GRS = dict(lat_centro_0=87.5, dlat=-5.0, lon_centro_0=-177.5, dlon=5.0, lon_ciclica=True)
+
+
+def _leer(archivo, forma):
+    return np.fromfile(WEB_DATOS / archivo, dtype="<f4").reshape(forma)
+
+
+def _armonica(rej: np.ndarray, iteraciones: int = 20000) -> np.ndarray:
+    """Interpolación armónica (ecuación de Laplace) en las celdas sin dato, con las celdas medidas fijas.
+    Longitud cíclica; en las filas extremas se usa la propia fila (derivada nula hacia el polo)."""
+    fijo = np.isfinite(rej)
+    out = np.where(fijo, rej, np.nanmean(rej)).astype(np.float64)
+    for _ in range(iteraciones):
+        arriba = np.vstack([out[:1], out[:-1]]); abajo = np.vstack([out[1:], out[-1:]])
+        media = (arriba + abajo + np.roll(out, 1, 1) + np.roll(out, -1, 1)) / 4
+        out = np.where(fijo, out, media)
+    return out
+
+
+def construir_aproximaciones() -> None:
+    print("[Aprox] polos enmascarados de Odyssey GRS (aproximación autorizada)")
+    neut = _leer("ns_epitermales_05deg.bin", (360, 720))
+    with np.errstate(all="ignore"):
+        n5 = np.nanmean(neut.reshape(36, 10, 72, 10), axis=(1, 3))      # flujo medio en las celdas de 5° de GRS
+    for el, variable, nombre in (("h2o", "agua", "Agua equivalente (H2O)"), ("fe", "hierro", "Hierro (Fe)"),
+                                  ("si", "silicio", "Silicio (Si)"), ("cl", "cloro", "Cloro (Cl)")):
+        real = _leer(f"grs_{el}_5deg.bin", (36, 72))
+        hueco = ~np.isfinite(real)
+        aprox = np.full(real.shape, np.nan, "<f4")
+        if el == "h2o":
+            ok = np.isfinite(real) & np.isfinite(n5)
+            x, y = np.log(n5[ok]), np.log(real[ok])
+            b, a = np.polyfit(x, y, 1)
+            r2 = float(np.corrcoef(x, y)[0, 1] ** 2)
+            fac = float(np.exp((y - (a + b * x)).std()))
+            usar = hueco & np.isfinite(n5)
+            aprox[usar] = np.exp(a + b * np.log(n5[usar]))
+            fmin, fmax = float(n5[ok].min()), float(n5[ok].max())
+            fuera = int((usar & ((n5 < fmin) | (n5 > fmax))).sum())
+            metodo = (f"Regresión ajustada donde hay los dos datos ({int(ok.sum())} celdas de 5°): "
+                      f"ln(H2O %) = {a:.3f} {b:+.3f}·ln(flujo de neutrones epitermales, cuentas/s); R² = {r2:.2f}, "
+                      f"error típico ×{fac:.2f}. Aplicada al flujo medio de cada celda enmascarada.")
+            aviso = (f"Calibrada con flujos {fmin:.1f}–{fmax:.1f} cuentas/s; {fuera} celdas polares están fuera de ese rango "
+                     "(extrapolación): en el polo sur probablemente SUBESTIMA el hielo. En el polo norte los neutrones son del "
+                     "invierno de 2002, con escarcha de CO2 encima, y la aproximación sale baja.")
+            print(f"  H2O: {metodo} · {fuera} celdas extrapoladas")
+        else:
+            aprox[hueco] = _armonica(real)[hueco]
+            metodo = ("Interpolación armónica (ecuación de Laplace) desde el borde de la zona medida: continuación suave de los "
+                      "valores de latitudes medias. No hay ninguna medida en los polos para este elemento.")
+            aviso = ("No tiene en cuenta la dilución por el hielo polar (que bajaría la concentración real del suelo). "
+                     "Es solo una continuidad espacial, no un dato.")
+            print(f"  {el.upper()}: armónica · rango {np.nanmin(aprox):.3f}–{np.nanmax(aprox):.3f}")
+        registrar_capa(f"mars_{el}_aprox", aprox, dict(
+            cuerpo="mars", variable=f"{variable}_aprox", nombre=f"{nombre} · APROXIMACIÓN en los polos",
+            unidades="% en peso", archivo=f"grs_{el}_aprox_5deg.bin", escala=1, desplazamiento=0, sin_dato=None, **GEO_GRS,
+            resolucion="5° × 5°", aproximacion=True, metodo=metodo, nota=aviso,
+            procesado="Solo celdas que el equipo GRS dejó sin dato; el resto es NaN. " + metodo,
+            fuente={"mision": "Aproximación propia sobre 2001 Mars Odyssey (GRS y Neutron Spectrometer)",
+                    "dataset": "Derivado de ODY-M-GRS-5-ELEMENTS-V1.0" + (" y GRS Special Products (NS)" if el == "h2o" else ""),
+                    "productos": [f"grs_{el}_5deg.bin"] + (["ns_epitermales_05deg.bin"] if el == "h2o" else []),
+                    "urls": [f"{GRS}/data/smoothed/{el}_sr_5x5.tab"] + ([f"{GRS_ESP}/data/ns_epithermal_020917.tab"] if el == "h2o" else []),
+                    "md5_originales": {}, "cita": "Aproximación calculada en este proyecto (tools/construir_marte.py, paso aprox)."}))
+
+
+PASOS = {"mola": construir_mola, "grs": construir_grs, "tes": construir_tes, "neutrones": construir_neutrones,
+         "aprox": construir_aproximaciones}
 
 if __name__ == "__main__":
     elegidos = sys.argv[1:] or list(PASOS)

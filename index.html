@@ -1,10 +1,20 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Landfall · Buscador de bases lunares y marcianas</title>
+  <title>Landfall · Moon and Mars base site finder</title>
+  <meta name="description" content="Landfall ranks candidate base sites on the Moon and Mars with NASA PDS data, and finds Earth analogs where crews can train first.">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/proposito.css">
+  <link rel="stylesheet" href="css/graficos.css">
+  <link rel="stylesheet" href="css/g-matriz.css">
+  <link rel="stylesheet" href="css/g-capa.css">
+  <link rel="stylesheet" href="css/g-dispersion.css">
+  <link rel="stylesheet" href="css/g-especifico.css">
+  <link rel="stylesheet" href="css/g-entorno.css">
+  <link rel="stylesheet" href="css/g-corte.css">
+  <link rel="stylesheet" href="css/estetica.css">
   <script type="importmap">
     { "imports": { "three": "./vendor/three.module.js", "three/addons/": "./vendor/addons/" } }
   </script>
@@ -13,106 +23,226 @@
   <canvas id="stage"></canvas>
   <div id="markers"></div>
 
+  <!-- Proyectos: menú lateral con «Nuevo proyecto» y la lista de bases (js/proyectos.js) -->
+  <button id="btn-menu" class="menu-btn" aria-expanded="false" aria-controls="cajon"><span aria-hidden="true">☰</span><span class="sr-only">Projects</span></button>
+  <div id="cajon-fondo" class="cajon-fondo" hidden></div>
+  <nav id="cajon" class="cajon" aria-label="Projects" hidden>
+    <div class="cajon-cab"><div class="brand"><span class="logo">◐</span> LANDFALL</div>
+      <button type="button" class="lg-x" data-cerrar-cajon aria-label="Close the menu">✕</button></div>
+    <button type="button" class="btn primary" id="btn-nuevo-proyecto">＋ New project</button>
+    <h2 class="cajon-tit">Projects</h2>
+    <p class="cajon-nota" id="proyectos-vacio">No projects yet. Every mission you start is saved here.</p>
+    <ul class="proyectos" id="lista-proyectos"></ul>
+    <p class="cajon-nota">Each project is a base. Bases on the same body are shown together on its map. They are saved in this browser.</p>
+    <!-- Créditos de datos e imágenes (los rellena js/main.js): aquí se ven también en móvil y en pantallas estrechas -->
+    <p class="cajon-nota cajon-creditos" id="cajon-creditos"></p>
+  </nav>
+
   <!-- Barra superior -->
   <header id="hud" hidden>
     <div class="brand"><span class="logo">◐</span> LANDFALL</div>
     <div id="chips" class="chips"></div>
-    <span class="demo" id="data-badge" title="Datos de demostración">DATOS DEMO</span>
-    <button id="btn-new" class="btn ghost">↺ Nueva misión</button>
+    <span class="demo" id="data-badge" title="Demonstration data" hidden>DEMO DATA</span>
+    <!-- En móvil solo se ve el icono; el texto sigue disponible para lectores de pantalla (.btn-txt) -->
+    <button id="btn-grafico" class="btn ghost" aria-controls="perfil" aria-expanded="true" title="Purpose chart" hidden><span class="btn-ico" aria-hidden="true">📊</span><span class="btn-txt">Chart</span></button>
+    <button id="btn-about" class="btn ghost" aria-controls="about" title="Our work"><span class="btn-ico" aria-hidden="true">📚</span><span class="btn-txt">Our work</span></button>
+    <button id="btn-new" class="btn ghost" title="New project"><span class="btn-ico" aria-hidden="true">＋</span><span class="btn-txt">New project</span></button>
   </header>
 
   <!-- Configuración de la misión -->
   <main id="setup">
-    <div class="card wizard" id="wizard" data-at="1">
+    <!-- Portada: empezar misión, lo que hemos trabajado y nuestro grupo (js/proposito.js) -->
+    <div class="card inicio" id="inicio">
       <div class="wz-top">
         <div class="brand big"><span class="logo">◐</span> LANDFALL</div>
-        <span class="eyebrow">Mediciones reales · NASA PDS</span>
+        <span class="eyebrow">Real data · NASA</span>
       </div>
-      <h1>¿Dónde construimos la <em>primera base</em>?</h1>
-      <div class="hero">
-        <p class="lead">Elige destino y objetivo. Volamos hasta allí, cruzamos las mediciones de los orbitadores de la NASA y te decimos dónde aterrizar… y dónde entrenar antes en la Tierra.</p>
-        <div class="stats" id="stats"></div>
+      <h1>Where do we build the <em>first base</em>?</h1>
+      <p class="lead">On the Moon or on Mars, with NASA data. And where to train first on Earth.</p>
+      <div class="stats" id="stats"></div>
+      <div class="inicio-opciones">
+        <button id="btn-empezar" class="btn primary">Start mission</button>
+        <button id="btn-about-intro" class="btn ghost" aria-controls="about">Our work</button>
+        <button id="btn-grupo" class="btn ghost" aria-controls="grupo">Our team</button>
       </div>
+      <div class="load" id="load-status"><i id="load-bar"></i><span id="load-text">Loading NASA models…</span></div>
+    </div>
 
-      <nav class="steps" id="steps" aria-label="Pasos de la misión">
-        <button data-go="1"><i></i><span>1 · Destino</span></button>
-        <button data-go="2"><i></i><span>2 · Objetivo</span></button>
-        <button data-go="3"><i></i><span>3 · Tripulación</span></button>
+    <div class="card wizard" id="wizard" data-at="1" hidden>
+      <div class="wz-top">
+        <div class="brand big"><span class="logo">◐</span> LANDFALL</div>
+        <button id="btn-inicio" class="btn ghost small-btn">← Home</button>
+      </div>
+      <h1 class="sr-only">New mission</h1>
+
+      <!-- Cada paso muestra lo elegido (p. ej. «2 · Energía») y lleva de vuelta a ese paso -->
+      <nav class="steps" id="steps" aria-label="Mission steps">
+        <button data-go="1"><i></i><span>1<span class="sep"> · </span><span class="tit">Destination</span></span></button>
+        <button data-go="2"><i></i><span>2<span class="sep"> · </span><span class="tit">Purpose</span></span></button>
+        <button data-go="3"><i></i><span>3<span class="sep"> · </span><span class="tit">Crew</span></span></button>
       </nav>
 
       <section data-step="1">
-        <h2>¿A dónde vamos?</h2>
+        <h2 tabindex="-1">Where are we going?</h2>
         <div class="grid two" id="g-body"></div>
       </section>
+      <!-- Paso 2: árbol propósito › tipo › criterios (js/proposito.js, data/propositos.json, data/sources.json) -->
       <section data-step="2" hidden>
-        <h2>¿Para qué es la base?</h2>
-        <div class="grid" id="g-obj"></div>
+        <h2 id="h-proposito" tabindex="-1">What is the base for?</h2>
+        <div class="arbol" id="g-proposito" role="radiogroup" aria-labelledby="h-proposito"></div>
+        <!-- Solo si no se pueden cargar los propósitos: objetivos de la versión anterior -->
+        <div class="grid" id="g-obj" hidden></div>
       </section>
       <section data-step="3" hidden>
-        <h2>¿Cuántos y cuánto tiempo?</h2>
-        <label class="field">Tripulación <b id="crew-val">6</b> personas
+        <h2 tabindex="-1">How many, and for how long?</h2>
+        <label class="field">Crew <b id="crew-val">6</b> people
           <input id="crew" type="range" min="2" max="20" value="6">
         </label>
-        <div class="field">Duración de la estancia
+        <div class="field">Length of stay
           <div class="seg" id="g-dur"></div>
         </div>
         <div class="summary" id="summary"></div>
       </section>
 
       <div class="nav">
-        <button id="btn-back" class="btn ghost" disabled>← Atrás</button>
-        <button id="btn-next" class="btn primary" disabled>Siguiente →</button>
+        <button id="btn-back" class="btn ghost" disabled>← Back</button>
+        <button id="btn-next" class="btn primary" disabled>Next →</button>
       </div>
-      <div class="load" id="load-status"><i id="load-bar"></i><span id="load-text">Cargando modelos de la NASA…</span></div>
     </div>
   </main>
 
   <!-- Telemetría durante el viaje -->
   <div id="flight" hidden>
-    <div class="phase" id="f-phase">Trayectoria</div>
+    <div class="flight-head">
+      <div class="phase" id="f-phase">Trajectory</div>
+      <button id="btn-skip" class="btn ghost small">Skip trip ⏭</button>
+    </div>
     <div class="bar"><i id="f-bar"></i></div>
     <div class="telemetry">
-      <div><small>DISTANCIA RESTANTE</small><b id="f-dist">—</b></div>
-      <div><small>FASE</small><b id="f-state">Inyección translunar</b></div>
-      <div><small>DATOS</small><b id="f-layers">—</b></div>
+      <div><small>DISTANCE REMAINING</small><b id="f-dist">—</b></div>
+      <div><small>PHASE</small><b id="f-state">Translunar injection</b></div>
+      <div><small>DATA</small><b id="f-layers">—</b></div>
     </div>
-    <button id="btn-skip" class="btn ghost small">Saltar viaje ⏭</button>
   </div>
 
   <!-- Capas de datos reales sobre el globo -->
   <aside id="layers" hidden>
-    <h3>Capas de datos <small>NASA PDS</small></h3>
-    <div id="layer-list" role="group" aria-label="Capa de datos sobre el globo"></div>
-    <p id="layer-hint">Elige una capa para pintar sus mediciones sobre el globo.</p>
+    <h3>Data layers <small>NASA PDS</small></h3>
+    <div id="layer-list" role="group" aria-label="Data layer on the globe"></div>
+    <p id="layer-hint">Choose a layer to paint its measurements on the globe.</p>
     <div id="legend" hidden></div>
   </aside>
 
   <!-- Resultados -->
   <aside id="results" class="panel" hidden>
     <div class="panel-head">
-      <h3>Mejores emplazamientos</h3>
+      <h3>Best sites</h3>
       <small id="res-sub"></small>
     </div>
+    <!-- Panel de gráficos con las mediciones reales de todos los emplazamientos (js/graficos/panel.js) -->
+    <div class="res-acciones"><button type="button" id="btn-comparar" class="btn ghost small-btn" aria-controls="analisis">📊 Compare with measured data</button>
+      <p class="res-ley" id="res-leyenda" hidden><span><i class="med" aria-hidden="true"></i>points with NASA PDS measurements</span><span><i class="est" aria-hidden="true"></i>with estimates</span></p></div>
+    <!-- Propósito y criterios activos (js/proposito.js) -->
+    <div class="panel-foot crit-res" id="res-criterios" hidden></div>
     <ol id="res-list"></ol>
     <div class="panel-foot" id="res-layers"></div>
   </aside>
 
   <!-- Detalle de un emplazamiento -->
   <aside id="detail" class="panel wide" hidden>
-    <button class="close" id="detail-close" aria-label="Cerrar">✕</button>
+    <button class="close" id="detail-close" aria-label="Close">✕</button>
     <div id="detail-body"></div>
   </aside>
 
   <!-- Entrenamiento en la Tierra -->
   <aside id="training" class="panel wide" hidden>
-    <button class="close" id="training-close" aria-label="Volver">✕</button>
+    <button class="close" id="training-close" aria-label="Back">✕</button>
     <div id="training-body"></div>
   </aside>
+
+  <!-- Nosotros: el reto y cómo lo resolvemos -->
+  <aside id="about" class="about" hidden aria-labelledby="about-title">
+    <button class="close" id="about-close" aria-label="Close">✕</button>
+    <span class="tag">OUR WORK</span>
+    <h2 id="about-title">The challenge and how we address it</h2>
+
+    <h4>The challenge</h4>
+    <p>We are taking part in the official NASA Space Apps 2026 challenge
+      <a href="https://www.spaceappschallenge.org/2026/challenges/permanent-moon-base-locations-and-mars/" target="_blank" rel="noopener"><i>Identify Earth Locations that Analog the Permanent Moon Base Locations and Mars</i></a>.
+      The challenge asks teams to use open data on the Earth, the Moon and Mars, from NASA and other agencies, to identify and characterize places on Earth that can serve as analogs of future lunar bases or Mars landing sites.
+      It also asks teams to explain what makes a place an analog and where the analogy breaks down, because no place on Earth fully reproduces another planet.</p>
+
+    <h4>Our solution</h4>
+    <ol>
+      <li><b>Sites on the Moon and Mars.</b> For a given crew and mission objective, the app ranks candidate sites.
+        Terrain, ice, temperature and resources are computed from measured NASA PDS layers (LOLA, Diviner, Lunar Prospector, MOLA, TES, GRS).
+        Illumination, radiation, communications link and science value are demonstration estimates, and the weights of each objective were set by the team. Each site sheet says so.</li>
+      <li><b>Measured Earth analogs.</b> A scientific engine written in Python compares the relief of the lunar or Martian region with every window on Earth of the same physical size.
+        It returns the candidates on the map, with their uncertainty, their sources and their limitations. It uses no machine learning, no subjective weights and no similarity percentages.</li>
+      <li><b>Earth context.</b> For each training site, the NASA Earthdata catalogs are queried live: clear sky (HLS), relief (ASTER GDEM) and temperature (MODIS).</li>
+    </ol>
+
+    <h4>Which algorithms we use, and what for</h4>
+    <table class="mtab about-tab">
+      <tr><th>Algorithm</th><th>Purpose</th></tr>
+      <tr><td>Azimuthal equidistant and polar stereographic projections (Snyder 1987)</td><td>Cut windows of the same physical size in km on all three bodies, and read the LOLA polar DEMs with their official formula.</td></tr>
+      <tr><td>Area-mean resampling</td><td>Bring every DEM to the same cell size h without creating detail that does not exist: h is never smaller than that of the coarsest product.</td></tr>
+      <tr><td>Least-squares plane per window</td><td>Remove differences in vertical reference (lunar sphere, areoid, terrestrial geoid) before comparing.</td></tr>
+      <tr><td>Evans–Young polynomial on a 3×3 neighborhood (Evans 1979; Florinsky 2016)</td><td>Slope, roughness, and profile, plan and mean curvature.</td></tr>
+      <tr><td>Masked FFT variogram (Marcotte 1996)</td><td>How relief is distributed across scales, from h to L/2: two terrains with the same histogram can be organized differently.</td></tr>
+      <tr><td>Moran's I (Moran 1950)</td><td>Whether steep slopes cluster (scarps, crater rims) or are scattered.</td></tr>
+      <tr><td>Wasserstein-1 distance (Vallender 1974)</td><td>Difference between distributions of relative elevation, slope, roughness and curvatures, in their own units.</td></tr>
+      <tr><td>Kolmogorov–Smirnov with effective sample size (Stephens 1970; Bretherton et al. 1999)</td><td>Test of distributions that does not treat neighboring pixels, which are correlated, as independent observations.</td></tr>
+      <tr><td>Energy distance (Székely and Rizzo 2013)</td><td>Compare the joint distribution of the two curvatures, which share a unit (1/km); also used as an alternative metric in validation.</td></tr>
+      <tr><td>Percentiles, Pareto dominance and leximax ordering (Ehrgott 2005)</td><td>Rank candidates on seven criteria without subjective weights.</td></tr>
+      <tr><td>Block bootstrap (Künsch 1989) and Kendall's τ (Kendall 1938)</td><td>Measure the uncertainty and stability of the ranking under changes in resolution, window, noise, gaps, normalization, metric and vertical reference.</td></tr>
+    </table>
+
+    <h4>Data</h4>
+    <p class="small">All data come from the official challenge resources. Each result includes the citation and the DOI or URL of every source used.</p>
+    <ol class="small refs">
+      <li>Smith, D. E. et al. (2010). The Lunar Orbiter Laser Altimeter investigation on the Lunar Reconnaissance Orbiter mission. Space Science Reviews, 150, 209–241. <a href="https://doi.org/10.1007/s11214-009-9512-y" target="_blank" rel="noopener">doi:10.1007/s11214-009-9512-y</a>. Data: LRO-L-LOLA-4-GDR-V1.0 (LDEM_16, LDEM_75S/N_240M), NASA PDS Geosciences Node.</li>
+      <li>Smith, D. E. et al. (2001). Mars Orbiter Laser Altimeter: Experiment summary after the first year of global mapping of Mars. J. Geophys. Res., 106(E10), 23689–23722. <a href="https://doi.org/10.1029/2000JE001364" target="_blank" rel="noopener">doi:10.1029/2000JE001364</a>. Data: MGS-M-MOLA-5-MEGDR-L3-V1.0, NASA PDS.</li>
+      <li>NASA JPL (2013). NASA Shuttle Radar Topography Mission Global 30 arc second V002. NASA LP DAAC. <a href="https://doi.org/10.5067/MEASURES/SRTM/SRTMGL30.002" target="_blank" rel="noopener">doi:10.5067/MEASURES/SRTM/SRTMGL30.002</a>.</li>
+      <li>Williams, J.-P. et al. (2017), Diviner; Feldman, W. C. et al. (2001) and Lawrence, D. J. et al. (2002), Lunar Prospector; Boynton, W. V. et al. (2007), Odyssey GRS; Putzig, N. E. and Mellon, M. T. (2007), TES. Full citations in each globe layer.</li>
+      <li>NASA Earthdata (HLS v2.0, ASTER GDEM v3, MODIS MOD11A1 v061): citations and DOIs in the panel of each training site.</li>
+    </ol>
+
+    <h4>What we do not claim</h4>
+    <ul class="small">
+      <li>That a place on Earth reproduces the Moon or Mars: gravity, vacuum or atmosphere, radiation and temperatures are not reproduced.</li>
+      <li>That similar relief means the same geological origin or the same suitability for a mission. We keep geomorphological similarity, environmental similarity and suitability separate.</li>
+      <li>Anything below the scale of the global data (≈ 1–4 km): rocks, regolith and caves are out of scope.</li>
+    </ul>
+    <p class="small muted">Documentation: <a href="base-planetaria/similitud/INVENTARIO_RECURSOS.md" target="_blank" rel="noopener">inventory of official resources</a> ·
+      <a href="base-planetaria/similitud/METODOLOGIA.md" target="_blank" rel="noopener">methodology and equations</a> ·
+      <a href="base-planetaria/similitud/ARQUITECTURA.md" target="_blank" rel="noopener">architecture</a>.</p>
+  </aside>
+  <!-- Nuestro grupo: en blanco por ahora -->
+  <aside id="grupo" class="about" hidden aria-labelledby="grupo-title">
+    <button class="close" id="grupo-close" aria-label="Close">✕</button>
+    <span class="tag">OUR TEAM</span>
+    <h2 id="grupo-title">Our team</h2>
+  </aside>
+  <!-- Comparación detallada objetivo ↔ lugar terrestre (js/comparacion.js) -->
+  <aside id="comparacion" class="about cmp" hidden aria-label="Detailed comparison"></aside>
+  <!-- Comparación de los emplazamientos con las capas reales del PDS: matriz, distribución, latitud, dispersión (js/graficos/) -->
+  <aside id="analisis" class="about analisis" hidden aria-labelledby="analisis-tit"></aside>
+
+  <!-- Gráfico de propósitos: barras que suman 100 % ↔ lugar más parecido del mapa (js/perfil.js) -->
+  <aside id="perfil" class="perfil" aria-labelledby="perfil-tit" hidden></aside>
+
+  <!-- Flujo de propósito: criterios, fuentes y tabla de los resultados; glosario (js/proposito.js) -->
+  <dialog id="criterios" class="dlg" aria-labelledby="criterios-titulo"></dialog>
+  <dialog id="glosario" class="dlg" aria-labelledby="glosario-titulo"></dialog>
 
   <footer id="credits"></footer>
   <div id="toast" hidden></div>
   <div id="tip" hidden></div>
+  <!-- Anuncios para lectores de pantalla: cambios de paso, de propósito, de criterios y de filtros -->
+  <div id="anuncio" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
 
   <script type="module" src="js/main.js"></script>
 </body>
 </html>
+

@@ -1,0 +1,436 @@
+{
+  "esquema": 1,
+  "descripcion": "Propósitos, subapartados y criterios del flujo (js/proposito.js). Cada elemento de un criterio remite a data/sources.json: «fuente» es el id de una fuente y «vacio» el id de un vacío de datos. «capas» son ids de base-planetaria/web/data/capas.json (capas ya cargadas en la web). Si un criterio no tiene entrada para un cuerpo (null), no aplica y se oculta. Aquí no hay valores de capa: los textos describen qué aporta cada fuente. [[id|texto]] marca un término del glosario; {cuerpo}, {a_cuerpo}, {por_cuerpo}, {en_cuerpo} y {de_cuerpo} se sustituyen por el destino elegido.",
+  "cuerpos": {
+    "moon": { "cuerpo": "the Moon", "a_cuerpo": "to the Moon", "por_cuerpo": "across the Moon", "en_cuerpo": "on the Moon", "de_cuerpo": "of the Moon", "cos": "Lluna" },
+    "mars": { "cuerpo": "Mars", "a_cuerpo": "to Mars", "por_cuerpo": "across Mars", "en_cuerpo": "on Mars", "de_cuerpo": "of Mars", "cos": "Mart" }
+  },
+  "pesos": "All active criteria count equally: no weighting is applied between them. This is a design decision, not data.",
+  "propositos": [
+    {
+      "id": "vivienda", "nombre": "Housing", "inicial": "H", "icono": "🏠", "objetivo_existente": "habitat",
+      "frase": "Living there safely.",
+      "subapartados": [
+        {
+          "id": "fija", "nombre": "Fixed", "predeterminado": true,
+          "frase": "A permanent, stable and protected base.",
+          "criterios": [
+            { "id": "terreno", "nombre": "Flat, stable terrain", "frase": "Gently sloping ground without major irregularities.",
+              "moon": [
+                { "fuente": "lola_gdr_pendiente", "que": "Terrain [[pendiente|slope]].", "capas": ["moon_pendiente"] },
+                { "fuente": "lola_gdr_rugosidad", "que": "Terrain [[rugosidad|roughness]].", "capas": ["moon_rugosidad"] }
+              ],
+              "mars": [
+                { "fuente": "mola_megdr", "que": "Topography. Slope is computed from the [[dem|elevation model]]: it is a derived quantity.", "capas": ["mars_elev"], "derivada": "pendiente" }
+              ],
+              "earth": [ { "vacio": "dem_tierra", "buscar_en": "earthdata_search" } ] },
+            { "id": "rocas", "nombre": "Rocks on the surface", "frase": "How much rock lies on the ground.",
+              "moon": [ { "fuente": "diviner_ghrm", "que": "[[abundancia_rocas|Rock abundance]]." } ],
+              "mars": [ { "fuente": "tes_timap", "que": "[[inercia_termica|Thermal inertia]], as an indicator of surface materials.", "capas": ["mars_inercia"] } ],
+              "earth": [ { "vacio": "tierra_sin_capa" } ] },
+            { "id": "proteccion", "nombre": "Natural protection (caves and pits)", "frase": "Natural cavities that could serve as shelter.",
+              "moon": [
+                { "fuente": "lroc_pozos", "que": "Pits and possible lava tube skylights imaged by the LROC camera.", "contexto": true },
+                { "vacio": "catalogo_pozos_lroc" }
+              ],
+              "mars": [ { "fuente": "mars_cave_catalog", "que": "Cave entrance candidates." } ],
+              "earth": [ { "vacio": "cuevas_tierra" } ] },
+            { "id": "termico", "nombre": "Thermal environment", "frase": "What temperatures the site experiences.",
+              "moon": [
+                { "fuente": "diviner_ghrm", "que": "[[regolito|Regolith]] temperature and [[anomalia_temperatura|temperature anomaly]]." },
+                { "fuente": "diviner_gcp", "que": "Surface temperature over the lunar day: maximum, minimum and mean. This is the Diviner product the site already had loaded.", "capas": ["moon_tmax", "moon_tmin", "moon_tmedia"] }
+              ],
+              "mars": [ { "fuente": "mcs", "que": "Atmospheric temperature profiles." } ],
+              "earth": [ { "fuente": "modis_mod11a2", "que": "Land surface temperature." } ] },
+            { "id": "luz_comunicacion", "nombre": "Light and communication", "frase": "How much sunlight arrives and whether Earth is visible from there.",
+              "moon": [
+                { "fuente": "lola_gdrvis", "que": "[[iluminacion_media|Average solar illumination]] and [[visibilidad_tierra|Earth visibility]] at the poles." },
+                { "fuente": "pgda_69", "que": "The same polar maps, published by the PGDA." }
+              ],
+              "mars": [ { "vacio": "insolacion_marte" }, { "vacio": "visibilidad_tierra_marte" } ],
+              "earth": null },
+            { "id": "recursos_cerca", "nombre": "Close to resources", "frase": "Whether usable materials are available nearby.",
+              "moon": [ { "ver": "recursos", "que": "The layers for this criterion are those of the Mining purpose." } ],
+              "mars": [ { "fuente": "swim", "que": "Subsurface ice maps.", "verificar": true, "nota": "The project download is pending verification." } ],
+              "earth": null }
+          ],
+          "contexto": [
+            { "cuerpo": "moon", "fuente": "artemis3", "texto": "NASA selected the Artemis III candidate regions based on terrain slope, ease of communication with Earth and lighting conditions. All lie within six degrees of latitude of the south pole." },
+            { "cuerpo": "mars", "fuente": "hls2", "texto": "NASA defines an [[zona_exploracion|Exploration Zone]] as a region with a landing site, a habitation site and sites of scientific interest." }
+          ]
+        },
+        {
+          "id": "movil", "nombre": "Mobile",
+          "frase": "A module that moves.",
+          "criterios": [
+            { "id": "transitabilidad", "nombre": "Trafficability", "frase": "Whether the terrain allows a vehicle to pass.",
+              "moon": [
+                { "fuente": "lola_gdr_pendiente", "que": "Terrain [[pendiente|slope]].", "capas": ["moon_pendiente"] },
+                { "fuente": "lola_gdr_rugosidad", "que": "Terrain [[rugosidad|roughness]].", "capas": ["moon_rugosidad"] },
+                { "fuente": "sldem2015", "que": "Slope derived from SLDEM2015." }
+              ],
+              "mars": [ { "fuente": "mola_megdr", "que": "Topography.", "capas": ["mars_elev"] } ],
+              "earth": [ { "vacio": "tierra_sin_capa" } ] },
+            { "id": "rocas_ruta", "nombre": "Rocks along the route", "frase": "How much rock lies along the way.",
+              "moon": [ { "fuente": "diviner_ghrm", "que": "[[abundancia_rocas|Rock abundance]]." } ],
+              "mars": [ { "fuente": "tes_timap", "que": "[[inercia_termica|Thermal inertia]].", "capas": ["mars_inercia"] } ],
+              "earth": [ { "vacio": "tierra_sin_capa" } ] },
+            { "id": "luz_recorrido", "nombre": "Light along the route", "frase": "How much sunlight there is along the route.",
+              "moon": [ { "fuente": "lola_gdrvis", "que": "[[iluminacion_media|Average illumination]], polar regions only." } ],
+              "mars": null, "earth": null },
+            { "id": "polvo", "nombre": "Atmospheric dust", "frase": "How much dust there is in the air.",
+              "moon": null,
+              "mars": [ { "fuente": "mcs", "que": "Dust [[opacidad|opacity]] in vertical profiles." } ],
+              "earth": [ { "fuente": "worldview", "que": "Images of dust storms.", "verificar": true, "nota": "The specific layer is pending verification." } ] },
+            { "id": "comunicacion", "nombre": "Communication with Earth", "frase": "Whether Earth is visible from the site.",
+              "moon": [ { "fuente": "lola_gdrvis", "que": "[[visibilidad_tierra|Earth visibility]], polar regions only." } ],
+              "mars": [ { "vacio": "visibilidad_tierra_marte" } ],
+              "earth": null }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "investigacion", "nombre": "Research", "inicial": "R", "icono": "🔬", "objetivo_existente": "science",
+      "frase": "Studying the site or testing instruments.",
+      "subapartados": [
+        {
+          "id": "tecnologica", "nombre": "Technological",
+          "frase": "Testing instruments on Earth before sending them.",
+          "avisos": [ "Each row pairs an instrument that studies {cuerpo} with a similar instrument on Earth. The site only states which technique they share. It does not claim that the values are comparable." ],
+          "criterios": [
+            { "id": "radar", "nombre": "Test bed: radar", "frase": "Instruments that send radio waves and measure what comes back.",
+              "moon": [ { "fuente": "mini_rf", "que": "Mini-RF radar, on LRO." }, { "fuente": "mini_sar_ch1", "que": "Mini-SAR radar, on Chandrayaan-1." } ],
+              "mars": [ { "fuente": "sharad_marsis", "que": "SHARAD and MARSIS radars." } ],
+              "earth": [
+                { "fuente": "radarsat1", "que": "[[sar|SAR radar]] images." },
+                { "fuente": "rcm", "que": "RADARSAT Constellation." },
+                { "fuente": "sar_tutorial", "que": "SAR tutorial in Python and QGIS.", "enlace": true }
+              ] },
+            { "id": "infrarrojo", "nombre": "Test bed: thermal infrared", "frase": "Instruments that measure the heat emitted by the surface.",
+              "moon": [ { "fuente": "lro_diviner", "que": "Diviner radiometer. Layers loaded on the site: surface temperature (GCP product).", "capas": ["moon_tmax", "moon_tmin", "moon_tmedia"] } ],
+              "mars": [ { "fuente": "tes_themis", "que": "TES and THEMIS instruments. Layer loaded on the site: TES [[inercia_termica|thermal inertia]].", "capas": ["mars_inercia"] } ],
+              "earth": [ { "fuente": "modis_mod11a2", "que": "MODIS land surface temperature." } ] },
+            { "id": "altimetria", "nombre": "Test bed: laser altimetry", "frase": "Instruments that measure terrain height with a laser.",
+              "moon": [ { "fuente": "lola_gdr_dem", "que": "LOLA altimeter.", "capas": ["moon_elev"] } ],
+              "mars": [ { "fuente": "mola_megdr", "que": "MOLA altimeter.", "capas": ["mars_elev"] } ],
+              "earth": [ { "vacio": "tierra_sin_capa" } ] },
+            { "id": "optico", "nombre": "Test bed: optical and spectral", "frase": "Cameras and instruments that split light into colors.",
+              "moon": [ { "fuente": "lroc_imagen", "que": "LROC camera." } ],
+              "mars": [ { "fuente": "mars_optico", "que": "CRISM, OMEGA and HiRISE instruments." } ],
+              "earth": [ { "fuente": "sentinel2", "que": "Sentinel-2 imagery." }, { "fuente": "gcom_c_sgli", "que": "SGLI instrument on the GCOM-C satellite." } ] },
+            { "id": "neutrones", "nombre": "Test bed: neutrons", "frase": "Instruments that count the neutrons leaving the ground.",
+              "moon": [ { "fuente": "lend", "que": "LEND detector: [[flujo_neutrones|neutron flux]]." } ],
+              "mars": [ { "fuente": "odyssey_ns", "que": "Mars Odyssey GRS, NS and HEND instruments. Layer loaded on the site: [[neutrones_epitermales|epithermal neutron]] flux (NS).", "capas": ["mars_neutrones"] } ],
+              "earth": [ { "vacio": "neutrones_tierra" } ] },
+            { "id": "geometria", "nombre": "Geometry and navigation", "frase": "Where each spacecraft is and where it is pointing at any moment.",
+              "moon": [ { "fuente": "naif_spice", "que": "[[spice|SPICE]] system.", "enlace": true } ],
+              "mars": [ { "fuente": "naif_spice", "que": "[[spice|SPICE]] system.", "enlace": true } ],
+              "earth": null }
+          ]
+        },
+        {
+          "id": "cientifica", "nombre": "Scientific",
+          "frase": "Open questions about {cuerpo}.",
+          "criterios": [
+            { "id": "volatiles", "nombre": "Volatiles and ice", "frase": "Evidence of ice and of other materials that evaporate easily.",
+              "moon": [
+                { "fuente": "lola_psr", "que": "[[psr|Permanently shadowed regions]]: LOLA characterizes them to identify possible sites with ice." },
+                { "fuente": "lp_hidrogeno", "que": "Hydrogen in the top meter of soil.", "capas": ["moon_h"] },
+                { "fuente": "lend", "que": "[[flujo_neutrones|Neutron flux]]." }
+              ],
+              "mars": [
+                { "fuente": "odyssey_grs", "que": "Near-surface hydrogen, expressed as water equivalent.", "capas": ["mars_h2o"] },
+                { "fuente": "odyssey_ns", "que": "[[flujo_neutrones|Neutron flux]] (NS and HEND).", "capas": ["mars_neutrones"] },
+                { "fuente": "swim", "que": "Subsurface ice maps.", "verificar": true, "nota": "The project download is pending verification." }
+              ],
+              "earth": [ { "fuente": "gcom_w_amsr2", "que": "Snow and ice.", "verificar": true, "nota": "The specific product is pending verification." } ] },
+            { "id": "mineralogia", "nombre": "Mineralogy", "frase": "Which minerals the ground is made of.",
+              "moon": [ { "fuente": "diviner_gdr_l3", "que": "Position of the [[rasgo_christiansen|Christiansen feature]]." } ],
+              "mars": [
+                { "fuente": "omega_mapas", "que": "Global maps of olivine and ferric oxides." },
+                { "fuente": "omega_crism_hidratados", "que": "Sites with hydrated minerals." }
+              ],
+              "earth": [ { "vacio": "mineralogia_tierra" } ] },
+            { "id": "interior", "nombre": "Interior of the body", "frase": "What happens beneath the surface: quakes and heat.",
+              "moon": [ { "fuente": "apollo_pds", "que": "Seismic and heat flow data from the Apollo program." } ],
+              "mars": [ { "fuente": "insight_hp3", "que": "InSight HP3 heat flow package." } ],
+              "earth": [ { "vacio": "tierra_sin_capa" } ] },
+            { "id": "atmosfera", "nombre": "Atmosphere", "frase": "What the air is like: temperature, dust, ice and water vapor.",
+              "moon": null,
+              "mars": [ { "fuente": "mcs", "que": "Temperature, dust and water-ice [[opacidad|opacity]], and water vapor." } ],
+              "earth": [ { "fuente": "sentinel5p", "que": "Atmospheric data.", "verificar": true, "nota": "The products are pending verification." } ] },
+            { "id": "cuevas", "nombre": "Caves", "frase": "Entrances to cavities beneath the surface.",
+              "moon": [
+                { "fuente": "lroc_pozos", "que": "Pits imaged by the LROC camera.", "contexto": true },
+                { "vacio": "catalogo_pozos_lroc" }
+              ],
+              "mars": [ { "fuente": "mars_cave_catalog", "que": "Cave entrance candidates." } ],
+              "earth": [ { "vacio": "cuevas_tierra" } ] }
+          ]
+        },
+        {
+          "id": "terreno", "nombre": "Terrain", "predeterminado": true,
+          "frase": "The ground and the relief.",
+          "criterios": [
+            { "id": "topografia", "nombre": "Topography, slope and roughness", "frase": "The shape of the terrain: heights, inclination and irregularities.",
+              "moon": [
+                { "fuente": "lola_gdr_dem", "que": "[[dem|Elevation model]].", "capas": ["moon_elev"] },
+                { "fuente": "lola_gdr_pendiente", "que": "[[pendiente|Slope]].", "capas": ["moon_pendiente"] },
+                { "fuente": "lola_gdr_rugosidad", "que": "[[rugosidad|Roughness]].", "capas": ["moon_rugosidad"] },
+                { "fuente": "sldem2015", "que": "SLDEM2015 merged relief." }
+              ],
+              "mars": [ { "fuente": "mola_megdr", "que": "Topography.", "capas": ["mars_elev"] } ],
+              "earth": [ { "vacio": "dem_tierra", "buscar_en": "earthdata_search" } ] },
+            { "id": "rocas_regolito", "nombre": "Rocks and regolith", "frase": "How much rock and loose material there is on the surface.",
+              "moon": [
+                { "fuente": "diviner_ghrm", "que": "[[abundancia_rocas|Rock abundance]] and [[regolito|regolith]] temperature." },
+                { "fuente": "diviner_gdr_l3", "que": "Diviner level 3 products." }
+              ],
+              "mars": [ { "fuente": "tes_timap", "que": "[[inercia_termica|Thermal inertia]].", "capas": ["mars_inercia"] } ],
+              "earth": [ { "fuente": "modis_mod11a2", "que": "Surface temperature." } ] },
+            { "id": "radar", "nombre": "Surface radar response", "frase": "How the ground returns radio waves.",
+              "moon": [
+                { "fuente": "mini_rf", "que": "[[cpr|Circular polarization ratio (CPR)]] and [[parametros_stokes|Stokes parameters]]." },
+                { "fuente": "mini_sar_ch1", "que": "Polar mosaics." }
+              ],
+              "mars": [ { "fuente": "sharad_marsis", "que": "SHARAD and MARSIS radars." } ],
+              "earth": [ { "fuente": "radarsat1", "que": "[[sar|SAR radar]] images." }, { "fuente": "rcm", "que": "RADARSAT Constellation." } ] },
+            { "id": "imagen", "nombre": "High-resolution imagery", "frase": "Detailed photographs of the surface.",
+              "moon": [ { "fuente": "lroc_imagen", "que": "LROC camera." } ],
+              "mars": [ { "fuente": "mars_imagen", "que": "HiRISE, CTX and HRSC cameras." } ],
+              "earth": [ { "fuente": "sentinel2", "que": "Sentinel-2 imagery." } ] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "recursos", "nombre": "Mining", "inicial": "M", "icono": "⛏", "objetivo_existente": "isru",
+      "frase": "Using local materials.",
+      "aviso_capa": "Evidence, not confirmation.",
+      "avisos": [ "The layers of this purpose show evidence, not confirmation." ],
+      "subapartados": [
+        {
+          "id": "solido", "nombre": "Solid", "predeterminado": true,
+          "frase": "Minerals, rocks and soil.",
+          "criterios": [
+            { "id": "composicion", "nombre": "Mineral composition", "frase": "Which minerals the ground is made of.",
+              "moon": [ { "fuente": "diviner_gdr_l3", "que": "Position of the [[rasgo_christiansen|Christiansen feature]]." } ],
+              "mars": [ { "fuente": "omega_mapas", "que": "Maps of olivine and ferric oxides." } ],
+              "earth": [ { "fuente": "sentinel2", "que": "Sentinel-2 imagery.", "verificar": true, "nota": "The mineral product is pending verification." } ] },
+            { "id": "elementos", "nombre": "Chemical elements", "frase": "Which elements are in the ground, and in what amounts.",
+              "moon": [ { "fuente": "lp_hierro", "que": "Iron (FeO) in the soil.", "capas": ["moon_feo"] } ],
+              "mars": [ { "fuente": "odyssey_grs", "que": "Element concentration maps: among others, hydrogen, silicon, iron, potassium, thorium and chlorine.", "capas": ["mars_h2o", "mars_si", "mars_fe", "mars_k", "mars_th", "mars_cl"] } ],
+              "earth": [ { "vacio": "tierra_sin_capa" } ] },
+            { "id": "regolito_roca", "nombre": "Available regolith and rock", "frase": "How much loose material and rock is available to work with.",
+              "moon": [
+                { "fuente": "diviner_ghrm", "que": "[[abundancia_rocas|Rock abundance]] and [[regolito|regolith]] temperature." },
+                { "fuente": "lola_gdr_albedo", "que": "Surface albedo." }
+              ],
+              "mars": [ { "fuente": "tes_timap", "que": "[[inercia_termica|Thermal inertia]].", "capas": ["mars_inercia"] } ],
+              "earth": [ { "vacio": "tierra_sin_capa" } ] },
+            { "id": "hidratados", "nombre": "Hydrated minerals", "frase": "Minerals that hold water in their structure.",
+              "moon": null,
+              "mars": [ { "fuente": "omega_crism_hidratados", "que": "Sites with hydrated minerals." } ],
+              "earth": [ { "vacio": "tierra_sin_capa" } ] }
+          ]
+        },
+        {
+          "id": "liquido", "nombre": "Liquid", "nombre_largo": "Liquid (water from ice)",
+          "frase": "Water. There it exists mostly as ice: the search is for evidence of ice.",
+          "criterios": [
+            { "id": "sombra", "nombre": "Cold and permanently shadowed areas", "frase": "Places the Sun never reaches, where ice could survive.",
+              "moon": [
+                { "fuente": "lola_gdrvis", "que": "[[iluminacion_media|Average illumination]], to locate [[psr|permanent shadows]]." },
+                { "fuente": "pgda_69", "que": "The same polar maps, published by the PGDA." },
+                { "fuente": "diviner_polar", "que": "Diviner polar products. Only their name has been verified." }
+              ],
+              "mars": null, "earth": null },
+            { "id": "hidrogeno", "nombre": "Evidence of hydrogen or ice", "frase": "Hydrogen signals in the ground, which may be due to ice.",
+              "moon": [
+                { "fuente": "lp_hidrogeno", "que": "Hydrogen in the top meter of soil.", "capas": ["moon_h"] },
+                { "fuente": "lend", "que": "[[flujo_neutrones|Neutron flux]]." }
+              ],
+              "mars": [
+                { "fuente": "odyssey_grs", "que": "Hydrogen, expressed as water equivalent.", "capas": ["mars_h2o"] },
+                { "fuente": "odyssey_ns", "que": "[[flujo_neutrones|Neutron flux]] maps (NS and HEND).", "capas": ["mars_neutrones"] },
+                { "fuente": "swim", "que": "Subsurface ice, from the equator to 60°N.", "verificar": true, "nota": "The project download is pending verification." }
+              ],
+              "earth": [ { "fuente": "gcom_w_amsr2", "que": "Snow and ice.", "verificar": true, "nota": "The product is pending verification." } ] },
+            { "id": "radar", "nombre": "Radar", "frase": "How the ground returns radio waves.",
+              "moon": [ { "fuente": "mini_rf", "que": "[[cpr|Circular polarization ratio (CPR)]]." }, { "fuente": "mini_sar_ch1", "que": "Polar mosaics." } ],
+              "mars": [ { "fuente": "sharad_marsis", "que": "SHARAD and MARSIS radars." } ],
+              "earth": [ { "fuente": "radarsat1", "que": "[[sar|SAR radar]] images." }, { "fuente": "rcm", "que": "RADARSAT Constellation." } ] }
+          ],
+          "contexto": [
+            { "cuerpo": "mars", "fuente": "swim", "texto": "According to NASA, buried ice would be a vital resource for astronauts on Mars, as drinking water and as an ingredient for propellant." }
+          ]
+        },
+        {
+          "id": "gas", "nombre": "Gas",
+          "frase": "Gases and materials that evaporate.",
+          "criterios": [
+            { "id": "composicion_gas", "nombre": "Composition of the atmosphere or exosphere", "frase": "Which gases surround {cuerpo}.",
+              "moon": [ { "fuente": "lamp", "que": "LAMP instrument. The [[exosfera|exosphere]] is the target of study; what LAMP measures is pending verification." } ],
+              "mars": [
+                { "fuente": "mcs", "que": "Water vapor and CO₂ cloud [[opacidad|opacity]]." },
+                { "fuente": "tgo_nomad_acs", "que": "NOMAD and ACS instruments." }
+              ],
+              "earth": [ { "fuente": "sentinel5p", "que": "Atmospheric data.", "verificar": true, "nota": "The products are pending verification." } ] },
+            { "id": "volatiles_atrapados", "nombre": "Trapped volatiles", "frase": "[[volatiles|Volatiles]] retained in very cold areas.",
+              "moon": [ { "ver": "recursos", "ver_sub": "liquido", "que": "The layers for this criterion are those of Mining › Liquid (permanently shadowed areas)." } ],
+              "mars": [ { "ver": "recursos", "ver_sub": "liquido", "que": "The layers for this criterion are those of Mining › Liquid." } ],
+              "earth": null }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "energia", "nombre": "Energy", "inicial": "E", "icono": "⚡", "objetivo_existente": "energy",
+      "frase": "Generating electricity.",
+      "avisos": [ "Only solar power has data layers covering large areas. For geothermal there are only measurements at specific points, and for nuclear there is no siting-criteria layer in the verified sources." ],
+      "subapartados": [
+        {
+          "id": "solar", "nombre": "Solar", "predeterminado": true,
+          "frase": "From sunlight.",
+          "criterios": [
+            { "id": "luz_media", "nombre": "Average sunlight", "frase": "How much sunlight the site receives over time.",
+              "moon": [
+                { "fuente": "lola_gdrvis", "que": "[[iluminacion_media|Average solar illumination]] at the poles, computed from LOLA topography over a lunar precession cycle of about 18.6 years." },
+                { "fuente": "pgda_69", "que": "The same polar maps, published by the PGDA." }
+              ],
+              "mars": [ { "vacio": "insolacion_marte" } ],
+              "earth": null },
+            { "id": "luz_paneles", "nombre": "Light at panel height", "frase": "How much light arrives slightly above the ground, where the panels would go.",
+              "moon": [ { "fuente": "pgda_78", "que": "High-resolution south pole sites, with illumination computed at 1 m and 5 m above the surface." } ],
+              "mars": null, "earth": null },
+            { "id": "polvo_luz", "nombre": "Dust that reduces light", "frase": "How much dust in the air is blocking the Sun.",
+              "moon": null,
+              "mars": [
+                { "fuente": "mcs", "que": "Dust [[opacidad|opacity]]." },
+                { "fuente": "mcs_ode", "que": "MCS uses a visible and near-infrared channel to study the effect of solar radiation on the energy balance of Mars.", "contexto": true }
+              ],
+              "earth": [ { "vacio": "tierra_sin_capa" } ] }
+          ]
+        },
+        {
+          "id": "geotermica", "nombre": "Geothermal", "tipo": "puntos", "no_filtra": true,
+          "frase": "Heat from the interior. Only point measurements exist.",
+          "avisos": [ "Point measurement. There is no verified global map.", "This type does not filter locations, and there is no interpolation between points." ],
+          "criterios": [
+            { "id": "flujo_calor", "nombre": "Measured heat flow", "frase": "How much heat leaves the ground, measured with probes at specific sites.",
+              "moon": [ { "fuente": "apollo_hfe", "que": "Apollo 15 and Apollo 17 Heat Flow Experiment, as concatenated and corrected data. Two sites." }, { "vacio": "mapa_flujo_calor" } ],
+              "mars": [ { "fuente": "insight_hp3", "que": "InSight HP3 probe: temperatures and probe position. One site." }, { "vacio": "mapa_flujo_calor" } ],
+              "earth": [ { "vacio": "tierra_sin_capa" } ] }
+          ],
+          "puntos": {
+            "moon": [
+              { "id": "apollo15", "nombre": "Apollo 15", "lat": 26.13239, "lon": 3.6333, "fuente": "apollo_hfe", "fuente_coordenadas": "nssdca_apollo", "nota": "Lunar module coordinates." },
+              { "id": "apollo17", "nombre": "Apollo 17", "lat": 20.1911, "lon": 30.7723, "fuente": "apollo_hfe", "fuente_coordenadas": "nssdca_apollo", "nota": "Lunar module coordinates." }
+            ],
+            "mars": [
+              { "id": "insight", "nombre": "InSight", "lat": 4.4, "lon": 135.8, "fuente": "insight_hp3", "fuente_coordenadas": "insight_mision", "nota": "Center of the E9 landing ellipse, not the final position of the lander." }
+            ]
+          }
+        },
+        {
+          "id": "nuclear", "nombre": "Nuclear", "tipo": "contexto", "no_filtra": true,
+          "frase": "From a reactor. Information only, no layers.",
+          "avisos": [ "There is no official siting-criteria layer for reactors in the sources consulted. The terrain layers of the Housing purpose are shown as context only.", "This type does not filter locations." ],
+          "criterios": [
+            { "id": "terreno_contexto", "nombre": "Terrain (context only)", "frase": "The same terrain layers as in Housing. They are not siting criteria for a reactor.",
+              "moon": [
+                { "fuente": "lola_gdr_pendiente", "que": "Terrain [[pendiente|slope]].", "capas": ["moon_pendiente"] },
+                { "fuente": "lola_gdr_rugosidad", "que": "Terrain [[rugosidad|roughness]].", "capas": ["moon_rugosidad"] },
+                { "vacio": "criterios_nuclear" }
+              ],
+              "mars": [
+                { "fuente": "mola_megdr", "que": "Topography. Slope is computed from the [[dem|elevation model]]: it is a derived quantity.", "capas": ["mars_elev"], "derivada": "pendiente" },
+                { "vacio": "criterios_nuclear" }
+              ],
+              "earth": null }
+          ],
+          "contexto": [
+            { "fuente": "fsp", "texto": "NASA states that surface fission can provide abundant, continuous power regardless of the environmental conditions on the Moon and Mars." },
+            { "fuente": "fsp", "texto": "NASA plans to test it first on the Moon and then on Mars." },
+            { "fuente": "fsp", "texto": "NASA and the U.S. Department of Energy are collaborating on a 10 kW-class system." }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "transporte", "nombre": "Logistics and relay", "inicial": "L", "icono": "🚀", "objetivo_existente": "outpost",
+      "frase": "Getting there and moving around easily.",
+      "subapartados": [
+        {
+          "id": "tierra_cuerpo", "nombre": "From Earth {a_cuerpo}", "predeterminado": true,
+          "frase": "Getting there and landing.",
+          "avisos_cuerpo": { "moon": [ "There is no verified public source for Earth–Moon trajectories." ] },
+          "criterios": [
+            { "id": "trayectorias", "nombre": "Launch windows and trajectories", "frase": "When to depart and which path to follow.",
+              "moon": [ { "vacio": "trayectorias_tierra_luna" } ],
+              "mars": [
+                { "fuente": "trajectory_browser", "que": "Trajectory search tool for planets and small bodies. It is linked; its values are not copied.", "enlace": true },
+                { "fuente": "ames_dinamica", "que": "It allows searching trajectories by launch window, duration and [[delta_v|ΔV]].", "contexto": true }
+              ],
+              "earth": null },
+            { "id": "aterrizaje", "nombre": "Safe landing zone", "frase": "Flat, obstacle-free ground to touch down on.",
+              "moon": [
+                { "fuente": "lola_gdr_pendiente", "que": "[[pendiente|Slope]].", "capas": ["moon_pendiente"] },
+                { "fuente": "lola_gdr_rugosidad", "que": "[[rugosidad|Roughness]].", "capas": ["moon_rugosidad"] },
+                { "fuente": "diviner_ghrm", "que": "Rocks on the surface." }
+              ],
+              "mars": [
+                { "fuente": "mola_megdr", "que": "Topography.", "capas": ["mars_elev"] },
+                { "fuente": "tes_timap", "que": "[[inercia_termica|Thermal inertia]].", "capas": ["mars_inercia"] }
+              ],
+              "earth": [ { "vacio": "tierra_sin_capa" } ] },
+            { "id": "comunicacion", "nombre": "Communication with Earth", "frase": "Whether Earth is visible from the site.",
+              "moon": [ { "fuente": "lola_gdrvis", "que": "[[visibilidad_tierra|Average Earth visibility]] from the polar surface." } ],
+              "mars": [ { "vacio": "visibilidad_tierra_marte" } ],
+              "earth": null },
+            { "id": "geometria", "nombre": "Orbital geometry", "frase": "Where each body is at any moment.",
+              "moon": [ { "fuente": "naif_spice", "que": "[[spice|SPICE]] ephemerides.", "enlace": true } ],
+              "mars": [ { "fuente": "naif_spice", "que": "[[spice|SPICE]] ephemerides.", "enlace": true } ],
+              "earth": null }
+          ],
+          "contexto": [
+            { "cuerpo": "moon", "fuente": "artemis3", "texto": "NASA used slope, communication with Earth and light to select the Artemis III regions." },
+            { "cuerpo": "mars", "fuente": "hls2", "texto": "NASA places the Landing Site within an [[zona_exploracion|Exploration Zone]]." }
+          ]
+        },
+        {
+          "id": "superficie", "nombre": "Travel {por_cuerpo}",
+          "frase": "Moving across the surface.",
+          "criterios": [
+            { "id": "pendiente", "nombre": "Slope", "frase": "How steeply the terrain is inclined.",
+              "moon": [
+                { "fuente": "lola_gdr_pendiente", "que": "[[pendiente|Slope]].", "capas": ["moon_pendiente"] },
+                { "fuente": "sldem2015", "que": "SLDEM2015 slope." }
+              ],
+              "mars": [ { "fuente": "mola_megdr", "que": "Slope derived from the MOLA [[dem|elevation model]]: it is a derived quantity.", "capas": ["mars_elev"], "derivada": "pendiente" } ],
+              "earth": [ { "vacio": "tierra_sin_capa" } ] },
+            { "id": "rugosidad", "nombre": "Roughness", "frase": "How much the terrain rises and falls over short distances.",
+              "moon": [
+                { "fuente": "lola_gdr_rugosidad", "que": "[[rugosidad|Roughness]].", "capas": ["moon_rugosidad"] },
+                { "fuente": "lola_rugosidad_extra", "que": "Supplementary roughness maps." }
+              ],
+              "mars": [ { "vacio": "rugosidad_marte" } ],
+              "earth": [ { "vacio": "tierra_sin_capa" } ] },
+            { "id": "rocas", "nombre": "Rocks", "frase": "How much rock lies along the way.",
+              "moon": [ { "fuente": "diviner_ghrm", "que": "[[abundancia_rocas|Rock abundance]]." } ],
+              "mars": [ { "fuente": "tes_timap", "que": "[[inercia_termica|Thermal inertia]].", "capas": ["mars_inercia"] } ],
+              "earth": [ { "vacio": "tierra_sin_capa" } ] },
+            { "id": "luz_ruta", "nombre": "Light en route", "frase": "How much sunlight there is along the way.",
+              "moon": [ { "fuente": "lola_gdrvis", "que": "[[iluminacion_media|Average illumination]], poles only." } ],
+              "mars": null, "earth": null },
+            { "id": "polvo", "nombre": "Dust and visibility", "frase": "How much dust there is in the air.",
+              "moon": null,
+              "mars": [ { "fuente": "mcs", "que": "Dust [[opacidad|opacity]]." } ],
+              "earth": [ { "fuente": "worldview", "que": "Images of Earth.", "verificar": true, "nota": "The specific layer is pending verification." } ] }
+          ]
+        }
+      ]
+    }
+  ]
+}

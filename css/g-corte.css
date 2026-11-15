@@ -1,0 +1,32 @@
+/* ============================================================================
+   Perfil del terreno de la ficha (js/graficos/corte.js). Prefijo g-co-.
+   Solo añade reglas; reutiliza las clases comunes de css/graficos.css (g-linea, g-banda, g-rej, g-eje, g-hit, g-ley…).
+   Los dos colores distinguen los cortes (oeste → este, sur → norte); no significan bueno ni malo.
+   ============================================================================ */
+/* Mismos valores que COLOR.serie1 y COLOR.serie2 de js/graficos/base.js; el módulo los fija además en línea en .g-co-caja */
+.g-co { --g-co-s1: #3987e5; --g-co-s2: #d95926; }
+
+/* las dos series: mismo trazo de 2 px que .g-linea, cada una con su color */
+.g-co .g-linea.g-co-l1 { stroke: var(--g-co-s1); }
+.g-co .g-linea.g-co-l2 { stroke: var(--g-co-s2); }
+.g-co .g-ley i.g-co-k1, .g-co .g-ley i.g-co-k2 { width: 14px; height: 2px; border-radius: 2px; }
+.g-co .g-ley i.g-co-k1 { background: var(--g-co-s1); }
+.g-co .g-ley i.g-co-k2 { background: var(--g-co-s2); }
+
+/* el emplazamiento, en el cruce de los dos cortes: acento con anillo del color del fondo */
+.g-co-sitio { fill: var(--g-enfasis); stroke: var(--g-superficie); stroke-width: 2; }
+/* su etiqueta puede caer sobre una línea: halo del color del fondo para que se lea */
+.g-co .g-svg text.g-co-halo { paint-order: stroke; stroke: var(--g-superficie); stroke-width: 3px; stroke-linejoin: round; }
+
+/* cursor: línea vertical fina y un punto sobre cada corte */
+.g-co-cursor { pointer-events: none; }
+.g-co-cur { stroke: #c6cde4; stroke-width: 1; }
+.g-co-p { stroke: var(--g-superficie); stroke-width: 2; }
+.g-co-p1 { fill: var(--g-co-s1); }
+.g-co-p2 { fill: var(--g-co-s2); }
+
+/* zona de acierto = todo el recuadro; también recibe el foco del teclado (flechas izquierda/derecha).
+   pan-y: arrastrar en horizontal recorre el perfil; en vertical, la ficha se sigue desplazando */
+.g-co-hit { pointer-events: all; cursor: crosshair; touch-action: pan-y; }
+.g-co .g-svg .g-co-hit:focus { outline: none; }
+.g-co .g-svg .g-co-hit:focus-visible { stroke: var(--accent); stroke-width: 1.5; }

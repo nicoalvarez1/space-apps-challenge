@@ -1,0 +1,31 @@
+/* ============================================================================
+   Dispersión «Dos mediciones a la vez» (js/graficos/dispersion.js). Prefijo g-ds-.
+   Solo lo que no está ya en css/graficos.css: el número dentro del círculo, las barras de error,
+   el halo de los rótulos que caen sobre marcas y la nota de lo que no se dibuja o no se ve.
+   ============================================================================ */
+
+/* número de puesto dentro del círculo: tinta oscura sobre el gris y sobre el acento; no intercepta el puntero */
+.g-svg text.g-ds-n { fill: #0b0b0b; stroke: none; font-size: 9px; font-weight: 700; pointer-events: none; }
+
+/* la marca es el grupo (zona de acierto + círculo + número): el realce se aplica al círculo */
+.g-ds-p:hover .g-m { fill: #fff; }
+.g-ds-p:focus-visible .g-m { stroke: #fff; }
+
+/* barras de error: ± incertidumbre publicada, del color de su círculo (gris; la del emplazamiento elegido, en el acento) */
+.g-ds-err { fill: none; stroke: var(--g-contexto); stroke-width: 1; }
+.g-ds-err.sel { stroke: var(--g-enfasis); }
+
+/* rótulos que pueden caer sobre la rejilla, una línea o un círculo: borde del color del fondo para que se lean */
+.g-svg text.g-ds-halo { paint-order: stroke; stroke: var(--g-superficie); stroke-width: 3px; stroke-linejoin: round; }
+
+/* franja de acierto de las líneas de mediana (tooltip con su valor) */
+.g-ds-med { cursor: help; }
+.g-ds-med:focus { outline: none; }
+.g-ds-med:focus-visible { fill: rgba(198, 205, 228, .16); }
+
+/* muestra de la leyenda para las barras de error: un trazo fino con remates */
+.g-ley i.g-ds-ley-err { width: 14px; height: 7px; border-radius: 0; border: solid var(--g-contexto); border-width: 0 1px;
+  background: linear-gradient(var(--g-contexto), var(--g-contexto)) center / 100% 1px no-repeat; }
+
+/* nota bajo el gráfico: emplazamientos sin dato (no se dibujan) y círculos que se tapan entre sí */
+.g-ds-nota { margin: .35rem 0 0; font-size: .72rem; line-height: 1.45; color: #c6cde4; }

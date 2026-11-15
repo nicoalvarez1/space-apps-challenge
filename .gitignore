@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+base-planetaria/similitud/cache/
+base-planetaria/datos_pds/srtmgl30/
+base-planetaria/datos_pds/srtmgl3/
+base-planetaria/datos_pds/nasadem/
+base-planetaria/datos_pds/srtmswbd/

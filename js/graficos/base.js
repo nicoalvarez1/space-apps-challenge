@@ -1,0 +1,150 @@
+// ============================================================================
+//  BASE DE LOS GRÁFICOS DE RESULTADOS  (js/graficos/*.js)
+//
+//  Piezas comunes: formato de números, escalas y marcas de eje, color, tooltip compartido (cursor y foco de teclado),
+//  alternativa en tabla y el envoltorio <figure>. Los gráficos son SVG o lienzo hechos a mano, sin librerías.
+//
+//  Normas que cumplen todos (css/graficos.css trae las clases):
+//  - Una serie importa y el resto es contexto: los emplazamientos van en gris y el elegido en el color de énfasis.
+//    Cada marca de un emplazamiento lleva data-sitio="<id>"; la clase .sel la pone el panel que contiene el gráfico.
+//  - El color nunca es el único canal: hay etiqueta, posición o tabla. Cada gráfico tiene su tabla («Ver en tabla»).
+//  - El texto usa los colores de texto, nunca el de la serie. Rejilla y ejes: líneas finas, continuas y tenues.
+//  - Lo que se ve al pasar el cursor se ve igual con el foco del teclado (conTip).
+//  - Los nombres y valores que se insertan en HTML pasan por esc().
+// ============================================================================
+export const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+export const nf = (v, dec = 0) => (v === v && v != null ? v.toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec }) : '—');
+export const coord = (lat, lon) => `${nf(Math.abs(lat), 1)}°${lat >= 0 ? 'N' : 'S'} ${nf(Math.abs(lon), 1)}°${lon >= 0 ? 'E' : 'W'}`;
+// Percentil como entero 0-100 («percentil 93» = el 93 % de la superficie tiene un valor menor o igual)
+export const pct = (p) => (p === p ? Math.round(p * 100) : null);
+// El mismo percentil para escribirlo: «<1» y «>99» en los extremos (0 y 100 darían a entender que no hay nada más allá)
+export const pctTxt = (p) => (p !== p ? '—' : p < 0.005 ? '<1' : p > 0.995 ? '>99' : String(Math.round(p * 100)));
+
+// ---------------------------------------------------------------------------
+//  Color
+// ---------------------------------------------------------------------------
+// Para lienzos (el SVG usa las clases de css/graficos.css, que leen las mismas variables)
+export const COLOR = {
+  enfasis: '#5dffd0',               // el emplazamiento elegido (el acento de la web)
+  contexto: '#7c86a6',              // los demás emplazamientos
+  planeta: '#3d4763',               // la distribución de toda la superficie (fondo del gráfico)
+  serie1: '#3987e5', serie2: '#d95926',
+  tinta: '#e8ecf8', tinta2: '#c6cde4', mudo: '#8e98b8', fondo: '#0a0e1c',
+};
+
+// Secuencial de un solo tono (azul). En tema oscuro lo poco queda cerca del fondo y lo mucho, claro.
+export const SEQ = ['#0d366b', '#184f95', '#256abf', '#3987e5', '#6da7ec', '#9ec5f4', '#cde2fb'];
+const hex = (h) => [1, 3, 5].map((k) => parseInt(h.slice(k, k + 2), 16));
+
+// Rampa continua a partir de paradas hexadecimales: t (0…1) → [r, g, b]
+export function rampa(paradas) {
+  const rgb = paradas.map(hex), n = rgb.length - 1;
+  return (t) => {
+    const x = Math.min(1, Math.max(0, t === t ? t : 0)) * n, a = Math.min(n - 1, Math.floor(x)), f = x - a;
+    return [0, 1, 2].map((k) => Math.round(rgb[a][k] + (rgb[a + 1][k] - rgb[a][k]) * f));
+  };
+}
+const seq = rampa(SEQ);
+export const colorSeq = (t) => `rgb(${seq(t).join(', ')})`;
+// Texto legible dentro de una celda pintada con colorSeq(t): casi negro sobre los pasos claros, blanco sobre los oscuros
+export function tintaSobreSeq(t) {
+  const [r, g, b] = seq(t).map((v) => { const s = v / 255; return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4; });
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b > 0.3 ? '#0b0b0b' : '#ffffff';
+}
+
+// ---------------------------------------------------------------------------
+//  Escalas y ejes
+// ---------------------------------------------------------------------------
+// Escala lineal dominio → píxeles. f(v) → px; f.inv(px) → v; f.d = [d0, d1]; f.r = [r0, r1]
+export function lineal(d0, d1, r0, r1) {
+  if (d1 === d0) d1 = d0 + 1;
+  const f = (v) => r0 + ((v - d0) / (d1 - d0)) * (r1 - r0);
+  f.inv = (px) => d0 + ((px - r0) / (r1 - r0)) * (d1 - d0);
+  f.d = [d0, d1]; f.r = [r0, r1];
+  return f;
+}
+
+// Marcas «redondas» (1, 2, 2,5 o 5 × 10ⁿ) dentro de [min, max]
+export function marcas(min, max, n = 4) {
+  if (!(max > min)) return [min];
+  const crudo = (max - min) / n, mag = 10 ** Math.floor(Math.log10(crudo));
+  const paso = [1, 2, 2.5, 5, 10].map((k) => k * mag).find((x) => x >= crudo);
+  const out = [];
+  for (let v = Math.ceil(min / paso - 1e-9) * paso; v <= max + paso * 1e-9; v += paso) out.push(Number(v.toPrecision(12)));
+  return out;
+}
+// Decimales necesarios para escribir esas marcas tal cual (0,5 → 1; 0,25 → 2; 100 → 0)
+export function decimalesDe(ms) {
+  for (let d = 0; d < 6; d++) if (ms.every((v) => Math.abs(v - Number(v.toFixed(d))) < 1e-9 * Math.max(1, Math.abs(v)))) return d;
+  return 6;
+}
+
+// ---------------------------------------------------------------------------
+//  Tooltip compartido
+// ---------------------------------------------------------------------------
+let cajaTip = null;
+// tip(html, x, y): lo muestra junto al punto (x, y) de la ventana sin salirse de ella; tip(null) lo oculta
+export function tip(html, x = 0, y = 0) {
+  if (!cajaTip) {
+    cajaTip = document.createElement('div');
+    cajaTip.className = 'g-tip'; cajaTip.setAttribute('role', 'tooltip'); cajaTip.hidden = true;
+    document.body.appendChild(cajaTip);
+  }
+  if (html == null) { cajaTip.hidden = true; return; }
+  cajaTip.innerHTML = html; cajaTip.hidden = false;
+  const w = cajaTip.offsetWidth, h = cajaTip.offsetHeight;
+  const px = Math.max(8, Math.min(x + 14, innerWidth - w - 8)), py = y + 16 + h > innerHeight - 8 ? Math.max(8, y - h - 12) : y + 16;
+  cajaTip.style.transform = `translate(${Math.round(px)}px, ${Math.round(py)}px)`;
+}
+
+// Conecta el tooltip a las marcas de un gráfico por delegación: `contenido(el, evento)` devuelve el HTML del tooltip del
+// elemento que cumple `selector` (o null). Vale igual para el cursor, el dedo y el foco del teclado.
+export function conTip(raiz, selector, contenido) {
+  const de = (e) => { const el = e.target.closest?.(selector); return el && raiz.contains(el) ? el : null; };
+  const alPuntero = (e) => { const el = de(e), h = el && contenido(el, e); if (h) tip(h, e.clientX, e.clientY); else tip(null); };
+  raiz.addEventListener('pointermove', alPuntero);
+  raiz.addEventListener('pointerdown', alPuntero);
+  raiz.addEventListener('pointerleave', () => tip(null));
+  raiz.addEventListener('focusin', (e) => {
+    const el = de(e), h = el && contenido(el, e);
+    if (h) { const r = el.getBoundingClientRect(); tip(h, r.left + r.width / 2, r.bottom); }
+  });
+  raiz.addEventListener('focusout', () => tip(null));
+}
+
+// Filas del tooltip: valor destacado y etiqueta secundaria. filas = [[etiqueta, valor], …]
+export const tipHtml = (titulo, filas = [], nota = '') => `<b class="g-tip-tit">${esc(titulo)}</b>${filas.map(([k, v]) =>
+  `<span class="g-tip-fila"><span>${esc(k)}</span><b>${esc(v)}</b></span>`).join('')}${nota ? `<small>${esc(nota)}</small>` : ''}`;
+
+// ---------------------------------------------------------------------------
+//  Tabla alternativa y envoltorio
+// ---------------------------------------------------------------------------
+// Alternativa en tabla de un gráfico. cabeceras = ['Emplazamiento', …]; filas = [[celda, …], …] (texto ya formateado).
+// La primera columna es la cabecera de la fila. Usa los estilos .tabla y .tabla-scroll de css/proposito.css.
+export function tabla({ titulo, cabeceras, filas, abierta = false }) {
+  return `<details class="g-tabla"${abierta ? ' open' : ''}><summary>Show as table</summary>
+    <div class="tabla-scroll" tabindex="0" role="region" aria-label="Table: ${esc(titulo)}"><table class="tabla">
+      <caption>${esc(titulo)}</caption>
+      <thead><tr>${cabeceras.map((c) => `<th scope="col">${esc(c)}</th>`).join('')}</tr></thead>
+      <tbody>${filas.map((f) => `<tr>${f.map((c, i) => (i ? `<td class="num">${esc(c)}</td>` : `<th scope="row">${esc(c)}</th>`)).join('')}</tr>`).join('')}</tbody>
+    </table></div></details>`;
+}
+
+// Envoltorio de un gráfico: título (qué se ve), subtítulo (cómo leerlo), cuerpo, pie (de dónde sale cada número) y tabla.
+// `cuerpo`, `pie` y `tablaHtml` son HTML ya escapado; `titulo` y `sub` son texto.
+export function figura({ titulo, sub = '', cuerpo, pie = '', tablaHtml = '', clase = '' }) {
+  return `<figure class="g-fig ${clase}"><figcaption><b class="g-tit">${esc(titulo)}</b>${sub ? `<span class="g-sub">${esc(sub)}</span>` : ''}</figcaption>
+    ${cuerpo}${pie ? `<p class="g-pie">${pie}</p>` : ''}${tablaHtml}</figure>`;
+}
+
+// Leyenda: entradas = [{ clase, texto }] donde `clase` es la clase de la muestra (g-m-sel, g-m-ctx, g-m-planeta…)
+export const leyenda = (entradas) => `<div class="g-ley">${entradas.map((e) => `<span><i class="${esc(e.clase)}" aria-hidden="true"></i>${esc(e.texto)}</span>`).join('')}</div>`;
+
+// Nombre corto de un emplazamiento para etiquetas con poco sitio: «Shackleton», «Marius Hills»
+export const nombreCorto = (nombre) => nombre.replace(/\s+(crater rim|crater|massif|ridge|pit|skylight|plateau|basin|plain|lava tubes)$/i, '');
+
+// Nombre del cuerpo con su artículo y sus preposiciones
+export const CUERPO = { moon: { nombre: 'the Moon', en: 'on the Moon', de: 'of the Moon' }, mars: { nombre: 'Mars', en: 'on Mars', de: 'of Mars' } };
+
+// Fuente de una capa en una línea: «LRO · LOLA, 0,125° (≈3,8 km en el ecuador)»
+export const fuenteDe = (c) => `${c.meta.fuente?.mision ?? ''}${c.meta.resolucion ? `, ${c.meta.resolucion}` : ''}`;

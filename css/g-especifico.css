@@ -1,0 +1,47 @@
+/* ============================================================================
+   Gráfico propio de cada cuerpo (js/graficos/especifico.js). Prefijo g-es-.
+   Luna: temperatura mínima–media–máxima por emplazamiento (dumbbell). Marte: pequeños múltiplos de composición
+   con su incertidumbre. Solo añade reglas a css/graficos.css (clases comunes g-*) y usa sus variables.
+   Los selectores llevan la especificidad justa para ganar a las reglas comunes sea cual sea el orden de carga.
+   ============================================================================ */
+
+/* ---------- fila de un emplazamiento (los dos gráficos) ---------- */
+/* La fila entera es la marca: su zona de acierto hace de realce al pasar, de banda del destacado y de anillo de foco.
+   El trazo de foco común (.g-svg [data-sitio]:focus-visible) se heredaría a los textos de la fila: aquí se anula. */
+.g-svg g.g-es-fila[data-sitio]:focus-visible { stroke: none; }
+.g-svg .g-es-fila text { stroke: none; }
+.g-es-fila .g-es-zona { transition: fill .15s; }
+.g-es-fila:hover .g-es-zona { fill: rgba(255, 255, 255, .05); }
+.g-es-fila.sel .g-es-zona { fill: var(--g-enfasis, #5dffd0); fill-opacity: .1; }
+.g-es-fila:focus-visible .g-es-zona { stroke: #fff; stroke-width: 1.5; }
+.g-es-nota { margin: .4rem 0 0; font-size: .7rem; line-height: 1.45; color: var(--mute); }
+
+/* ---------- Luna: de la mínima a la máxima ---------- */
+/* Dos series con significado (mínima y máxima): colores categóricos que llegan de base.js (COLOR.serie1 / serie2)
+   como variables en línea; aquí solo el valor de reserva. El destacado no cambia de color: banda, negrita y valores. */
+.g-es-serie { --g-es-min: #3987e5; --g-es-max: #d95926; }
+.g-es-luna .g-svg { max-width: 720px; }                     /* en paneles anchos el texto no crece sin límite */
+.g-es-seg { stroke: var(--g-contexto, #7c86a6); stroke-width: 2; stroke-linecap: round; }
+.g-es-med { stroke: #c6cde4; stroke-width: 2; }
+.g-es-pt { stroke: var(--g-superficie, #0a0e1c); stroke-width: 2; }
+.g-es-pt.g-es-min { fill: var(--g-es-min); }
+.g-es-pt.g-es-max { fill: var(--g-es-max); }
+.g-svg text.g-es-nd { font-style: italic; }
+.g-ley i.g-es-ley-min { background: var(--g-es-min); }
+.g-ley i.g-es-ley-max { background: var(--g-es-max); }
+.g-ley i.g-es-ley-med { width: 2px; height: 12px; border-radius: 0; background: #c6cde4; }
+.g-ley i.g-es-ley-sel { width: 16px; border-radius: 3px; background: rgba(93, 255, 208, .22); }
+
+/* ---------- Marte: un panel por elemento ---------- */
+/* Paneles de 150 px como mínimo; en pantallas estrechas caben dos por fila (por eso el mínimo no pasa de media caja) */
+.g-es-rejilla { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(150px, calc(50% - 7px)), 1fr)); gap: .8rem .85rem; }
+.g-es-panel { min-width: 0; }
+.g-es-panel .g-vacio { margin: .3rem 0; }
+.g-es-ptit { margin-bottom: .2rem; font-size: .74rem; line-height: 1.3; color: var(--text); }
+.g-es-ptit span { color: var(--mute); font-size: .68rem; white-space: nowrap; }
+.g-ml.g-es-err { stroke-width: 1.5; stroke-linecap: butt; }   /* extremos rectos: la barra mide exactamente ± la incertidumbre */
+.g-es-fila:hover .g-m:not(.sel), .g-es-fila:focus-visible .g-m:not(.sel) { fill: #fff; }
+/* valor escrito del destacado: halo del color del fondo para que se lea sobre la rejilla y la línea de la mediana */
+.g-svg .g-es-fila text.g-es-halo { stroke: var(--g-superficie, #0a0e1c); stroke-width: 3; stroke-linejoin: round; paint-order: stroke; }
+.g-ley i.g-es-ley-err { width: 16px; height: 2px; border-radius: 0; background: var(--g-contexto, #7c86a6); }
+.g-ley i.g-es-ley-ref { width: 1px; height: 12px; border-radius: 0; background: #c6cde4; }
