@@ -29,7 +29,6 @@ Web «Landfall» (NASA Space Apps 2026). Interfaz en inglés (otra sesión la tr
 - Duplicado sin usar: `base-planetaria/web/data/tierra/motor/` (la web usa `analogos/`; `publicar.sh` ya lo excluye).
 - «Datos de referencia (estimación)» escritos a mano en `js/data.js` contradicen lo medido (Shackleton, Taurus-Littrow). Decisión del usuario.
 - Recuentos distintos para el mismo lugar entre la comparación detallada y el panel (dos métodos del motor).
-- Panel «Our team» vacío.
 - Los 3 avisos 404 de `assets/*.glb` (modelos opcionales de Blender) son inofensivos.
 
 ## Reglas del usuario

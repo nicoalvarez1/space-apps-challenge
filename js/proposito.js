@@ -777,22 +777,20 @@ function montar() {
     aplicarFiltros(true);
   });
 
-  // Portada: empezar (o continuar) la misión, lo trabajado (panel #about, ya existente) y nuestro grupo
+  // Portada: empezar (o continuar) la misión, lo trabajado (panel #about, ya existente)
   $('#btn-empezar').addEventListener('click', () => {
     est.vista = 'mision'; ctx.render(); enfocarPaso(ctx.getStep());
   });
   $('#btn-inicio').addEventListener('click', () => {
     est.vista = null; ctx.render(); $('#btn-empezar').focus();
   });
-  $('#btn-grupo').addEventListener('click', () => { $('#grupo').hidden = false; $('#grupo-close').focus(); });
-  $('#grupo-close').addEventListener('click', () => { $('#grupo').hidden = true; $('#btn-grupo').focus(); });
 
   // Escape cierra primero una definición abierta; dentro de un diálogo no llega al resto de la página
   addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
     if (cerrarDefiniciones()) { e.preventDefault(); e.stopPropagation(); return; }
     if (e.target.closest?.('dialog.dlg')) { e.stopPropagation(); return; }
-    for (const id of ['comparacion', 'analisis', 'grupo', 'about']) if (!$(`#${id}`).hidden) { $(`#${id}`).hidden = true; e.stopPropagation(); return; }
+    for (const id of ['comparacion', 'analisis', 'about']) if (!$(`#${id}`).hidden) { $(`#${id}`).hidden = true; e.stopPropagation(); return; }
   }, true);
 
   addEventListener('popstate', alPopstate);
