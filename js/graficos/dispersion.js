@@ -18,7 +18,7 @@
 // ============================================================================
 import { RADIO_ZONA } from '../capas.js';
 import { cuantil } from '../analitica.js';
-import { esc, nf, pct, lineal, marcas, decimalesDe, tip, conTip, tipHtml, tabla, figura, leyenda, nombreCorto, fuenteDe } from './base.js';
+import { esc, nf, pct, lineal, marcas, decimalesDe, tip, conTip, tipHtml, tabla, figura, leyenda, nombreCorto, fuenteDe, masAltoQue } from './base.js';
 
 const MARGEN = 0.08;                                   // aire alrededor de los datos, como fracción de su extensión
 const R = 9, R_HIT = 14;                               // radio del círculo y de su zona de acierto (≥ 24 px de diámetro)
@@ -74,7 +74,7 @@ function dibujo({ W, X, Y, pts, medX, medY, sel, cuerpo }) {
 
   // Medianas de la superficie: una línea por eje. El rótulo de la vertical va encima del gráfico; el de la horizontal,
   // dentro, en el extremo (y el lado de la línea) donde tape menos círculos.
-  const rot = 'surface median', wRot = rot.length * CH;
+  const rot = 'middle value', wRot = rot.length * CH;
   const zona = (eje, k, med, geo) => `<rect class="g-hit g-ds-med" data-med="${eje}" tabindex="0" role="img"
       aria-label="${esc(`Median of the surface ${cuerpo.de}: ${nombreDe(k.def)} ${k.def.fmt(med)}`)}" ${geo}/>`;
   let refs = '';
@@ -177,8 +177,8 @@ export function pintar(el, ctx) {
   const ley = leyenda([
     elegido && { clase: 'g-m-sel', texto: nombreCorto(elegido.s.name) },
     pts.some((p) => p !== elegido) && { clase: 'g-m-ctx', texto: elegido ? 'The other sites' : 'Sites' },
-    (medX === medX || medY === medY) && { clase: 'g-m-ref', texto: `Median of the surface ${cuerpo.de}` },
-    conErr.length && { clase: 'g-ds-ley-err', texto: `± published uncertainty (${conErr.map((k) => nombreDe(k.def)).join(' and ')})` },
+    (medX === medX || medY === medY) && { clase: 'g-m-ref', texto: `Middle value ${cuerpo.de}` },
+    conErr.length && { clase: 'g-ds-ley-err', texto: `margin of error (${conErr.map((k) => nombreDe(k.def)).join(' and ')})` },
   ].filter(Boolean));
   const nombres = (ss) => ss.map((s) => nombreCorto(s.name)).join(', ');
   const { svg, juntos } = pts.length ? dibujo({ W, X, Y, pts, medX, medY, sel: ctx.sel, cuerpo }) : { svg: '', juntos: [] };
@@ -190,7 +190,8 @@ export function pintar(el, ctx) {
   if (juntos.length) notas.push(`Almost at the same point (one circle hides the other): ${juntos.map(([a, b]) => `${a.rank} ${nombreCorto(a.name)} and ${b.rank} ${nombreCorto(b.name)}`).join('; ')}.`);
   const cuerpoHtml = control
     + (pts.length ? ley + svg : '<p class="g-vacio">No site has data in both layers at once.</p>')
-    + (notas.length ? `<p class="g-ds-nota">${esc(notas.join(' '))}</p>` : '');
+    ;
+  const notasHtml = notas.length ? `<p class="g-ds-nota">${esc(notas.join(' '))}</p>` : '';
 
   const fuente = (k) => `<b>${esc(nombreDe(k.def))}</b>: ${esc(fuenteDe(k.capa))}${k.derivada ? ' (derived from elevation)' : ''}`;
   const pie = `Horizontal axis · ${fuente(X)}. Vertical axis · ${fuente(Y)}.
@@ -210,9 +211,9 @@ export function pintar(el, ctx) {
   });
 
   el.innerHTML = figura({
-    titulo: `Two measurements at once: ${nx} and ${ny}`,
-    sub: `Each circle is a site (the number is its rank). The thin lines mark the median of the surface ${cuerpo.de}.`,
-    cuerpo: cuerpoHtml, pie, tablaHtml, clase: 'g-ds',
+    titulo: `${nx} against ${ny}`,
+    sub: `Each circle is a site. The thin lines mark the middle value ${cuerpo.de}.`,
+    cuerpo: cuerpoHtml, mas: notasHtml, pie, tablaHtml, clase: 'g-ds',
   });
 
   // Cambiar la capa del eje Y: se guarda la elección y el panel vuelve a pintar este gráfico
@@ -224,7 +225,7 @@ export function pintar(el, ctx) {
 
   // Tooltip (cursor y foco): emplazamientos y líneas de mediana
   const porId = new Map(pts.map((p) => [p.s.id, p]));
-  const filaTip = (k, m) => { const p = pct(m.pct); return [`${nombreDe(k.def)}${p != null ? ` (percentile ${p})` : ''}`, valorTxt(k.def, m)]; };
+  const filaTip = (k, m) => { const p = pct(m.pct); return [`${nombreDe(k.def)}${p != null ? ` (${masAltoQue(m.pct)} of the surface)` : ''}`, valorTxt(k.def, m)]; };
   conTip(el, '[data-sitio], [data-med]', (t) => {
     if (t.dataset.med) {
       const k = t.dataset.med === 'x' ? X : Y, med = t.dataset.med === 'x' ? medX : medY;
@@ -233,7 +234,7 @@ export function pintar(el, ctx) {
     const p = porId.get(t.dataset.sitio);
     if (!p) return null;
     return tipHtml(`${p.s.rank}. ${p.s.name}`, [filaTip(X, p.x), filaTip(Y, p.y)],
-      `Percentile: % of the surface ${cuerpo.de} with an equal or lower value.${haySigma(p.x) || haySigma(p.y) ? ' ± = published uncertainty.' : ''}`);
+      `“Higher than N %”: share of the surface ${cuerpo.de} with an equal or lower value.${haySigma(p.x) || haySigma(p.y) ? ' ± = published uncertainty.' : ''}`);
   });
 
   // Si el contenedor cambia mucho de ancho (ventana o panel redimensionados), se pide al panel otro pintado para que el

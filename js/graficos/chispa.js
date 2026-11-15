@@ -21,5 +21,5 @@ export function chispa(c, valor, cuerpo) {
   return `<span class="chispa" title="${esc(texto)}">
     <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(texto)}"><g class="chispa-planeta">${barras}</g>
       <line class="chispa-marca" x1="${x.toFixed(1)}" x2="${x.toFixed(1)}" y1="0" y2="${H}"/></svg>
-    <span class="chispa-txt">percentile <b>${p}</b></span></span>`;
+    <span class="chispa-txt">higher than <b>${p} %</b></span></span>`;
 }

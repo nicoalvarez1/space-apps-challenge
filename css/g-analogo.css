@@ -1,0 +1,82 @@
+/* ============================================================================
+   Panel de la Tierra: análogos del motor de similitud (js/graficos/analogo.js, openTraining en js/main.js). Prefijo an-.
+   Solo añade reglas; usa las variables de css/style.css y las clases comunes de css/graficos.css (g-fig, g-svg, g-ley…).
+   Serie 1 (objetivo, Luna/Marte) y serie 2 (ventana terrestre) = COLOR.serie1 / serie2 de js/graficos/base.js.
+   ============================================================================ */
+.an-intro { margin: .3rem 0 .6rem; }
+.an-tit { margin: .2rem 0 .15rem; }
+.an-origen { margin: .2rem 0 .7rem; font-size: .68rem; line-height: 1.45; color: var(--mute); }
+.an-origen i { display: inline-block; width: 7px; height: 7px; margin-right: .35rem; border-radius: 50%; background: var(--accent); vertical-align: 0; }
+.an-origen.pre i { background: var(--g-contexto); }
+
+/* lista de candidatos: una línea con lo esencial, el elegido con el borde de acento (como .alt.sel) */
+.an-lista { list-style: none; margin: 0 0 .4rem; padding: 0; display: grid; gap: .35rem; }
+.an-cand { display: flex; gap: .6rem; align-items: flex-start; width: 100%; text-align: left; padding: .5rem .65rem;
+  border: 1px solid var(--line); border-radius: 4px; background: rgba(255, 255, 255, .03); color: var(--text); }
+.an-cand:hover { border-color: rgba(93, 255, 208, .5); }
+.an-cand.sel { border-color: var(--accent); background: rgba(93, 255, 208, .07); }
+.an-rk { flex: none; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font: 700 .7rem var(--mono);
+  background: var(--g-contexto); color: #0a0e1c; }
+.an-cand.sel .an-rk { background: var(--accent); color: #022; }
+.an-txt { min-width: 0; }
+.an-txt b { display: block; font-size: .84rem; font-weight: 600; }
+.an-txt small { display: block; margin-top: .1rem; font-size: .7rem; line-height: 1.4; color: #c6cde4; }
+
+/* ficha del lugar terrestre elegido */
+.an-ficha { margin-top: 1rem; padding-top: .9rem; border-top: 1px solid var(--line); display: grid; gap: 1.2rem; min-width: 0; }
+.an-ficha > * { min-width: 0; }
+.an-cab h3 { margin: .1rem 0 .2rem; font-family: var(--serif); font-weight: 600; font-size: 1.15rem; }
+.an-cab .an-frase { margin: .3rem 0 0; font-size: .88rem; line-height: 1.5; color: var(--text); }
+.an-cab small { color: var(--mute); font-size: .72rem; }
+.an-mas { margin-top: .55rem; }
+/* columnas que pueden encoger: el lienzo tiene el ancho intrínseco del mapa (hasta 192 px) y no debe ensanchar el panel */
+.an-mapas .cmp-mapas { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem; }
+.an-mapas .cmp-mapas figure { min-width: 0; }
+#training { overflow-x: hidden; }
+.an-mapas .cmp-mapas figcaption { font-size: .68rem; margin-top: .25rem; color: #c6cde4; }
+
+/* «How close, criterion by criterion» */
+.an-zona { fill: var(--g-planeta); }
+.an-z5 { opacity: .55; } .an-z25 { opacity: .25; }
+.g-svg text.an-zt { fill: var(--mute); font-size: 8.5px; }
+.an-guia { stroke: var(--g-eje); stroke-width: 1; }
+.an-punto { fill: var(--g-enfasis); stroke: var(--g-superficie); stroke-width: 2; }
+.an-punto.an-distinta { fill: var(--g-contexto); }
+.an-fila:focus { outline: none; }
+.an-fila:focus-visible .an-punto, .an-fila:hover .an-punto { stroke: #fff; }
+.g-svg text.an-cl-distinta { fill: var(--mute); font-weight: 400; }
+
+/* distribuciones */
+.an-dpanel + .an-dpanel { margin-top: .35rem; }
+.an-dtit { display: block; font-size: .74rem; font-weight: 600; color: #c6cde4; }
+.an-med { stroke: #fff; stroke-width: 2; }
+.an-dfila:focus { outline: none; }
+.an-dfila:focus-visible .an-med, .an-dfila:hover .an-med { stroke: var(--accent); }
+.an-fig-dist .g-ley i { border-radius: 2px; }
+
+/* dónde se sostiene y dónde falla */
+.an-sf { display: grid; gap: .8rem; }
+.an-sf h5 { margin: 0 0 .35rem; font-size: .74rem; font-weight: 600; letter-spacing: .05em; color: #c3c6d2; }
+.an-sf ul { margin: 0; padding: 0; list-style: none; font-size: .78rem; line-height: 1.45; }
+.an-sf li { position: relative; padding-left: 1.1rem; margin-bottom: .3rem; color: #c6cde4; }
+.an-sf li b { color: var(--text); font-weight: 600; }
+.an-si li::before { content: "✓"; position: absolute; left: 0; color: var(--accent); font-weight: 700; }
+.an-no li::before { content: "✕"; position: absolute; left: 0; color: var(--bad); font-weight: 700; }
+.an-sf .an-nc { margin: .5rem 0 .25rem; }
+.an-sf .an-nc-l li { font-size: .72rem; }
+.an-sf .an-nc-l li::before { content: "–"; color: var(--mute); }
+
+/* plegables: método completo del motor y análogos de referencia */
+details.an-plegable { border: 1px solid var(--line); border-radius: 4px; padding: .5rem .7rem; background: rgba(255, 255, 255, .02); }
+details.an-plegable > summary { cursor: pointer; font-size: .8rem; font-weight: 600; color: #c6cde4; }
+details.an-plegable[open] > summary { margin-bottom: .5rem; }
+details.an-plegable .motor { margin-top: 0; }
+.an-famosos { margin-top: 1.3rem; }
+.an-aviso { margin: .2rem 0 .6rem; font-size: .7rem; color: var(--gold); }
+
+/* pista en la ficha del emplazamiento: hay análogos terrestres */
+.an-pista { display: flex; gap: .5rem; align-items: center; width: 100%; margin: .2rem 0 .8rem; padding: .5rem .7rem; text-align: left;
+  border: 1px solid rgba(93, 255, 208, .45); border-radius: 4px; background: rgba(93, 255, 208, .06); color: var(--text); font-size: .8rem; line-height: 1.35; }
+.an-pista:hover { border-color: var(--accent); background: rgba(93, 255, 208, .1); }
+.an-pista b { font-weight: 600; }
+.an-pista span:last-child { margin-left: auto; color: var(--accent); }

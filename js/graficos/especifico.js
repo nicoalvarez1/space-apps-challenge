@@ -20,7 +20,7 @@
 // ============================================================================
 import { RADIO_ZONA } from '../capas.js';
 import { cuantil } from '../analitica.js';
-import { esc, nf, pct, COLOR, lineal, marcas, decimalesDe, conTip, tipHtml, tabla, figura, leyenda, nombreCorto, fuenteDe } from './base.js';
+import { esc, nf, pct, COLOR, lineal, marcas, decimalesDe, conTip, tipHtml, tabla, figura, leyenda, nombreCorto, fuenteDe, pctTxt } from './base.js';
 
 const vacio = (t) => `<p class="g-vacio">${esc(t)}</p>`;
 const px = (v) => Number(v.toFixed(1));
@@ -103,7 +103,7 @@ function luna(el, ctx) {
   const nota = incompletos.length ? `<p class="g-es-nota">No minimum or maximum data (that mark is not drawn): ${esc(incompletos.map((r) => `${r.s.rank}. ${nombreCorto(r.s.name)}`).join(', '))}.</p>` : '';
   // Los dos colores de serie salen de base.js (COLOR) y llegan al SVG y a la leyenda como variables CSS
   const cuerpo = `<div class="g-es-serie" style="--g-es-min: ${COLOR.serie1}; --g-es-max: ${COLOR.serie2}">${ley}
-    <svg class="g-svg" viewBox="0 0 ${W} ${H}" role="group" aria-label="${esc(`Minimum, mean and maximum surface temperature at each site ${ctx.cuerpo.en}`)}">${eje}${dibujo}</svg>${nota}</div>`;
+    <svg class="g-svg" viewBox="0 0 ${W} ${H}" role="group" aria-label="${esc(`Minimum, mean and maximum surface temperature at each site ${ctx.cuerpo.en}`)}">${eje}${dibujo}</svg></div>`;
 
   // Pie: qué es cada temperatura, con las palabras de los metadatos de cada capa
   const proc = separar(ks.map((k) => k.capa.meta.procesado)), notas = unicos(ks.map((k) => k.capa.meta.nota));
@@ -117,8 +117,8 @@ function luna(el, ctx) {
     filas: filas.map((r) => [rotulo(r.s), txt(kMin, r.mi), txt(kMed, r.me), txt(kMax, r.ma), oscilacion(r)]) });
 
   el.innerHTML = figura({ titulo: 'Daytime and nighttime temperature',
-    sub: 'Surface temperature measured by Diviner: from the minimum to the maximum of the day-night cycle.',
-    cuerpo, pie, tablaHtml, clase: 'g-es g-es-luna' });
+    sub: 'Coldest and hottest ground temperature at each site, measured from orbit.',
+    cuerpo, mas: nota, pie, tablaHtml, clase: 'g-es g-es-luna' });
 
   const porId = new Map(filas.map((r) => [r.s.id, r]));
   conTip(el, '.g-es-fila', (g) => {
@@ -183,15 +183,15 @@ function marte(el, ctx) {
     }).join('');
 
     return `<div class="g-es-panel">${titulo}
-      <svg class="g-svg" viewBox="0 0 ${W} ${H}" data-es-col="${esc(id)}" role="group" aria-label="${esc(`${k.def.corto} (${k.def.unidad}): value and published uncertainty at each site. Median ${ctx.cuerpo.de}: ${medianaTxt(k)}`)}">${eje}${filas}</svg></div>`;
+      <svg class="g-svg" viewBox="0 0 ${W} ${H}" data-es-col="${esc(id)}" role="group" aria-label="${esc(`${k.def.corto} (${k.def.unidad}): value and published uncertainty at each site. Surface median ${ctx.cuerpo.en}: ${medianaTxt(k)}`)}">${eje}${filas}</svg></div>`;
   };
 
   const elegido = ctx.filas.find((f) => f.sitio.id === ctx.sel);
   const ley = leyenda([{ clase: 'g-m-ctx', texto: 'site' }, ...(elegido ? [{ clase: 'g-m-sel', texto: `highlighted: ${nombreCorto(elegido.sitio.name)}` }] : []),
-    { clase: 'g-es-ley-err', texto: '± published uncertainty' }, { clase: 'g-es-ley-ref', texto: `median ${ctx.cuerpo.de}` }]);
+    { clase: 'g-es-ley-err', texto: 'margin of error' }, { clase: 'g-es-ley-ref', texto: `middle value ${ctx.cuerpo.de}` }]);
   const sinDato = cols.map((k) => ({ k, quien: ctx.filas.filter((f) => !f.v[k.def.id]).map((f) => `${f.sitio.rank}. ${nombreCorto(f.sitio.name)}`) })).filter((d) => d.quien.length);
   const nota = sinDato.length ? `<p class="g-es-nota">No published data (no mark drawn): ${esc(sinDato.map((d) => `${d.k.def.corto}: ${d.quien.join(', ')}`).join(' · '))}.</p>` : '';
-  const cuerpo = `${ley}<div class="g-es-rejilla">${cols.map(panel).join('')}</div>${nota}`;
+  const cuerpo = `${ley}<div class="g-es-rejilla">${cols.map(panel).join('')}</div>`;
 
   // Pie: lo que es la barra se dice con el texto de los metadatos de cada capa de incertidumbre (meta.procesado),
   // agrupando los elementos que comparten descripción. No se afirma nada más (ni nivel de confianza ni distribución).
@@ -208,7 +208,7 @@ function marte(el, ctx) {
     <b>Point</b>: ${unaCelda ? `value of the ${esc(paso)} cell that contains the site` : `mean of the ${esc(paso)} cells whose center lies within ${ARCO} of arc of the site (if there are none, the cell that contains it)`};
     sites that fall in the same cell share a value.
     <b>Bar</b>: from the value minus the uncertainty to the value plus the uncertainty that the source publishes for that same cell (${barras}).
-    <b>Vertical line</b>: median of the cells with data ${esc(ctx.cuerpo.de)}, weighted by their area; the cursor percentile refers to that same surface with data.
+    <b>Vertical line</b>: median of the cells with data ${esc(ctx.cuerpo.en)}, weighted by their area; the cursor percentile refers to that same surface with data.
     Each panel has its own horizontal scale. ${citas.map(esc).join(' ')}`;
 
   const tablaHtml = tabla({ titulo: `Surface composition at each site ${ctx.cuerpo.en}: value ± published uncertainty (Odyssey GRS)`,
@@ -216,9 +216,9 @@ function marte(el, ctx) {
     filas: [...ctx.filas.map((f) => [rotulo(f.sitio), ...cols.map((k) => { const z = f.v[k.def.id]; return z ? valorSigma(k.def, z, false) : 'no data'; })]),
       [`Median of the surface ${ctx.cuerpo.de}`, ...cols.map((k) => medianaTxt(k, k.def.tick))]] });
 
-  el.innerHTML = figura({ titulo: 'Surface composition, with its uncertainty',
-    sub: 'Each panel is one element; each row, one site (by rank).',
-    cuerpo, pie, tablaHtml, clase: 'g-es g-es-marte' });
+  el.innerHTML = figura({ titulo: 'What the ground is made of',
+    sub: 'One box per chemical element, one row per site. The line around each dot shows the margin of error.',
+    cuerpo, mas: nota, pie, tablaHtml, clase: 'g-es g-es-marte' });
 
   const porId = new Map(ctx.filas.map((f) => [f.sitio.id, f])), porCol = new Map(cols.map((k) => [k.def.id, k]));
   conTip(el, '.g-es-fila', (g) => {
@@ -227,8 +227,8 @@ function marte(el, ctx) {
     const z = f.v[k.def.id];
     if (!z) return tipHtml(rotulo(f.sitio), [[k.def.corto, 'no data']], 'The source publishes no data in the cell of this site.');
     const p = pct(z.pct);
-    return tipHtml(rotulo(f.sitio), [[k.def.corto, valorSigma(k.def, z)], [`Percentile ${ctx.cuerpo.en}`, p == null ? '—' : String(p)], [`Median ${ctx.cuerpo.de}`, medianaTxt(k)]],
-      `${may(resumen(z, k.capa))}. ${conSigma(z) ? '± = published uncertainty for that cell.' : 'No published uncertainty for that cell.'} Percentile: share of the surface with data that has an equal or lower value.`);
+    return tipHtml(rotulo(f.sitio), [[k.def.corto, valorSigma(k.def, z)], ['Higher than', p == null ? '—' : `${pctTxt(z.pct)} % of the surface`], ['Surface median', medianaTxt(k)]],
+      `${may(resumen(z, k.capa))}. ${conSigma(z) ? '± = published uncertainty for that cell.' : 'No published uncertainty for that cell.'} “Higher than N %”: share of the surface with data that has an equal or lower value.`);
   });
 }
 

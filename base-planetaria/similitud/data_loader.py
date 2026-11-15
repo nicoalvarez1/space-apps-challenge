@@ -142,8 +142,8 @@ class Raster:
             "filas": self.filas, "columnas": self.columnas,
             "espaciado_nativo_m": round(self.espaciado_nativo_m(), 1),
             "referencia_vertical": self.referencia_vertical,
-            "superficie_horizontal": (f"esfera R = {self.radio_m / 1000:.1f} km" if self.elipsoide is None else
-                                      f"elipsoide WGS84 (a = {self.elipsoide[0]:.0f} m, 1/f = {1 / self.elipsoide[1]:.9f})"),
+            "superficie_horizontal": (f"sphere R = {self.radio_m / 1000:.1f} km" if self.elipsoide is None else
+                                      f"WGS84 ellipsoid (a = {self.elipsoide[0]:.0f} m, 1/f = {1 / self.elipsoide[1]:.9f})"),
             "conteos_de_observacion": self.conteos is not None,
             "criterio_validez": self.criterio_validez,
             **self.procedencia,
@@ -232,7 +232,7 @@ def _leer_pds3(base: Path, grupo: str) -> tuple[np.ndarray, dict]:
     lbl, img = base.with_suffix(".lbl"), base.with_suffix(".img")
     for r in (lbl, img):
         if not r.exists():
-            raise DatosNoDisponibles(f"Falta {r}. Descárgalo con `python3 base-planetaria/tools/descargar.py {grupo}`.")
+            raise DatosNoDisponibles(f"Missing {r}. Download it with `python3 base-planetaria/tools/descargar.py {grupo}`.")
     et = comun.leer_etiqueta_pds3(lbl)
     lineas = int(comun.numero(et["IMAGE.LINES"]))
     muestras = int(comun.numero(et["IMAGE.LINE_SAMPLES"]))
@@ -289,7 +289,7 @@ def cargar_lola_16() -> RejillaGeografica:
     return RejillaGeografica(
         cuerpo="moon", producto="LDEM_16", fuente="lola_gdr_16ppd", crudo=dn, escala=escala, desplazamiento=0.0,
         radio_m=radio, elipsoide=None, conteos=conteos,
-        referencia_vertical=f"altura sobre la esfera de {radio / 1000:.1f} km (no el geoide lunar)",
+        referencia_vertical=f"height above the {radio / 1000:.1f} km sphere (not the lunar geoid)",
         procedencia={"archivo": "ldem_16.img", "conversion": f"altura (m) = DN × {escala}", **_version(et)},
         lat0=lat0, dlat=dlat, lon0=lon0, dlon=dlon)
 
@@ -323,7 +323,7 @@ def cargar_lola_polar(nombre: str = "ldem_75s_240m") -> RejillaPolar:
     return RejillaPolar(
         cuerpo="moon", producto=nombre.upper(), fuente="lola_gdr_polar", crudo=dn, escala=escala, desplazamiento=0.0,
         radio_m=radio, elipsoide=None, conteos=conteos,
-        referencia_vertical="altura sobre la esfera de 1737,4 km (no el geoide lunar)",
+        referencia_vertical="height above the 1737.4 km sphere (not the lunar geoid)",
         procedencia={"archivo": f"{nombre}.img", "conversion": f"altura (m) = DN × {escala}", **_version(et)},
         polo=polo, escala_m=escala_m, lpo=lpo, spo=spo, lat_borde=abs(borde))
 
@@ -336,10 +336,10 @@ def cargar_mola(referencia: str = "areoide") -> RejillaGeografica:
     if referencia == "areoide":
         dn, et = _leer_pds3(d / "megt90n000eb", "mola")
         _exigir("IMAGE.SCALING_FACTOR" not in et, "MEGT con factor de escala inesperado")
-        escala, ref = 1.0, "radio − areoide (GMM3 hasta grado 50)"
+        escala, ref = 1.0, "radius − areoid (GMM3 up to degree 50)"
     elif referencia == "esfera":
         dn, et = _leer_pds3(d / "megr90n000eb", "mola")
-        escala, ref = comun.numero(et["IMAGE.SCALING_FACTOR"]), "radio − esfera de 3396 km"
+        escala, ref = comun.numero(et["IMAGE.SCALING_FACTOR"]), "radius − 3396 km sphere"
     else:
         raise ValueError(referencia)
     _exigir(comun.limpio(et.get("TARGET_NAME", "")) == "MARS", "la etiqueta no es de Marte")
@@ -568,7 +568,7 @@ def construir_mosaico_srtmgl30(directorio: Path = DIR_SRTMGL30, destino: Path | 
     tener las 27 (≈ 1,5 GB) en memoria a la vez."""
     zips = sorted(directorio.glob("*.zip"))
     if not zips:
-        raise DatosNoDisponibles(f"No hay teselas SRTMGL30 en {directorio}. Usa `python -m similitud descargar-tierra`.")
+        raise DatosNoDisponibles(f"No SRTMGL30 tiles in {directorio}. Use `python -m similitud descargar-tierra`.")
     cajas = cajas_cmr(directorio)
     geos = []
     for ruta in zips:
@@ -699,7 +699,7 @@ def cargar_srtmgl30(umbral_agua: float = UMBRAL_AGUA) -> RejillaGeografica:
     return RejillaGeografica(
         cuerpo="earth", producto="SRTMGL30 V002", fuente="srtmgl30", crudo=dn, escala=1.0, desplazamiento=0.0,
         radio_m=None, elipsoide=(config.WGS84_A, config.WGS84_F), sin_dato=meta["sin_dato"], mascara=masc,
-        referencia_vertical="altura sobre el geoide EGM96 (documentación LP DAAC); latitudes geodésicas WGS84",
+        referencia_vertical="height above the EGM96 geoid (LP DAAC documentation); WGS84 geodetic latitudes",
         criterio_validez=criterio,
         procedencia={"teselas": len(meta["teselas"]), "mosaico": mosaico.name,
                      "cobertura_lat": [round(meta["lat0"] - (meta["filas"] - 0.5) * meta["paso"], 4), 90.0],
@@ -727,8 +727,8 @@ def descargar_srtmgl30(directorio: Path = DIR_SRTMGL30) -> list[Path]:
     """Descarga las teselas con Earthdata Login vía `curl --netrc`. Este código no lee la contraseña."""
     if not (Path.home() / ".netrc").exists() and not os.environ.get("NETRC"):
         raise DatosNoDisponibles(
-            "Falta ~/.netrc con `machine urs.earthdata.nasa.gov login … password …` (cuenta gratuita en "
-            "https://urs.earthdata.nasa.gov). El motor no pide ni guarda credenciales.")
+            "Missing ~/.netrc with `machine urs.earthdata.nasa.gov login … password …` (free account at "
+            "https://urs.earthdata.nasa.gov). The engine never asks for or stores credentials.")
     directorio.mkdir(parents=True, exist_ok=True)
     hechos = []
     with tempfile.TemporaryDirectory() as tmp:
@@ -743,8 +743,8 @@ def descargar_srtmgl30(directorio: Path = DIR_SRTMGL30) -> list[Path]:
                                 "-m", "1800", "-o", str(parcial), url], capture_output=True, text=True)
             if r.returncode != 0 or not zipfile.is_zipfile(parcial):
                 parcial.unlink(missing_ok=True)
-                raise DatosNoDisponibles(f"Earthdata rechazó {destino.name}: {r.stderr.strip()[:200]} "
-                                         "(¿credenciales en ~/.netrc? ¿aplicación LP DAAC autorizada en tu perfil?)")
+                raise DatosNoDisponibles(f"Earthdata rejected {destino.name}: {r.stderr.strip()[:200]} "
+                                         "(credentials in ~/.netrc? LP DAAC application authorized in your profile?)")
             shutil.move(parcial, destino)
             hechos.append(destino)
     return hechos
@@ -835,7 +835,7 @@ def descargar_srtmswbd(directorio: Path = DIR_SRTMSWBD, simultaneas: int = 8, pr
     pendientes y se devuelve el mensaje exacto (no se reintenta ni se rodea)."""
     from concurrent.futures import ThreadPoolExecutor, as_completed
     if not (Path.home() / ".netrc").exists() and not os.environ.get("NETRC"):
-        raise DatosNoDisponibles("Falta ~/.netrc con las credenciales de Earthdata Login.")
+        raise DatosNoDisponibles("Missing ~/.netrc with the Earthdata Login credentials.")
     directorio.mkdir(parents=True, exist_ok=True)
     urls = urls_srtmswbd(guardar=directorio / CMR_GRANULOS)
     pendientes = [u for u in urls if not ((directorio / u.rsplit("/", 1)[1]).exists()
@@ -937,7 +937,7 @@ def _bordes_compartidos(bordes: dict) -> dict:
 def _geometria_mosaico() -> dict:
     ruta = (config.CACHE / "srtmgl30_mosaico_i2le.bin").with_suffix(".json")
     if not ruta.exists():
-        raise DatosNoDisponibles("Falta el mosaico SRTMGL30: `python -m similitud descargar-tierra` primero.")
+        raise DatosNoDisponibles("Missing the SRTMGL30 mosaic: run `python -m similitud descargar-tierra` first.")
     meta = json.loads(ruta.read_text(encoding="utf-8"))
     return {k: meta[k] for k in ("filas", "columnas", "lat0", "lon0", "paso")}
 
@@ -955,13 +955,13 @@ def construir_fraccion_agua(directorio: Path = DIR_SRTMSWBD, geometria: dict | N
     t0 = time.time()
     cajas = cajas_swbd(directorio)
     if cajas is None:
-        raise DatosNoDisponibles(f"Falta {directorio / CMR_GRANULOS}: lanza `python -m similitud descargar-agua`.")
+        raise DatosNoDisponibles(f"Missing {directorio / CMR_GRANULOS}: run `python -m similitud descargar-agua`.")
     zips = _zips_swbd(directorio)
     _exigir(not (set(zips) - set(cajas)), f"teselas en disco que CMR no lista: {sorted(set(zips) - set(cajas))[:5]}")
     faltan = set(cajas) - set(zips)
     if faltan:
-        raise DatosNoDisponibles(f"Faltan {len(faltan)} de {len(cajas)} teselas SRTMSWBD en {directorio}: vuelve a "
-                                 "lanzar `python -m similitud descargar-agua` (salta las ya descargadas).")
+        raise DatosNoDisponibles(f"{len(faltan)} of {len(cajas)} SRTMSWBD tiles missing in {directorio}: run "
+                                 "`python -m similitud descargar-agua` again (it skips tiles already downloaded).")
     s_cob, n_cob = COBERTURA_SWBD
     _exigir(all(s_cob <= la and la + 1 <= n_cob for la, _ in cajas), f"hay teselas fuera de {COBERTURA_SWBD}")
     desde_mosaico = geometria is None
@@ -1199,7 +1199,7 @@ def cargar_hgt_region(clave: str, lat: float, lon: float, lado_km: float) -> Rej
     return RejillaGeografica(
         cuerpo="earth", producto=prod["producto"], fuente=prod["fuente"], crudo=mos, escala=1.0, desplazamiento=0.0,
         radio_m=None, elipsoide=(config.WGS84_A, config.WGS84_F), sin_dato=VACIO_HGT,
-        referencia_vertical="altura sobre el geoide EGM96 (documentación LP DAAC); latitudes geodésicas WGS84",
+        referencia_vertical="height above the EGM96 geoid (LP DAAC documentation); WGS84 geodetic latitudes",
         criterio_validez="celda ≠ −32768 (vacío) y dentro de teselas existentes (sin tesela = océano según CMR)",
         procedencia={"teselas": sorted(z.name for z, _ in leidas.values()),
                      "teselas_oceano_segun_cmr": sorted(nombre_tesela(a, b) for a, b in nec if (a, b) not in leidas)},
@@ -1212,8 +1212,8 @@ def _curl_earthdata(url: str, destino: Path, tarro: Path) -> None:
                         "-m", "1800", "-o", str(parcial), url], capture_output=True, text=True)
     if r.returncode != 0 or not zipfile.is_zipfile(parcial):
         parcial.unlink(missing_ok=True)
-        raise DatosNoDisponibles(f"Earthdata rechazó {destino.name}: {r.stderr.strip()[:200]} "
-                                 "(¿credenciales en ~/.netrc? ¿aplicación LP DAAC autorizada en tu perfil?)")
+        raise DatosNoDisponibles(f"Earthdata rejected {destino.name}: {r.stderr.strip()[:200]} "
+                                 "(credentials in ~/.netrc? LP DAAC application authorized in your profile?)")
     shutil.move(parcial, destino)
 
 
@@ -1221,7 +1221,7 @@ def descargar_hgt(clave: str, lat: float, lon: float, lado_km: float) -> dict:
     """Descarga (Earthdata Login vía ~/.netrc) las teselas que cubren la ventana y anota cuáles no existen en CMR."""
     prod = PRODUCTOS_HGT[clave]
     if not (Path.home() / ".netrc").exists() and not os.environ.get("NETRC"):
-        raise DatosNoDisponibles("Falta ~/.netrc con las credenciales de Earthdata Login.")
+        raise DatosNoDisponibles("Missing ~/.netrc with the Earthdata Login credentials.")
     nec = teselas_necesarias(lat, lon, lado_km)
     s_, w_ = min(a for a, _ in nec), min(b for _, b in nec)
     n_, e_ = max(a for a, _ in nec) + 1, max(b for _, b in nec) + 1

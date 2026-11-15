@@ -1,0 +1,181 @@
+{
+ "generado": "2026-11-15T02:44:23+00:00",
+ "parametros": {
+  "orden": "python -m similitud buscar",
+  "k": 5,
+  "buscar_en": "earth",
+  "lado_km": "por defecto del motor (config.LADO_KM = 200)",
+  "producto_lunar_polar": "ldem_75s_240m / ldem_75n_240m si |lat| ≥ 78° y está en disco",
+  "validacion": "por sitio, ver «validado»"
+ },
+ "sitios": {
+  "mars:arcadia": {
+   "archivo": "mars_arcadia.json",
+   "segundos": 3.9,
+   "validado": true,
+   "producto": "por defecto del motor",
+   "lat": 47.2,
+   "lon": -176.0
+  },
+  "mars:arsia": {
+   "archivo": "mars_arsia.json",
+   "segundos": 3.7,
+   "validado": true,
+   "producto": "por defecto del motor",
+   "lat": -8.3,
+   "lon": -120.1
+  },
+  "mars:deuteronilus": {
+   "archivo": "mars_deuteronilus.json",
+   "segundos": 3.7,
+   "validado": true,
+   "producto": "por defecto del motor",
+   "lat": 44.0,
+   "lon": 24.0
+  },
+  "mars:elysium": {
+   "archivo": "mars_elysium.json",
+   "segundos": 4.1,
+   "validado": true,
+   "producto": "por defecto del motor",
+   "lat": 4.5,
+   "lon": 135.9
+  },
+  "mars:gale": {
+   "archivo": "mars_gale.json",
+   "segundos": 3.6,
+   "validado": true,
+   "producto": "por defecto del motor",
+   "lat": -5.4,
+   "lon": 137.8
+  },
+  "mars:hellas": {
+   "archivo": "mars_hellas.json",
+   "segundos": 3.7,
+   "validado": true,
+   "producto": "por defecto del motor",
+   "lat": -42.4,
+   "lon": 70.5
+  },
+  "mars:jezero": {
+   "archivo": "mars_jezero.json",
+   "segundos": 4.9,
+   "validado": true,
+   "producto": "por defecto del motor",
+   "lat": 18.4,
+   "lon": 77.7
+  },
+  "mars:melas": {
+   "archivo": "mars_melas.json",
+   "segundos": 4.0,
+   "validado": true,
+   "producto": "por defecto del motor",
+   "lat": -9.8,
+   "lon": -75.0
+  },
+  "mars:meridiani": {
+   "archivo": "mars_meridiani.json",
+   "segundos": 4.2,
+   "validado": true,
+   "producto": "por defecto del motor",
+   "lat": -1.9,
+   "lon": -5.0
+  },
+  "mars:utopia": {
+   "archivo": "mars_utopia.json",
+   "segundos": 3.9,
+   "validado": true,
+   "producto": "por defecto del motor",
+   "lat": 46.0,
+   "lon": 118.0
+  },
+  "moon:aristarchus": {
+   "archivo": "moon_aristarchus.json",
+   "segundos": 9.7,
+   "validado": true,
+   "producto": "por defecto del motor",
+   "lat": 23.7,
+   "lon": -47.4
+  },
+  "moon:cabeus": {
+   "archivo": "moon_cabeus.json",
+   "segundos": 21.0,
+   "validado": true,
+   "producto": "ldem_75s_240m",
+   "lat": -84.9,
+   "lon": -35.5
+  },
+  "moon:connecting": {
+   "archivo": "moon_connecting.json",
+   "segundos": 21.3,
+   "validado": true,
+   "producto": "ldem_75s_240m",
+   "lat": -89.4,
+   "lon": -111.0
+  },
+  "moon:malapert": {
+   "archivo": "moon_malapert.json",
+   "segundos": 19.5,
+   "validado": true,
+   "producto": "ldem_75s_240m",
+   "lat": -85.9,
+   "lon": 2.9
+  },
+  "moon:marius": {
+   "archivo": "moon_marius.json",
+   "segundos": 9.6,
+   "validado": true,
+   "producto": "por defecto del motor",
+   "lat": 14.1,
+   "lon": -56.8
+  },
+  "moon:peary": {
+   "archivo": "moon_peary.json",
+   "segundos": 20.6,
+   "validado": true,
+   "producto": "ldem_75n_240m",
+   "lat": 88.6,
+   "lon": 33.0
+  },
+  "moon:schrodinger": {
+   "archivo": "moon_schrodinger.json",
+   "segundos": 9.4,
+   "validado": true,
+   "producto": "por defecto del motor",
+   "lat": -75.0,
+   "lon": 132.4
+  },
+  "moon:shackleton": {
+   "archivo": "moon_shackleton.json",
+   "segundos": 424.0,
+   "validado": true,
+   "producto": "ldem_75s_240m",
+   "lat": -89.9,
+   "lon": 0.0
+  },
+  "moon:sinus": {
+   "archivo": "moon_sinus.json",
+   "segundos": 9.4,
+   "validado": true,
+   "producto": "por defecto del motor",
+   "lat": 0.4,
+   "lon": 1.4
+  },
+  "moon:taurus": {
+   "archivo": "moon_taurus.json",
+   "segundos": 9.4,
+   "validado": true,
+   "producto": "por defecto del motor",
+   "lat": 20.2,
+   "lon": 30.8
+  },
+  "moon:tranquillitatis": {
+   "archivo": "moon_tranquillitatis.json",
+   "segundos": 9.4,
+   "validado": true,
+   "producto": "por defecto del motor",
+   "lat": 8.34,
+   "lon": 33.2
+  }
+ }
+}

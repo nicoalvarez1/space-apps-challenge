@@ -1,0 +1,52 @@
+/* ============================================================================
+   Llamada principal «Where to train on Earth?» (js/main.js → ctaEntreno, ctaResultados) y vista «Realistic» de los
+   mapas del entrenamiento (js/graficos/realista.js, usada por analogo.js y tierra-cara.js). Solo añade reglas.
+   ============================================================================ */
+
+/* ---------- llamada principal: ancho completo, alta, degradado de acento con un pulso suave ---------- */
+.cta-train { position: relative; display: flex; align-items: center; gap: .85rem; width: 100%; min-height: 4.6rem;
+  margin: .1rem 0 1rem; padding: .95rem 1.1rem; text-align: left; border: 0; border-radius: 12px; color: #02201a;
+  background: linear-gradient(118deg, #5dffd0 0%, #45e6f0 52%, #7fb2ff 100%);
+  box-shadow: 0 0 0 1px rgba(93, 255, 208, .65), 0 8px 26px -10px rgba(93, 255, 208, .6);
+  animation: cta-pulso 2.8s ease-in-out infinite; transition: filter .15s, transform .15s; }
+.cta-train:hover { filter: brightness(1.07) saturate(1.05); }
+.cta-train:active { transform: translateY(1px); }
+.cta-train:focus { outline: none; }
+.cta-train:focus-visible { outline: 3px solid #fff; outline-offset: 3px; box-shadow: 0 0 0 6px rgba(4, 7, 18, .9), 0 0 0 8px var(--accent); }
+.cta-ico { flex: none; font-size: 2.1rem; line-height: 1; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .25)); }
+.cta-txt { display: grid; gap: .15rem; min-width: 0; }
+.cta-txt > b { font-size: 1.08rem; font-weight: 800; letter-spacing: .01em; line-height: 1.2; }
+.cta-sub { font-size: .78rem; font-weight: 600; line-height: 1.35; opacity: .86; }
+.cta-dato { font-size: .7rem; line-height: 1.35; opacity: .8; }
+.cta-dato:empty { display: none; }
+.cta-dato b { font-weight: 800; }
+.cta-fl { flex: none; margin-left: auto; font-size: 1.5rem; font-weight: 800; transition: transform .2s; }
+.cta-train:hover .cta-fl, .cta-train:focus-visible .cta-fl { transform: translateX(4px); }
+@keyframes cta-pulso {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(93, 255, 208, .65), 0 6px 22px -10px rgba(93, 255, 208, .5); }
+  50% { box-shadow: 0 0 0 1px rgba(93, 255, 208, .95), 0 0 0 6px rgba(93, 255, 208, .13), 0 10px 32px -8px rgba(93, 255, 208, .75); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cta-train { animation: none; transition: none; }
+  .cta-fl { transition: none; }
+}
+
+/* en el panel de resultados: bajo la cabecera, antes de «Compare with measured data» (que queda como secundaria) */
+#res-entreno { padding: 0 1.2rem; }
+.cta-train.res { margin: 0 0 .55rem; min-height: 0; padding: .8rem 1rem; }
+.cta-train.res .cta-ico { font-size: 1.8rem; }
+.cta-sub b { font-weight: 800; }
+.cta-arriba { display: block; margin: 1.2rem auto .2rem; }
+
+@media (max-width: 800px) {
+  #res-entreno { padding: 0 1rem; }
+  .cta-train { min-height: 4rem; padding: .8rem .9rem; gap: .7rem; }
+  .cta-ico { font-size: 1.7rem; }
+  .cta-txt > b { font-size: 1rem; }
+}
+
+/* ---------- mapas del entrenamiento: suaves (el lienzo ya va a la resolución de pantalla) ---------- */
+.an-mapas .cmp-mapas canvas, .g-tr-mapa canvas { image-rendering: auto; }
+.rl-nota { margin: .35rem 0 0; }
+.rl-ley .g-en-nota { justify-content: flex-start; }
+.g-seg button[disabled] { opacity: .45; cursor: not-allowed; }

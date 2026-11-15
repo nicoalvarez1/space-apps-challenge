@@ -1,0 +1,1184 @@
+{
+ "generado": "2026-11-15T02:51:47Z",
+ "segundos": 85.1,
+ "descripcion": "Earth analogs precomputed by the similarity engine (python -m similitud precalcular-web) for the sites in js/data.js, used by the web when the engine server is not running.",
+ "parametros": {
+  "lado_km": 200.0,
+  "k": 5,
+  "buscar_en": "earth",
+  "validar": true,
+  "lat_mde_polar_luna": 78.0,
+  "polares_en_disco": [
+   "ldem_75n_240m",
+   "ldem_75s_240m"
+  ]
+ },
+ "cuantizacion": {
+  "json": "compact (no indentation)",
+  "visual.mapas": {
+   "elev_rel": "rounded to 1 decimals",
+   "pendiente": "rounded to 2 decimals"
+  },
+  "resto": "unchanged (the same numbers the server returns)"
+ },
+ "sitios": {
+  "moon:shackleton": {
+   "cuerpo": "moon",
+   "id": "shackleton",
+   "nombre": "Shackleton crater rim",
+   "lat": -89.9,
+   "lon": 0.0,
+   "producto": "ldem_75s_240m",
+   "archivo": "moon_shackleton.json",
+   "comparaciones": [
+    "moon_shackleton_1.json",
+    "moon_shackleton_2.json",
+    "moon_shackleton_3.json",
+    "moon_shackleton_4.json",
+    "moon_shackleton_5.json"
+   ],
+   "candidatos": [
+    {
+     "rango": 1,
+     "lat": -27.357057829111543,
+     "lon": -66.61016949152543,
+     "peor_percentil": 0.05673758865248227
+    },
+    {
+     "rango": 2,
+     "lat": -0.3169389064258815,
+     "lon": -78.94736842105266,
+     "peor_percentil": 0.08089217802446294
+    },
+    {
+     "rango": 3,
+     "lat": 9.597771365225528,
+     "lon": -70.07633587786262,
+     "peor_percentil": 0.08315345873162709
+    },
+    {
+     "rango": 4,
+     "lat": -29.159732423957255,
+     "lon": -67.75862068965517,
+     "peor_percentil": 0.09014287182649809
+    },
+    {
+     "rango": 5,
+     "lat": -4.8236253935401585,
+     "lon": 143.727959697733,
+     "peor_percentil": 0.09271250899373008
+    }
+   ],
+   "segundos": 17.4
+  },
+  "moon:malapert": {
+   "cuerpo": "moon",
+   "id": "malapert",
+   "nombre": "Malapert massif",
+   "lat": -85.9,
+   "lon": 2.9,
+   "producto": "ldem_75s_240m",
+   "archivo": "moon_malapert.json",
+   "comparaciones": [
+    "moon_malapert_1.json",
+    "moon_malapert_2.json",
+    "moon_malapert_3.json",
+    "moon_malapert_4.json",
+    "moon_malapert_5.json"
+   ],
+   "candidatos": [
+    {
+     "rango": 1,
+     "lat": -27.357057829111543,
+     "lon": -66.61016949152543,
+     "peor_percentil": 0.06619385342789598
+    },
+    {
+     "rango": 2,
+     "lat": -4.8236253935401585,
+     "lon": 143.727959697733,
+     "peor_percentil": 0.08633980881899475
+    },
+    {
+     "rango": 3,
+     "lat": -3.0209507986944475,
+     "lon": 137.9396984924623,
+     "peor_percentil": 0.08644259430568403
+    },
+    {
+     "rango": 4,
+     "lat": 9.597771365225528,
+     "lon": -70.07633587786262,
+     "peor_percentil": 0.08716209271250899
+    },
+    {
+     "rango": 5,
+     "lat": -0.3169389064258815,
+     "lon": -78.94736842105266,
+     "peor_percentil": 0.08777880563264467
+    }
+   ],
+   "segundos": 22.5
+  },
+  "moon:connecting": {
+   "cuerpo": "moon",
+   "id": "connecting",
+   "nombre": "Shackleton–de Gerlache ridge",
+   "lat": -89.4,
+   "lon": -111.0,
+   "producto": "ldem_75s_240m",
+   "archivo": "moon_connecting.json",
+   "comparaciones": [
+    "moon_connecting_1.json",
+    "moon_connecting_2.json",
+    "moon_connecting_3.json",
+    "moon_connecting_4.json",
+    "moon_connecting_5.json"
+   ],
+   "candidatos": [
+    {
+     "rango": 1,
+     "lat": -27.357057829111543,
+     "lon": -66.61016949152543,
+     "peor_percentil": 0.05324288210504677
+    },
+    {
+     "rango": 2,
+     "lat": -0.3169389064258815,
+     "lon": -78.94736842105266,
+     "peor_percentil": 0.07369719395621338
+    },
+    {
+     "rango": 3,
+     "lat": 9.597771365225528,
+     "lon": -70.07633587786262,
+     "peor_percentil": 0.08078939253777366
+    },
+    {
+     "rango": 4,
+     "lat": -29.159732423957255,
+     "lon": -67.75862068965517,
+     "peor_percentil": 0.0856203104121698
+    },
+    {
+     "rango": 5,
+     "lat": -24.65304593684298,
+     "lon": -64.95867768595042,
+     "peor_percentil": 0.09589885908109774
+    }
+   ],
+   "segundos": 23.1
+  },
+  "moon:cabeus": {
+   "cuerpo": "moon",
+   "id": "cabeus",
+   "nombre": "Cabeus crater",
+   "lat": -84.9,
+   "lon": -35.5,
+   "producto": "ldem_75s_240m",
+   "archivo": "moon_cabeus.json",
+   "comparaciones": [
+    "moon_cabeus_1.json",
+    "moon_cabeus_2.json",
+    "moon_cabeus_3.json",
+    "moon_cabeus_4.json",
+    "moon_cabeus_5.json"
+   ],
+   "candidatos": [
+    {
+     "rango": 1,
+     "lat": -27.357057829111543,
+     "lon": -66.61016949152543,
+     "peor_percentil": 0.06691335183472094
+    },
+    {
+     "rango": 2,
+     "lat": -0.3169389064258815,
+     "lon": -78.94736842105266,
+     "peor_percentil": 0.07924761023743447
+    },
+    {
+     "rango": 3,
+     "lat": -3.0209507986944475,
+     "lon": 137.9396984924623,
+     "peor_percentil": 0.08243396032480214
+    },
+    {
+     "rango": 4,
+     "lat": 9.597771365225528,
+     "lon": -70.07633587786262,
+     "peor_percentil": 0.0851063829787234
+    },
+    {
+     "rango": 5,
+     "lat": -4.8236253935401585,
+     "lon": 143.727959697733,
+     "peor_percentil": 0.08582588138554836
+    }
+   ],
+   "segundos": 22.9
+  },
+  "moon:peary": {
+   "cuerpo": "moon",
+   "id": "peary",
+   "nombre": "Peary crater",
+   "lat": 88.6,
+   "lon": 33.0,
+   "producto": "ldem_75n_240m",
+   "archivo": "moon_peary.json",
+   "comparaciones": [
+    "moon_peary_1.json",
+    "moon_peary_2.json",
+    "moon_peary_3.json",
+    "moon_peary_4.json",
+    "moon_peary_5.json"
+   ],
+   "candidatos": [
+    {
+     "rango": 1,
+     "lat": -15.639672962614423,
+     "lon": -72.65625,
+     "peor_percentil": 0.05026210299105766
+    },
+    {
+     "rango": 2,
+     "lat": 25.821842718836926,
+     "lon": 95.76601671309191,
+     "peor_percentil": 0.05046767396443622
+    },
+    {
+     "rango": 3,
+     "lat": -3.922288096117303,
+     "lon": 139.748743718593,
+     "peor_percentil": 0.05077603042450406
+    },
+    {
+     "rango": 4,
+     "lat": -8.42897458323158,
+     "lon": -76.1012658227848,
+     "peor_percentil": 0.06506321307431391
+    },
+    {
+     "rango": 5,
+     "lat": 17.709807042031226,
+     "lon": -96.15789473684208,
+     "peor_percentil": 0.06814677767499229
+    }
+   ],
+   "segundos": 18.0
+  },
+  "moon:tranquillitatis": {
+   "cuerpo": "moon",
+   "id": "tranquillitatis",
+   "nombre": "Mare Tranquillitatis pit",
+   "lat": 8.34,
+   "lon": 33.2,
+   "producto": null,
+   "archivo": "moon_tranquillitatis.json",
+   "comparaciones": [
+    "moon_tranquillitatis_1.json",
+    "moon_tranquillitatis_2.json",
+    "moon_tranquillitatis_3.json",
+    "moon_tranquillitatis_4.json",
+    "moon_tranquillitatis_5.json"
+   ],
+   "candidatos": [
+    {
+     "rango": 1,
+     "lat": 31.22986650337406,
+     "lon": 12.140762463343094,
+     "peor_percentil": 0.13761966927763272
+    },
+    {
+     "rango": 2,
+     "lat": 22.216493529145502,
+     "lon": 46.34146341463415,
+     "peor_percentil": 0.13968668407310705
+    },
+    {
+     "rango": 3,
+     "lat": 16.80846974460837,
+     "lon": 45.70680628272251,
+     "peor_percentil": 0.1469756309834639
+    },
+    {
+     "rango": 4,
+     "lat": 33.93387839564262,
+     "lon": 38.61027190332328,
+     "peor_percentil": 0.16177110530896432
+    },
+    {
+     "rango": 5,
+     "lat": 64.57934650801971,
+     "lon": -121.0526315789474,
+     "peor_percentil": 0.16242384682332464
+    }
+   ],
+   "segundos": 7.7
+  },
+  "moon:marius": {
+   "cuerpo": "moon",
+   "id": "marius",
+   "nombre": "Marius Hills skylight",
+   "lat": 14.1,
+   "lon": -56.8,
+   "producto": null,
+   "archivo": "moon_marius.json",
+   "comparaciones": [
+    "moon_marius_1.json",
+    "moon_marius_2.json",
+    "moon_marius_3.json",
+    "moon_marius_4.json",
+    "moon_marius_5.json"
+   ],
+   "candidatos": [
+    {
+     "rango": 1,
+     "lat": 41.14457677502546,
+     "lon": 95.39999999999998,
+     "peor_percentil": 0.054286335944299394
+    },
+    {
+     "rango": 2,
+     "lat": 41.14457677502546,
+     "lon": 97.80000000000001,
+     "peor_percentil": 0.07016971279373369
+    },
+    {
+     "rango": 3,
+     "lat": 42.04591407244832,
+     "lon": 105.20270270270271,
+     "peor_percentil": 0.07517406440382941
+    },
+    {
+     "rango": 4,
+     "lat": 41.14457677502546,
+     "lon": 93.0,
+     "peor_percentil": 0.07637075718015666
+    },
+    {
+     "rango": 5,
+     "lat": 31.22986650337406,
+     "lon": -102.9325513196481,
+     "peor_percentil": 0.08942558746736293
+    }
+   ],
+   "segundos": 10.1
+  },
+  "moon:aristarchus": {
+   "cuerpo": "moon",
+   "id": "aristarchus",
+   "nombre": "Aristarchus plateau",
+   "lat": 23.7,
+   "lon": -47.4,
+   "producto": null,
+   "archivo": "moon_aristarchus.json",
+   "comparaciones": [
+    "moon_aristarchus_1.json",
+    "moon_aristarchus_2.json",
+    "moon_aristarchus_3.json",
+    "moon_aristarchus_4.json",
+    "moon_aristarchus_5.json"
+   ],
+   "candidatos": [
+    {
+     "rango": 1,
+     "lat": -31.86374431622582,
+     "lon": -65.30973451327435,
+     "peor_percentil": 0.0595082680591819
+    },
+    {
+     "rango": 2,
+     "lat": 46.5526005595626,
+     "lon": 86.05839416058393,
+     "peor_percentil": 0.06157528285465622
+    },
+    {
+     "rango": 3,
+     "lat": 44.74992596471689,
+     "lon": 96.0424028268551,
+     "peor_percentil": 0.06483899042645778
+    },
+    {
+     "rango": 4,
+     "lat": 69.08603299513399,
+     "lon": -31.690140845070403,
+     "peor_percentil": 0.06995213228894691
+    },
+    {
+     "rango": 5,
+     "lat": -28.2583951265344,
+     "lon": -65.12820512820514,
+     "peor_percentil": 0.08072236727589208
+    }
+   ],
+   "segundos": 10.0
+  },
+  "moon:schrodinger": {
+   "cuerpo": "moon",
+   "id": "schrodinger",
+   "nombre": "Schrödinger basin",
+   "lat": -75.0,
+   "lon": 132.4,
+   "producto": null,
+   "archivo": "moon_schrodinger.json",
+   "comparaciones": [
+    "moon_schrodinger_1.json",
+    "moon_schrodinger_2.json",
+    "moon_schrodinger_3.json",
+    "moon_schrodinger_4.json",
+    "moon_schrodinger_5.json"
+   ],
+   "candidatos": [
+    {
+     "rango": 1,
+     "lat": 31.22986650337406,
+     "lon": -7.917888563049928,
+     "peor_percentil": 0.024042645778938207
+    },
+    {
+     "rango": 2,
+     "lat": 6.893759472956962,
+     "lon": -74.09090909090907,
+     "peor_percentil": 0.03057006092254134
+    },
+    {
+     "rango": 3,
+     "lat": 18.611144339454082,
+     "lon": 42.38095238095238,
+     "peor_percentil": 0.06005221932114883
+    },
+    {
+     "rango": 4,
+     "lat": 36.63789028791119,
+     "lon": 68.0625,
+     "peor_percentil": 0.06538294168842472
+    },
+    {
+     "rango": 5,
+     "lat": -13.836998367768713,
+     "lon": -68.37209302325579,
+     "peor_percentil": 0.072236727589208
+    }
+   ],
+   "segundos": 9.3
+  },
+  "moon:taurus": {
+   "cuerpo": "moon",
+   "id": "taurus",
+   "nombre": "Taurus-Littrow",
+   "lat": 20.2,
+   "lon": 30.8,
+   "producto": null,
+   "archivo": "moon_taurus.json",
+   "comparaciones": [
+    "moon_taurus_1.json",
+    "moon_taurus_2.json",
+    "moon_taurus_3.json",
+    "moon_taurus_4.json",
+    "moon_taurus_5.json"
+   ],
+   "candidatos": [
+    {
+     "rango": 1,
+     "lat": 6.893759472956962,
+     "lon": -74.09090909090907,
+     "peor_percentil": 0.07365100087032202
+    },
+    {
+     "rango": 2,
+     "lat": 30.328529205951202,
+     "lon": 57.034883720930225,
+     "peor_percentil": 0.08453002610966058
+    },
+    {
+     "rango": 3,
+     "lat": 36.63789028791119,
+     "lon": 83.8125,
+     "peor_percentil": 0.09149260226283724
+    },
+    {
+     "rango": 4,
+     "lat": 40.243239477602614,
+     "lon": 46.7763157894737,
+     "peor_percentil": 0.09519147084421235
+    },
+    {
+     "rango": 5,
+     "lat": 33.03254109821977,
+     "lon": -115.8682634730539,
+     "peor_percentil": 0.09584421235857267
+    }
+   ],
+   "segundos": 9.1
+  },
+  "moon:sinus": {
+   "cuerpo": "moon",
+   "id": "sinus",
+   "nombre": "Sinus Medii plain",
+   "lat": 0.4,
+   "lon": 1.4,
+   "producto": null,
+   "archivo": "moon_sinus.json",
+   "comparaciones": [
+    "moon_sinus_1.json",
+    "moon_sinus_2.json",
+    "moon_sinus_3.json",
+    "moon_sinus_4.json",
+    "moon_sinus_5.json"
+   ],
+   "candidatos": [
+    {
+     "rango": 1,
+     "lat": 33.93387839564262,
+     "lon": 57.09969788519638,
+     "peor_percentil": 0.02295474325500435
+    },
+    {
+     "rango": 2,
+     "lat": 4.189747580688396,
+     "lon": 34.824120603015075,
+     "peor_percentil": 0.02589208006962576
+    },
+    {
+     "rango": 3,
+     "lat": 32.13120380079691,
+     "lon": -105.97633136094674,
+     "peor_percentil": 0.04275456919060052
+    },
+    {
+     "rango": 4,
+     "lat": 4.189747580688396,
+     "lon": 32.1105527638191,
+     "peor_percentil": 0.04862924281984334
+    },
+    {
+     "rango": 5,
+     "lat": -37.271768100762955,
+     "lon": -68.70662460567826,
+     "peor_percentil": 0.05004351610095736
+    }
+   ],
+   "segundos": 9.2
+  },
+  "mars:jezero": {
+   "cuerpo": "mars",
+   "id": "jezero",
+   "nombre": "Jezero crater",
+   "lat": 18.4,
+   "lon": 77.7,
+   "producto": null,
+   "archivo": "mars_jezero.json",
+   "comparaciones": [
+    "mars_jezero_1.json",
+    "mars_jezero_2.json",
+    "mars_jezero_3.json",
+    "mars_jezero_4.json",
+    "mars_jezero_5.json"
+   ],
+   "candidatos": [
+    {
+     "rango": 1,
+     "lat": 28.52585461110549,
+     "lon": -103.37142857142857,
+     "peor_percentil": 0.05689798833472206
+    },
+    {
+     "rango": 2,
+     "lat": 46.5526005595626,
+     "lon": 97.88321167883214,
+     "peor_percentil": 0.06487322937745507
+    },
+    {
+     "rango": 3,
+     "lat": 11.400445960071238,
+     "lon": 36.368286445012785,
+     "peor_percentil": 0.06534936317105107
+    },
+    {
+     "rango": 4,
+     "lat": 35.736552990488335,
+     "lon": 60.55555555555554,
+     "peor_percentil": 0.07772884180454707
+    },
+    {
+     "rango": 5,
+     "lat": 33.93387839564262,
+     "lon": -112.56797583081573,
+     "peor_percentil": 0.08475181526008808
+    }
+   ],
+   "segundos": 2.8
+  },
+  "mars:gale": {
+   "cuerpo": "mars",
+   "id": "gale",
+   "nombre": "Gale crater",
+   "lat": -5.4,
+   "lon": 137.8,
+   "producto": null,
+   "archivo": "mars_gale.json",
+   "comparaciones": [
+    "mars_gale_1.json",
+    "mars_gale_2.json",
+    "mars_gale_3.json",
+    "mars_gale_4.json",
+    "mars_gale_5.json"
+   ],
+   "candidatos": [
+    {
+     "rango": 1,
+     "lat": -17.442347557460135,
+     "lon": -69.4488188976378,
+     "peor_percentil": 0.09165575526723009
+    },
+    {
+     "rango": 2,
+     "lat": -21.047696747151555,
+     "lon": -69.19354838709677,
+     "peor_percentil": 0.0997500297583621
+    },
+    {
+     "rango": 3,
+     "lat": 56.46731083121401,
+     "lon": 159.5454545454545,
+     "peor_percentil": 0.10582073562671111
+    },
+    {
+     "rango": 4,
+     "lat": 43.84858866729403,
+     "lon": 78.125,
+     "peor_percentil": 0.10677300321390311
+    },
+    {
+     "rango": 5,
+     "lat": 36.63789028791119,
+     "lon": 84.9375,
+     "peor_percentil": 0.11034400666587312
+    }
+   ],
+   "segundos": 3.6
+  },
+  "mars:arcadia": {
+   "cuerpo": "mars",
+   "id": "arcadia",
+   "nombre": "Arcadia Planitia",
+   "lat": 47.2,
+   "lon": -176.0,
+   "producto": null,
+   "archivo": "mars_arcadia.json",
+   "comparaciones": [
+    "mars_arcadia_1.json",
+    "mars_arcadia_2.json",
+    "mars_arcadia_3.json",
+    "mars_arcadia_4.json",
+    "mars_arcadia_5.json"
+   ],
+   "candidatos": [
+    {
+     "rango": 1,
+     "lat": 57.36864812863686,
+     "lon": 79.53488372093022,
+     "peor_percentil": 0.03773360314248304
+    },
+    {
+     "rango": 2,
+     "lat": 56.46731083121401,
+     "lon": 82.63636363636363,
+     "peor_percentil": 0.04511367694322105
+    },
+    {
+     "rango": 3,
+     "lat": 51.05928704667688,
+     "lon": 27.968127490039848,
+     "peor_percentil": 0.04570884418521604
+    },
+    {
+     "rango": 4,
+     "lat": -3.922288096117303,
+     "lon": -74.62311557788945,
+     "peor_percentil": 0.047732412807999045
+    },
+    {
+     "rango": 5,
+     "lat": -15.639672962614423,
+     "lon": 22.03125,
+     "peor_percentil": 0.05011308177597905
+    }
+   ],
+   "segundos": 3.7
+  },
+  "mars:utopia": {
+   "cuerpo": "mars",
+   "id": "utopia",
+   "nombre": "Utopia Planitia",
+   "lat": 46.0,
+   "lon": 118.0,
+   "producto": null,
+   "archivo": "mars_utopia.json",
+   "comparaciones": [
+    "mars_utopia_1.json",
+    "mars_utopia_2.json",
+    "mars_utopia_3.json",
+    "mars_utopia_4.json",
+    "mars_utopia_5.json"
+   ],
+   "candidatos": [
+    {
+     "rango": 1,
+     "lat": 10.499108662648384,
+     "lon": 23.418367346938766,
+     "peor_percentil": 0.04856564694679205
+    },
+    {
+     "rango": 2,
+     "lat": 22.216493529145502,
+     "lon": 29.756097560975604,
+     "peor_percentil": 0.05356505177955005
+    },
+    {
+     "rango": 3,
+     "lat": -21.94903404457441,
+     "lon": 135.72972972972974,
+     "peor_percentil": 0.06011189144149506
+    },
+    {
+     "rango": 4,
+     "lat": -29.159732423957255,
+     "lon": 130.8620689655172,
+     "peor_percentil": 0.06058802523509106
+    },
+    {
+     "rango": 5,
+     "lat": 23.11783082656836,
+     "lon": 42.670299727520444,
+     "peor_percentil": 0.06273062730627306
+    }
+   ],
+   "segundos": 3.6
+  },
+  "mars:deuteronilus": {
+   "cuerpo": "mars",
+   "id": "deuteronilus",
+   "nombre": "Deuteronilus Mensae",
+   "lat": 44.0,
+   "lon": 24.0,
+   "producto": null,
+   "archivo": "mars_deuteronilus.json",
+   "comparaciones": [
+    "mars_deuteronilus_1.json",
+    "mars_deuteronilus_2.json",
+    "mars_deuteronilus_3.json",
+    "mars_deuteronilus_4.json",
+    "mars_deuteronilus_5.json"
+   ],
+   "candidatos": [
+    {
+     "rango": 1,
+     "lat": 38.4405648827569,
+     "lon": -105.5769230769231,
+     "peor_percentil": 0.03344839900011903
+    },
+    {
+     "rango": 2,
+     "lat": 15.907132447185516,
+     "lon": 37.96875,
+     "peor_percentil": 0.034281633138912034
+    },
+    {
+     "rango": 3,
+     "lat": 37.53922758533405,
+     "lon": 90.56962025316454,
+     "peor_percentil": 0.04856564694679205
+    },
+    {
+     "rango": 4,
+     "lat": 43.84858866729403,
+     "lon": -113.125,
+     "peor_percentil": 0.05154148315676705
+    },
+    {
+     "rango": 5,
+     "lat": 29.427191908528346,
+     "lon": 54.46685878962535,
+     "peor_percentil": 0.062135460064278066
+    }
+   ],
+   "segundos": 3.4
+  },
+  "mars:hellas": {
+   "cuerpo": "mars",
+   "id": "hellas",
+   "nombre": "Hellas basin",
+   "lat": -42.4,
+   "lon": 70.5,
+   "producto": null,
+   "archivo": "mars_hellas.json",
+   "comparaciones": [
+    "mars_hellas_1.json",
+    "mars_hellas_2.json",
+    "mars_hellas_3.json",
+    "mars_hellas_4.json",
+    "mars_hellas_5.json"
+   ],
+   "candidatos": [
+    {
+     "rango": 1,
+     "lat": 35.736552990488335,
+     "lon": 60.55555555555554,
+     "peor_percentil": 0.06308772765147007
+    },
+    {
+     "rango": 2,
+     "lat": 28.52585461110549,
+     "lon": 61.19999999999999,
+     "peor_percentil": 0.08475181526008808
+    },
+    {
+     "rango": 3,
+     "lat": 33.03254109821977,
+     "lon": 55.50898203592814,
+     "peor_percentil": 0.08641828353767408
+    },
+    {
+     "rango": 4,
+     "lat": 36.63789028791119,
+     "lon": 111.9375,
+     "peor_percentil": 0.0918938221640281
+    },
+    {
+     "rango": 5,
+     "lat": 32.13120380079691,
+     "lon": 67.63313609467457,
+     "peor_percentil": 0.09891679561956909
+    }
+   ],
+   "segundos": 3.5
+  },
+  "mars:arsia": {
+   "cuerpo": "mars",
+   "id": "arsia",
+   "nombre": "Arsia Mons lava tubes",
+   "lat": -8.3,
+   "lon": -120.1,
+   "producto": null,
+   "archivo": "mars_arsia.json",
+   "comparaciones": [
+    "mars_arsia_1.json",
+    "mars_arsia_2.json",
+    "mars_arsia_3.json",
+    "mars_arsia_4.json",
+    "mars_arsia_5.json"
+   ],
+   "candidatos": [
+    {
+     "rango": 1,
+     "lat": 44.74992596471689,
+     "lon": 96.0424028268551,
+     "peor_percentil": 0.12486608737055112
+    },
+    {
+     "rango": 2,
+     "lat": -0.3169389064258815,
+     "lon": 37.44360902255639,
+     "peor_percentil": 0.15033924532793716
+    },
+    {
+     "rango": 3,
+     "lat": 40.243239477602614,
+     "lon": 95.32894736842104,
+     "peor_percentil": 0.15081537912153314
+    },
+    {
+     "rango": 4,
+     "lat": 43.84858866729403,
+     "lon": 91.875,
+     "peor_percentil": 0.16509939292941317
+    },
+    {
+     "rango": 5,
+     "lat": 36.63789028791119,
+     "lon": 60.1875,
+     "peor_percentil": 0.17831210570170217
+    }
+   ],
+   "segundos": 3.3
+  },
+  "mars:melas": {
+   "cuerpo": "mars",
+   "id": "melas",
+   "nombre": "Melas Chasma",
+   "lat": -9.8,
+   "lon": -75.0,
+   "producto": null,
+   "archivo": "mars_melas.json",
+   "comparaciones": [
+    "mars_melas_1.json",
+    "mars_melas_2.json",
+    "mars_melas_3.json",
+    "mars_melas_4.json",
+    "mars_melas_5.json"
+   ],
+   "candidatos": [
+    {
+     "rango": 1,
+     "lat": -23.751708639420123,
+     "lon": -64.60273972602738,
+     "peor_percentil": 0.06261159385787406
+    },
+    {
+     "rango": 2,
+     "lat": 42.04591407244832,
+     "lon": 85.74324324324323,
+     "peor_percentil": 0.07701464111415307
+    },
+    {
+     "rango": 3,
+     "lat": 41.14457677502546,
+     "lon": 47.400000000000006,
+     "peor_percentil": 0.08808475181526008
+    },
+    {
+     "rango": 4,
+     "lat": 35.736552990488335,
+     "lon": 82.77777777777777,
+     "peor_percentil": 0.09225092250922509
+    },
+    {
+     "rango": 5,
+     "lat": -31.86374431622582,
+     "lon": -68.49557522123894,
+     "peor_percentil": 0.09225092250922509
+    }
+   ],
+   "segundos": 3.5
+  },
+  "mars:elysium": {
+   "cuerpo": "mars",
+   "id": "elysium",
+   "nombre": "Elysium Planitia",
+   "lat": 4.5,
+   "lon": 135.9,
+   "producto": null,
+   "archivo": "mars_elysium.json",
+   "comparaciones": [
+    "mars_elysium_1.json",
+    "mars_elysium_2.json",
+    "mars_elysium_3.json",
+    "mars_elysium_4.json",
+    "mars_elysium_5.json"
+   ],
+   "candidatos": [
+    {
+     "rango": 1,
+     "lat": -3.0209507986944475,
+     "lon": 25.7788944723618,
+     "peor_percentil": 0.13403166289727414
+    },
+    {
+     "rango": 2,
+     "lat": 25.821842718836926,
+     "lon": -12.534818941504227,
+     "peor_percentil": 0.15545768360909415
+    },
+    {
+     "rango": 3,
+     "lat": 24.92050542141407,
+     "lon": 12.430939226519342,
+     "peor_percentil": 0.15724318533507917
+    },
+    {
+     "rango": 4,
+     "lat": 25.821842718836926,
+     "lon": 44.623955431754865,
+     "peor_percentil": 0.15998095464825615
+    },
+    {
+     "rango": 5,
+     "lat": -8.42897458323158,
+     "lon": -73.36708860759495,
+     "peor_percentil": 0.16605166051660517
+    }
+   ],
+   "segundos": 3.2
+  },
+  "mars:meridiani": {
+   "cuerpo": "mars",
+   "id": "meridiani",
+   "nombre": "Meridiani Planum",
+   "lat": -1.9,
+   "lon": -5.0,
+   "producto": null,
+   "archivo": "mars_meridiani.json",
+   "comparaciones": [
+    "mars_meridiani_1.json",
+    "mars_meridiani_2.json",
+    "mars_meridiani_3.json",
+    "mars_meridiani_4.json",
+    "mars_meridiani_5.json"
+   ],
+   "candidatos": [
+    {
+     "rango": 1,
+     "lat": -19.245022152305843,
+     "lon": 14.801061007957571,
+     "peor_percentil": 0.13653136531365315
+    },
+    {
+     "rango": 2,
+     "lat": -26.455720531688687,
+     "lon": 18.655462184873954,
+     "peor_percentil": 0.15069634567313414
+    },
+    {
+     "rango": 3,
+     "lat": -15.639672962614423,
+     "lon": 27.65625,
+     "peor_percentil": 0.15629091774788714
+    },
+    {
+     "rango": 4,
+     "lat": -28.2583951265344,
+     "lon": 20.0,
+     "peor_percentil": 0.15771931912867515
+    },
+    {
+     "rango": 5,
+     "lat": 25.821842718836926,
+     "lon": 31.587743732590525,
+     "peor_percentil": 0.15902868706106416
+    }
+   ],
+   "segundos": 2.9
+  }
+ },
+ "archivos": {
+  "moon_shackleton.json": 84513,
+  "moon_shackleton_1.json": 326206,
+  "moon_shackleton_2.json": 324896,
+  "moon_shackleton_3.json": 325392,
+  "moon_shackleton_4.json": 326082,
+  "moon_shackleton_5.json": 310700,
+  "moon_peary.json": 85240,
+  "moon_peary_1.json": 308693,
+  "moon_peary_2.json": 313534,
+  "moon_peary_3.json": 323475,
+  "moon_peary_4.json": 320936,
+  "moon_peary_5.json": 313926,
+  "moon_tranquillitatis.json": 84271,
+  "moon_tranquillitatis_1.json": 285899,
+  "moon_tranquillitatis_2.json": 288709,
+  "moon_tranquillitatis_3.json": 288055,
+  "moon_tranquillitatis_4.json": 287247,
+  "moon_tranquillitatis_5.json": 287912,
+  "mars_jezero.json": 84770,
+  "mars_jezero_1.json": 106784,
+  "mars_jezero_2.json": 106762,
+  "mars_jezero_3.json": 100021,
+  "mars_jezero_4.json": 106754,
+  "mars_jezero_5.json": 106512,
+  "moon_marius.json": 85054,
+  "moon_marius_1.json": 296374,
+  "moon_marius_2.json": 295859,
+  "moon_marius_3.json": 296592,
+  "moon_marius_4.json": 295165,
+  "moon_marius_5.json": 296662,
+  "moon_aristarchus.json": 84725,
+  "moon_aristarchus_1.json": 302575,
+  "moon_aristarchus_2.json": 294363,
+  "moon_aristarchus_3.json": 301265,
+  "moon_aristarchus_4.json": 286632,
+  "moon_aristarchus_5.json": 293864,
+  "moon_malapert.json": 84256,
+  "moon_malapert_1.json": 331167,
+  "moon_malapert_2.json": 315699,
+  "moon_malapert_3.json": 323614,
+  "moon_malapert_4.json": 330327,
+  "moon_malapert_5.json": 329904,
+  "moon_cabeus.json": 84161,
+  "moon_cabeus_1.json": 329614,
+  "moon_cabeus_2.json": 328323,
+  "moon_cabeus_3.json": 322037,
+  "moon_cabeus_4.json": 328790,
+  "moon_cabeus_5.json": 314128,
+  "moon_connecting.json": 84818,
+  "moon_connecting_1.json": 325878,
+  "moon_connecting_2.json": 324581,
+  "moon_connecting_3.json": 325024,
+  "moon_connecting_4.json": 325779,
+  "moon_connecting_5.json": 323384,
+  "mars_gale.json": 84368,
+  "mars_gale_1.json": 102821,
+  "mars_gale_2.json": 109130,
+  "mars_gale_3.json": 102319,
+  "mars_gale_4.json": 102653,
+  "mars_gale_5.json": 109185,
+  "moon_schrodinger.json": 84733,
+  "moon_schrodinger_1.json": 306956,
+  "moon_schrodinger_2.json": 291929,
+  "moon_schrodinger_3.json": 292340,
+  "moon_schrodinger_4.json": 297775,
+  "moon_schrodinger_5.json": 305076,
+  "mars_arcadia.json": 85387,
+  "mars_arcadia_1.json": 92067,
+  "mars_arcadia_2.json": 91772,
+  "mars_arcadia_3.json": 99354,
+  "mars_arcadia_4.json": 92712,
+  "mars_arcadia_5.json": 99750,
+  "moon_taurus.json": 84323,
+  "moon_taurus_1.json": 291674,
+  "moon_taurus_2.json": 304943,
+  "moon_taurus_3.json": 305803,
+  "moon_taurus_4.json": 298809,
+  "moon_taurus_5.json": 290329,
+  "moon_sinus.json": 84938,
+  "moon_sinus_1.json": 298319,
+  "moon_sinus_2.json": 300891,
+  "moon_sinus_3.json": 298280,
+  "moon_sinus_4.json": 297682,
+  "moon_sinus_5.json": 296973,
+  "mars_utopia.json": 85346,
+  "mars_utopia_1.json": 101550,
+  "mars_utopia_2.json": 101056,
+  "mars_utopia_3.json": 101432,
+  "mars_utopia_4.json": 94855,
+  "mars_utopia_5.json": 101262,
+  "mars_deuteronilus.json": 85150,
+  "mars_deuteronilus_1.json": 107737,
+  "mars_deuteronilus_2.json": 107631,
+  "mars_deuteronilus_3.json": 107913,
+  "mars_deuteronilus_4.json": 107493,
+  "mars_deuteronilus_5.json": 100900,
+  "mars_hellas.json": 84397,
+  "mars_hellas_1.json": 107179,
+  "mars_hellas_2.json": 107161,
+  "mars_hellas_3.json": 107334,
+  "mars_hellas_4.json": 106958,
+  "mars_hellas_5.json": 107050,
+  "mars_arsia.json": 83694,
+  "mars_arsia_1.json": 108659,
+  "mars_arsia_2.json": 109049,
+  "mars_arsia_3.json": 109382,
+  "mars_arsia_4.json": 108920,
+  "mars_arsia_5.json": 108666,
+  "mars_melas.json": 84715,
+  "mars_melas_1.json": 110422,
+  "mars_melas_2.json": 109900,
+  "mars_melas_3.json": 104407,
+  "mars_melas_4.json": 103330,
+  "mars_melas_5.json": 110130,
+  "mars_elysium.json": 84824,
+  "mars_elysium_1.json": 94164,
+  "mars_elysium_2.json": 101136,
+  "mars_elysium_3.json": 100910,
+  "mars_elysium_4.json": 101093,
+  "mars_elysium_5.json": 100950,
+  "mars_meridiani.json": 85256,
+  "mars_meridiani_1.json": 103865,
+  "mars_meridiani_2.json": 103513,
+  "mars_meridiani_3.json": 103399,
+  "mars_meridiani_4.json": 103076,
+  "mars_meridiani_5.json": 102870
+ },
+ "bytes_total": 23919928
+}

@@ -19,6 +19,8 @@ export const coord = (lat, lon) => `${nf(Math.abs(lat), 1)}°${lat >= 0 ? 'N' : 
 export const pct = (p) => (p === p ? Math.round(p * 100) : null);
 // El mismo percentil para escribirlo: «<1» y «>99» en los extremos (0 y 100 darían a entender que no hay nada más allá)
 export const pctTxt = (p) => (p !== p ? '—' : p < 0.005 ? '<1' : p > 0.995 ? '>99' : String(Math.round(p * 100)));
+// El percentil dicho en llano para lo visible: «higher than 93 %» (la definición exacta va en «Learn more»)
+export const masAltoQue = (p) => (p == null || p !== p ? '' : `higher than ${pctTxt(p)} %`);
 
 // ---------------------------------------------------------------------------
 //  Color
@@ -130,12 +132,29 @@ export function tabla({ titulo, cabeceras, filas, abierta = false }) {
     </table></div></details>`;
 }
 
-// Envoltorio de un gráfico: título (qué se ve), subtítulo (cómo leerlo), cuerpo, pie (de dónde sale cada número) y tabla.
-// `cuerpo`, `pie` y `tablaHtml` son HTML ya escapado; `titulo` y `sub` son texto.
-export function figura({ titulo, sub = '', cuerpo, pie = '', tablaHtml = '', clase = '' }) {
+// Envoltorio de un gráfico: título (qué se ve), subtítulo (una frase llana: cómo leerlo), cuerpo y, plegado tras
+// «Learn more», el pie (de dónde sale cada número), notas largas (`mas`) y la tabla. Nada se pierde: solo se pliega.
+// `cuerpo`, `pie`, `mas` y `tablaHtml` son HTML ya escapado; `titulo` y `sub` son texto.
+export function figura({ titulo, sub = '', cuerpo, pie = '', mas = '', tablaHtml = '', clase = '' }) {
+  const extra = `${mas}${pie ? `<p class="g-pie">${pie}</p>` : ''}${tablaHtml}`;
   return `<figure class="g-fig ${clase}"><figcaption><b class="g-tit">${esc(titulo)}</b>${sub ? `<span class="g-sub">${esc(sub)}</span>` : ''}</figcaption>
-    ${cuerpo}${pie ? `<p class="g-pie">${pie}</p>` : ''}${tablaHtml}</figure>`;
+    ${cuerpo}${masInfo(extra, '', clase.trim() || titulo)}</figure>`;
 }
+
+// Bloque plegable «Learn more» / «Show less» con HTML ya escapado dentro. Vacío → nada.
+// El texto del botón cambia por CSS (details[open]), así que no necesita JS y funciona con teclado (Intro / espacio).
+// `clave` (opcional): recuerda si el lector lo dejó abierto, para que siga abierto cuando el gráfico se repinta
+// (p. ej. al destacar otro emplazamiento). También se abre si dentro hay una tabla que debe ir abierta.
+const masAbiertos = new Set();
+if (typeof document !== 'undefined') document.addEventListener('toggle', (e) => {
+  const d = e.target;
+  if (d?.classList?.contains('g-mas') && d.dataset.masClave) (d.open ? masAbiertos.add(d.dataset.masClave) : masAbiertos.delete(d.dataset.masClave));
+}, true);
+export const masInfo = (html, clase = '', clave = '') => {
+  if (!html || !html.trim()) return '';
+  const abierto = (clave && masAbiertos.has(clave)) || /class="g-tabla"\s+open/.test(html);
+  return `<details class="g-mas ${clase}"${clave ? ` data-mas-clave="${esc(clave)}"` : ''}${abierto ? ' open' : ''}><summary><span class="g-mas-ver">Learn more</span><span class="g-mas-menos">Show less</span></summary><div class="g-mas-cuerpo">${html}</div></details>`;
+};
 
 // Leyenda: entradas = [{ clase, texto }] donde `clase` es la clase de la muestra (g-m-sel, g-m-ctx, g-m-planeta…)
 export const leyenda = (entradas) => `<div class="g-ley">${entradas.map((e) => `<span><i class="${esc(e.clase)}" aria-hidden="true"></i>${esc(e.texto)}</span>`).join('')}</div>`;

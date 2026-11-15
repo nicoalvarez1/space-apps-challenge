@@ -16,7 +16,7 @@
 // ============================================================================
 import { histograma, muestra } from '../analitica.js';
 import { RADIO_ZONA } from '../capas.js';
-import { esc, nf, pct, lineal, marcas, decimalesDe, conTip, tipHtml, tabla, figura, leyenda, nombreCorto, fuenteDe } from './base.js';
+import { esc, nf, pct, pctTxt, masAltoQue, lineal, marcas, decimalesDe, conTip, tipHtml, tabla, figura, leyenda, nombreCorto, fuenteDe } from './base.js';
 
 const W = 460, M = { l: 40, r: 12, b: 36 };              // viewBox: ancho fijo; el alto depende de las filas de puntos
 const ALTO = 132;                                         // alto del histograma
@@ -36,7 +36,7 @@ export function pintar(el, ctx) {
   const k = ctx.cols.find((x) => x.def.id === ctx.capa);
   if (!k) { el.innerHTML = '<p class="g-vacio">Choose a layer to see how it is distributed over the surface.</p>'; return; }
   const { def, capa: c } = k, cuerpo = ctx.cuerpo, h = histograma(c);
-  const titulo = `${def.corto}: how it is distributed over the surface ${cuerpo.de}`;
+  const titulo = `${def.corto}: common or rare ${cuerpo.en}?`;
   if (h.lo !== h.lo || h.hi !== h.hi) {
     el.innerHTML = figura({ titulo, cuerpo: '<p class="g-vacio">This layer has no cell with data.</p>' });
     return;
@@ -97,19 +97,19 @@ export function pintar(el, ctx) {
 
   // ---- puntos de los emplazamientos (el destacado, el último: queda encima)
   const orden = [...pts.filter((p) => !p.sel), ...pts.filter((p) => p.sel)];
-  const percentilDe = (v) => { const P = pct(v.pct); return P == null ? '' : `percentile ${P}`; };
+  const percentilDe = (v) => masAltoQue(v.pct);
   const zonas = orden.map((p) => `<rect class="g-hit" data-sitio="${esc(p.f.sitio.id)}" aria-hidden="true" x="${f1(p.x - 8)}" y="${cy(p) - 8}" width="16" height="16" rx="8"/>`).join('');
   const puntos = orden.map((p) => `<circle class="g-m${p.sel ? ' sel' : ''}" data-sitio="${esc(p.f.sitio.id)}" tabindex="0" role="button"
       aria-label="${esc(`${p.f.sitio.name}: ${def.fmt(p.v.media)}${percentilDe(p.v) ? `, ${percentilDe(p.v)} of the surface ${cuerpo.de}` : ''}`)}"
       cx="${f1(p.x)}" cy="${cy(p)}" r="${R}"/>`).join('');
   const tipSitio = new Map(pts.map((p) => {
     const v = p.v, P = pct(v.pct), filas = [[def.corto, def.fmt(v.media)]];
-    if (P != null) filas.push(['Percentile on the surface', String(P)]);
+    if (P != null) filas.push(['Higher than', `${pctTxt(v.pct)} % of the surface`]);
     if (v.n > 1) filas.push(['Across its cells', `${breve(v.min)} … ${breve(v.max)}`]);
     if (v.sigma != null) filas.push(['Published uncertainty', `± ${breve(v.sigma)}`]);
     const nota = [
-      p.fuera < 0 ? 'Falls below the axis (percentile 0.5 of the surface): the point is drawn at the edge.' : '',
-      p.fuera > 0 ? 'Falls above the axis (percentile 99.5 of the surface): the point is drawn at the edge.' : '',
+      p.fuera < 0 ? 'Among the lowest 0.5 % of the surface: the point is drawn at the edge.' : '',
+      p.fuera > 0 ? 'Among the highest 0.5 % of the surface: the point is drawn at the edge.' : '',
       v.unica ? `No cell has its center within ${nf(RADIO_ZONA, 1)}°: this is the cell that contains the point.` : '',
     ].filter(Boolean).join(' ');
     return [p.f.sitio.id, tipHtml(p.f.sitio.name, filas, nota)];
@@ -166,8 +166,8 @@ export function pintar(el, ctx) {
   });
 
   el.innerHTML = figura({
-    titulo, sub: 'Bars: what share of the surface has each value. Points: the sites.',
-    cuerpo: ley + svg + nota, pie, tablaHtml, clase: 'g-di',
+    titulo, sub: `Bars: how much of ${cuerpo.nombre} has each value. Dots: the sites.`,
+    cuerpo: ley + svg, mas: nota, pie, tablaHtml, clase: 'g-di',
   });
 
   // Un solo conTip para puntos y columnas: dos escuchas sobre el mismo contenedor se ocultarían el tooltip el uno al otro

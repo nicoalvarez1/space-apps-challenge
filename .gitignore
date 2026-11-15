@@ -5,3 +5,6 @@ base-planetaria/datos_pds/srtmgl30/
 base-planetaria/datos_pds/srtmgl3/
 base-planetaria/datos_pds/nasadem/
 base-planetaria/datos_pds/srtmswbd/
+publicar/
+video/tmp/
+video/*.mp4

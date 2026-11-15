@@ -31,15 +31,16 @@ VERSION_FIRMA = "1"
 VARS = config.VARIABLES_DISTRIBUCION
 CRITERIOS = config.CRITERIOS
 
+# Textos que la web muestra (en inglés). Las claves son identificadores y no se traducen.
 NOMBRE = {
-    "elev_rel": "distribución de elevación relativa", "pendiente": "distribución de pendientes",
-    "rugosidad": "distribución de rugosidad", "curv_perfil": "distribución de curvatura de perfil",
-    "curv_planta": "distribución de curvatura de planta", "variograma": "variograma (estructura por escalas)",
-    "moran_pendiente": "agrupamiento espacial de pendientes (I de Moran)",
+    "elev_rel": "relative elevation distribution", "pendiente": "slope distribution",
+    "rugosidad": "roughness distribution", "curv_perfil": "profile curvature distribution",
+    "curv_planta": "plan curvature distribution", "variograma": "variogram (structure across scales)",
+    "moran_pendiente": "spatial clustering of slopes (Moran’s I)",
 }
-METRICA = {**{v: "Wasserstein-1" for v in VARS}, "variograma": "RMS de ln γ(r) en desfases de media octava",
+METRICA = {**{v: "Wasserstein-1" for v in VARS}, "variograma": "RMS of ln γ(r) at half-octave lags",
            "moran_pendiente": "|I_A − I_B|"}
-UNIDAD = {**{v: gm.UNIDADES[v] for v in VARS}, "variograma": "adimensional (ln)", "moran_pendiente": "adimensional"}
+UNIDAD = {**{v: gm.UNIDADES[v] for v in VARS}, "variograma": "dimensionless (ln)", "moran_pendiente": "dimensionless"}
 
 
 # =========================================================================== firma
@@ -151,7 +152,7 @@ def obtener_catalogo(r: Raster, lado_km: float, h: float, paso_km: float | None 
             "ventanas_validas": len(filas["lat"]), "descartes": descartes, "k_submuestreo": k,
             "segundos": round(time.time() - t0, 1), "version_firma": VERSION_FIRMA}
     if not filas["lat"]:
-        raise RuntimeError(f"Catálogo vacío para {r.producto}: {descartes}")
+        raise RuntimeError(f"Empty catalog for {r.producto}: {descartes}")
     cat = Catalogo(*(np.array(filas[x]) for x in ("lat", "lon", "cobertura", "observada", "q", "lg", "moran")), meta)
     config.CACHE.mkdir(parents=True, exist_ok=True)
     config.TEMPORAL.mkdir(parents=True, exist_ok=True)
@@ -242,7 +243,7 @@ def distancias_exactas(ca: dict, cb: dict, h: float, desc_a: dict | None = None,
                                                                      sa.log_variograma(cb["elev_rel"], h)))}
     out["moran_pendiente"] = {"distancia": abs(sa.moran_i(ca["pendiente"]) - sa.moran_i(cb["pendiente"]))}
     out["curvaturas_bivariante"] = {"energia_1_km": sd.energia(_curvaturas(ca), _curvaturas(cb)),
-                                    "nota": "energía sobre (k_v, k_h), ambas en 1/km; submalla regular ≤ 2000 celdas"}
+                                    "nota": "energy distance on (k_v, k_h), both in 1/km; regular subgrid of ≤ 2000 cells"}
     return out
 
 
@@ -267,13 +268,14 @@ def huella(lat: float, lon: float, lado_km: float, radio_m: float, puntos: int =
 
 # =========================================================================== explicación
 def _clase(d: float, p: float, ref: float) -> tuple[str, str]:
+    """(identificador de la clase, lectura en inglés para la web). Los identificadores no se traducen."""
     if d <= ref:
-        return "indistinguible", "dentro de la variabilidad propia del objetivo"
+        return "indistinguible", "within the target’s own variability"
     if p <= 0.05:
-        return "muy_proxima", f"entre el 5 % más próximo del catálogo (percentil {100 * p:.1f})"
+        return "muy_proxima", f"among the closest 5 % of the catalog (percentile {100 * p:.1f})"
     if p <= 0.25:
-        return "proxima", f"entre el 25 % más próximo (percentil {100 * p:.1f})"
-    return "distinta", f"percentil {100 * p:.1f}"
+        return "proxima", f"among the closest 25 % (percentile {100 * p:.1f})"
+    return "distinta", f"percentile {100 * p:.1f}"
 
 
 def explicar(crit: dict, desc_obj: dict, desc_cand: dict, h: float, lado_km: float) -> str:
@@ -281,40 +283,41 @@ def explicar(crit: dict, desc_obj: dict, desc_cand: dict, h: float, lado_km: flo
     difiere = [NOMBRE[c] for c, x in crit.items() if x["clase"] == "distinta"]
     eo, ec = desc_obj["estadisticos"], desc_cand["estadisticos"]
     partes = [
-        f"A escala h = {h / 1000:.2f} km y ventana L = {lado_km:.0f} km:",
-        f"pendiente mediana {ec['pendiente']['mediana']:.2f}° frente a {eo['pendiente']['mediana']:.2f}° del objetivo "
+        f"At cell size h = {h / 1000:.2f} km and window L = {lado_km:.0f} km:",
+        f"median slope {ec['pendiente']['mediana']:.2f}° versus {eo['pendiente']['mediana']:.2f}° in the target "
         f"(W₁ = {crit['pendiente']['distancia']:.3f}°);",
-        f"desviación típica del relieve {ec['elev_rel']['desv_tipica']:.0f} m frente a {eo['elev_rel']['desv_tipica']:.0f} m;",
-        f"rugosidad mediana {ec['rugosidad']['mediana']:.1f} m frente a {eo['rugosidad']['mediana']:.1f} m;",
-        f"variogramas que difieren en un factor típico ×{math.exp(crit['variograma']['distancia']):.2f}.",
+        f"standard deviation of relief {ec['elev_rel']['desv_tipica']:.0f} m versus {eo['elev_rel']['desv_tipica']:.0f} m;",
+        f"median roughness {ec['rugosidad']['mediana']:.1f} m versus {eo['rugosidad']['mediana']:.1f} m;",
+        f"variograms differ by a typical factor of ×{math.exp(crit['variograma']['distancia']):.2f}.",
     ]
     if coincide:
-        partes.append("Muy próxima o indistinguible en: " + ", ".join(coincide) + ".")
+        partes.append("Very close or indistinguishable in: " + ", ".join(coincide) + ".")
     if difiere:
-        partes.append("Difiere en: " + ", ".join(difiere) + ".")
-    partes.append("Es una semejanza geomorfológica a esta escala: no implica el mismo origen geológico, "
-                  "condiciones ambientales equivalentes ni aptitud para una misión.")
+        partes.append("Differs in: " + ", ".join(difiere) + ".")
+    partes.append("This is a geomorphological resemblance at this scale: it does not imply the same geological origin, "
+                  "equivalent environmental conditions or suitability for a mission.")
     return " ".join(partes)
 
 
+# Lo que la web muestra en «What was not compared» y «Limitations» (texto en inglés).
 VARIABLES_NO_COMPARADAS = [
-    {"variable": "densidad y tamaños de cráteres", "motivo": "no hay catálogo de cráteres entre los recursos oficiales verificados"},
-    {"variable": "composición (Lunar Prospector, Odyssey GRS)", "motivo": "no existe un mapa terrestre equivalente en los recursos oficiales"},
-    {"variable": "temperatura de superficie (Diviner, TES)", "motivo": "semejanza ambiental, no geomorfológica; sin MDE de temperatura terrestre cargado; rangos casi sin solape"},
-    {"variable": "profundidad de estabilidad del hielo (Diviner PRP)", "motivo": "sin equivalente terrestre"},
-    {"variable": "pendiente y rugosidad de LOLA (LDSM, LDRM)", "motivo": "base de 30–240 m, otra escala: se recalculan con el mismo algoritmo en todos los cuerpos"},
-    {"variable": "retrodispersión radar (RADARSAT, Mini-RF)", "motivo": "requiere calibración por longitud de onda e incidencia; fuera de esta versión"},
+    {"variable": "crater density and sizes", "motivo": "no crater catalog among the verified official resources"},
+    {"variable": "composition (Lunar Prospector, Odyssey GRS)", "motivo": "no equivalent Earth map among the official resources"},
+    {"variable": "surface temperature (Diviner, TES)", "motivo": "an environmental, not geomorphological, resemblance; no Earth temperature grid loaded; the ranges barely overlap"},
+    {"variable": "ice stability depth (Diviner PRP)", "motivo": "no Earth equivalent"},
+    {"variable": "LOLA slope and roughness (LDSM, LDRM)", "motivo": "30–240 m baseline, a different scale: they are recomputed with the same algorithm on every body"},
+    {"variable": "radar backscatter (RADARSAT, Mini-RF)", "motivo": "needs calibration for wavelength and incidence angle; outside this version"},
 ]
 
 LIMITACIONES = [
-    "La escala más fina comparable es h: no se describe nada menor (rocas, bloques, regolito, cuevas).",
-    "Una semejanza de relieve no implica el mismo proceso (impacto, volcanismo, erosión) ni el mismo material.",
-    "La Tierra no reproduce gravedad, vacío o atmósfera, radiación ni temperaturas lunares o marcianas.",
-    "SRTMGL30 no cubre al sur de 60°S (Antártida) y no indica qué celdas son medición o relleno; el hielo cuenta como superficie. "
-    "El agua solo se excluye con la máscara SRTMSWBD (si está en disco) o, donde no la hay, por valer 0 m: ver criterio_validez.",
-    "El percentil es relativo al catálogo terrestre evaluado: cambia si cambian L, h o la cobertura mínima.",
-    "El orden leximax trata todos los criterios por igual en espacio de rangos (única hipótesis de agregación).",
-    "Los criterios están correlacionados (p. ej., pendiente y variograma); no son evidencias independientes.",
+    "The finest comparable scale is h: nothing smaller is described (rocks, boulders, regolith, caves).",
+    "A resemblance in relief does not imply the same process (impact, volcanism, erosion) or the same material.",
+    "Earth does not reproduce lunar or Martian gravity, vacuum or atmosphere, radiation or temperatures.",
+    "SRTMGL30 does not cover south of 60°S (Antarctica) and does not say which cells are measured or filled; ice counts as surface. "
+    "Water is excluded only with the SRTMSWBD mask (when on disk) or, where there is none, by its value of 0 m.",
+    "The percentile is relative to the Earth catalog evaluated: it changes if L, h or the minimum coverage change.",
+    "The leximax ordering treats all criteria equally in rank space (the only aggregation assumption).",
+    "The criteria are correlated (e.g. slope and variogram); they are not independent pieces of evidence.",
 ]
 
 
@@ -327,11 +330,11 @@ def buscar_analogos(cuerpo: str, lat: float, lon: float, lado_km: float = config
     h = pp.resolucion_comun_m(r_obj, r_bus, h_solicitada_m=h_m)
     v_obj = pp.extraer_ventana(r_obj, lat, lon, lado_km, h)
     if v_obj.cobertura < config.MIN_COBERTURA:
-        raise pp.VentanaInvalida(f"cobertura del objetivo {v_obj.cobertura:.2%} < {config.MIN_COBERTURA:.0%}")
+        raise pp.VentanaInvalida(f"target coverage {v_obj.cobertura:.2%} < {config.MIN_COBERTURA:.0%}")
     c_obj, diag_obj = gm.campos(v_obj.z, h)
     f_obj = firma_de_campos(c_obj, h)
     if f_obj is None:
-        raise pp.VentanaInvalida("el objetivo no tiene celdas válidas suficientes")
+        raise pp.VentanaInvalida("the target does not have enough valid cells")
     f_obj = como_catalogo(f_obj)
     desc_obj = describir(c_obj, diag_obj, h)
 
@@ -390,13 +393,13 @@ def buscar_analogos(cuerpo: str, lat: float, lon: float, lado_km: float = config
                        "cobertura_minima": config.MIN_COBERTURA, "semilla": config.SEMILLA},
         "datos": {"objetivo": r_obj.resumen(), "busqueda": r_bus.resumen(), "catalogo": cat.meta},
         "criterios": [{"id": c, "nombre": NOMBRE[c], "metrica": METRICA[c], "unidades": UNIDAD[c]} for c in CRITERIOS],
-        "metodo_ordenacion": ("percentil de cada distancia en el catálogo → orden leximax (peor percentil, después "
-                              "el siguiente…), compatible con la dominancia de Pareto; sin pesos ni porcentaje de "
-                              "similitud. Se suprimen candidatos con centros a menos de L."),
+        "metodo_ordenacion": ("percentile of each distance in the catalog → leximax ordering (worst percentile, then "
+                              "the next…), compatible with Pareto dominance; no weights and no similarity percentage. "
+                              "Candidates whose centers are closer than L are suppressed."),
         "analogos": analogos,
         "variables_no_comparadas": VARIABLES_NO_COMPARADAS,
         "limitaciones": LIMITACIONES,
-        "tipo_de_semejanza": "geomorfológica (no ambiental, no aptitud para misión)",
+        "tipo_de_semejanza": "geomorphological (not environmental, not suitability for a mission)",
         "recurso_oficial": data_catalog.RECURSO_OFICIAL,
         "referencias": {
             "datos": list(dict.fromkeys(data_catalog.FUENTES[r_obj.fuente]["citas"]

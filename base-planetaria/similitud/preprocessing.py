@@ -64,8 +64,8 @@ def resolucion_comun_m(*rejillas: Raster, h_solicitada_m: float | None = None) -
         return h_min
     if h_solicitada_m < h_min * (1 - 1e-9):
         raise VentanaInvalida(
-            f"h = {h_solicitada_m:.0f} m es más fina que el espaciado nativo más grueso ({h_min:.0f} m): "
-            "se introduciría precisión artificial")
+            f"h = {h_solicitada_m:.0f} m is finer than the coarsest native spacing ({h_min:.0f} m): "
+            "it would introduce artificial precision")
     return float(h_solicitada_m)
 
 
@@ -73,8 +73,8 @@ def celdas_por_lado(lado_km: float, h_m: float) -> int:
     n = int(round(lado_km * 1000.0 / h_m))
     if n < config.MIN_CELDAS_LADO:
         raise VentanaInvalida(
-            f"La ventana de {lado_km} km tiene {n} celdas de {h_m:.0f} m por lado (< {config.MIN_CELDAS_LADO}): "
-            "distribuciones y variograma no serían estimables. Aumenta el lado o usa un MDE más fino.")
+            f"The {lado_km} km window has {n} cells of {h_m:.0f} m per side (< {config.MIN_CELDAS_LADO}): "
+            "distributions and variogram could not be estimated. Increase the side length or use a finer DEM.")
     return n
 
 
@@ -150,7 +150,7 @@ def quitar_plano(z: np.ndarray, h: float) -> tuple[np.ndarray, dict]:
     X, Y = np.meshgrid(t, -t)
     m = np.isfinite(z)
     if m.sum() < 3:
-        raise VentanaInvalida("menos de 3 celdas válidas")
+        raise VentanaInvalida("fewer than 3 valid cells")
     A = np.column_stack([np.ones(m.sum()), X[m], Y[m]])
     coef, *_ = np.linalg.lstsq(A, z[m], rcond=None)
     res = np.full_like(z, np.nan)

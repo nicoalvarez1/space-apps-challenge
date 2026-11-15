@@ -165,7 +165,7 @@ export function pintar(el, ctx) {
 
   // Los colores de las dos series salen de COLOR (base.js) y llegan al CSS como variables
   el.innerHTML = figura({
-    titulo: 'Terrain profile', sub: 'How the terrain rises and falls on either side of the site.', clase: 'g-co', pie, tablaHtml,
+    titulo: 'Ups and downs around the site', sub: 'Height of the ground along two straight lines through the site (heights stretched to be visible).', clase: 'g-co', pie, tablaHtml,
     cuerpo: `<div class="g-co-caja" style="--g-co-s1:${COLOR.serie1};--g-co-s2:${COLOR.serie2}">
       ${leyenda([{ clase: 'g-co-k1', texto: SERIES[0].nombre }, { clase: 'g-co-k2', texto: SERIES[1].nombre }, { clase: 'g-m-sel', texto: nombreCorto(sitio.name) }])}
       ${svg}</div>`,

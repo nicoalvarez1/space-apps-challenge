@@ -1,0 +1,33 @@
+<!doctype html>
+<!-- Plano del vídeo de 30 s: globo mitad Marte, mitad Luna, con las capas de datos reales apilándose encima.
+     Lo graba tools/video/planeta.py fotograma a fotograma (window.__frame(t)); en un navegador normal se reproduce solo. -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <base href="../../">
+  <title>Landfall · Mars | Moon</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script type="importmap">
+    { "imports": { "three": "./vendor/three.module.js", "three/addons/": "./vendor/addons/" } }
+  </script>
+  <style>
+    html, body { margin: 0; height: 100%; background: #02030a; overflow: hidden; }
+    canvas { display: block; width: 100vw; height: 100vh; }
+    .lista { position: fixed; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 14px;
+      font: 600 21px/1.2 "Avenir Next", "Helvetica Neue", sans-serif; color: #efece5; -webkit-font-smoothing: antialiased; }
+    .lista.izq { left: 120px; align-items: flex-start; }
+    .lista.der { right: 120px; align-items: flex-end; text-align: right; }
+    .lista h4 { margin: 0 0 6px; font: 600 15px/1 "Avenir Next", sans-serif; letter-spacing: .32em; color: #5dffd0; opacity: 0; }
+    .lista .it { display: flex; align-items: center; gap: 12px; opacity: 0; white-space: nowrap; }
+    .lista.der .it { flex-direction: row-reverse; }
+    .lista .it i { width: 34px; height: 7px; border-radius: 4px; flex: none; }
+    .lista .it small { font-weight: 500; color: rgba(239, 236, 229, .55); margin-left: 2px; }
+  </style>
+</head>
+<body>
+  <canvas id="c"></canvas>
+  <div class="lista izq" id="l-moon"><h4>MOON</h4></div>
+  <div class="lista der" id="l-mars"><h4>MARS</h4></div>
+  <script type="module" src="tools/video/planeta.js"></script>
+</body>
+</html>

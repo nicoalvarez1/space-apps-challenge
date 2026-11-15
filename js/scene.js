@@ -60,6 +60,7 @@ export class Viewer {
     this.bodies = {}; this.markers = []; this.tween = null; this.current = null; this.mode = 'intro';
     this.markersOn = false; this.selected = null; this.focusId = 'earth';
     this.viewShift = 0;                                          // desplaza la Tierra a la derecha tras el asistente
+    this.shiftX = 0;                                             // fracción del ancho (negativa = a la izquierda) fuera del asistente: la fija js/main.js (panel de la Tierra ancho)
     this.viewShiftY = 0; this.shiftY = 0;                        // sube el encuadre (fracción del alto) cuando una hoja tapa la parte de abajo: lo fija js/main.js
     this.loader = new GLTFLoader();
     this.mixers = []; this.clock = new THREE.Clock();
@@ -443,7 +444,7 @@ export class Viewer {
   showMotorAnalogs(list) {
     this.markers = this.markers.filter((m) => { if (m.id?.startsWith('motor-')) { m.el.remove(); return false; } return true; });
     for (const a of list) {
-      this._addMarker({ id: `motor-${a.rango}`, label: `#${a.rango} · worst percentile ${(100 * a.peor_percentil).toFixed(1)} %`,
+      this._addMarker({ id: `motor-${a.rango}`, label: `Earth match #${a.rango}`,
         lat: a.lat, lon: a.lon, body: 'earth', cls: 'analog', text: String(a.rango) });
       const el = this.markers.at(-1).el;
       el.classList.add('clic'); el.title = `Earth site #${a.rango}: click to see the detailed comparison`;
@@ -644,10 +645,10 @@ export class Viewer {
     // En el asistente la tarjeta ocupa la izquierda: desplazamos el encuadre para que la Tierra quede a la derecha
     const w = this.canvas.clientWidth, h = this.canvas.clientHeight;
     // y en móvil, con una hoja abierta abajo (resultados, ficha, entrenamiento), sube para que el globo quede en la parte visible
-    const goal = this.mode === 'intro' && w > 1000 ? 0.2 : 0, goalY = this.mode === 'intro' || this.mode === 'flight' ? 0 : this.shiftY, k = Math.min(1, dt * 2.5);
+    const goal = this.mode === 'intro' ? (w > 1000 ? 0.2 : 0) : this.mode === 'flight' ? 0 : this.shiftX, goalY = this.mode === 'intro' || this.mode === 'flight' ? 0 : this.shiftY, k = Math.min(1, dt * 2.5);
     this.viewShift += (goal - this.viewShift) * k;
     this.viewShiftY += (goalY - this.viewShiftY) * k;
-    if (this.viewShift > 0.002 || this.viewShiftY > 0.002) this.camera.setViewOffset(w, h, -w * this.viewShift, h * this.viewShiftY, w, h);
+    if (Math.abs(this.viewShift) > 0.002 || this.viewShiftY > 0.002) this.camera.setViewOffset(w, h, -w * this.viewShift, h * this.viewShiftY, w, h);
     else if (this.camera.view?.enabled) this.camera.clearViewOffset();
     this._updateMarkers();
     this.renderer.render(this.scene, this.camera);

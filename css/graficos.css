@@ -21,6 +21,21 @@
 .g-pie { margin: .4rem 0 0; font-size: .66rem; line-height: 1.45; color: var(--mute); }
 .g-pie b { color: #c6cde4; font-weight: 600; }
 
+/* ---------- «Learn more»: pie, tablas y notas técnicas plegadas (base.js → masInfo) ---------- */
+.g-mas { margin-top: .4rem; }
+.g-mas > summary { display: inline-flex; align-items: center; gap: .3rem; list-style: none; cursor: pointer; padding: .18rem .6rem;
+  border: 1px solid var(--line); border-radius: 99px; font-size: .7rem; color: #c6cde4; background: rgba(255, 255, 255, .03); }
+.g-mas > summary::-webkit-details-marker { display: none; }
+.g-mas > summary::after { content: '+'; font-weight: 700; color: var(--accent); }
+.g-mas[open] > summary::after { content: '−'; }
+.g-mas > summary:hover { color: var(--text); border-color: rgba(93, 255, 208, .5); }
+.g-mas > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.g-mas .g-mas-menos, .g-mas[open] .g-mas-ver { display: none; }
+.g-mas[open] .g-mas-menos { display: inline; }
+.g-mas-cuerpo { margin-top: .45rem; padding-left: .7rem; border-left: 2px solid var(--line); }
+.g-mas-cuerpo > :first-child { margin-top: 0; }
+.g-mas-cuerpo .g-tabla { margin-top: .35rem; }
+
 /* ---------- SVG ---------- */
 .g-svg { display: block; width: 100%; height: auto; overflow: visible; }
 .g-svg text { fill: var(--mute); font: 10px var(--font); font-variant-numeric: tabular-nums; }
@@ -131,3 +146,25 @@
 .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }   /* las tarjetas no ensanchan la ficha */
 .chispa { flex-wrap: wrap; row-gap: .1rem; }
 @media (max-width: 800px) { .about { z-index: 28; } }           /* por encima del botón de menú, que tapaba su esquina */
+
+/* ---------- versión en llano: ficha y entrenamiento compactos, el resto tras «Learn more» ---------- */
+.ficha-graf:has(> .g-cargando) { min-height: 24rem; }              /* ahora solo el mapa del entorno va visible */
+.fact .llano { margin-top: .15rem; color: #c6cde4; font-size: .68rem; }
+.ficha-clave { margin-bottom: .5rem; }
+.ficha-mas { margin: .9rem 0 .6rem; }
+.ficha-mas > summary { font-size: .78rem; padding: .3rem .9rem; }
+.ficha-mas .g-mas-cuerpo > h4:first-child { margin-top: .2rem; }
+.ficha-mas .radar { display: block; margin: .3rem auto; max-width: 100%; height: auto; }
+.an-paso { margin: 1.1rem 0 .4rem; }
+.an-mas { margin-top: 1rem; }
+.tr-match .g-mas { margin-top: .25rem; }
+.tr-match .g-mas > summary { font-size: .64rem; padding: .1rem .5rem; }
+.an-intro + .g-mas { margin: -.5rem 0 .9rem; }
+.an-por .g-mas { margin-top: .25rem; }
+
+/* Comparación detallada (#comparacion, js/comparacion.js): titular en llano y gráficos sencillos */
+.cmp-titular { margin: .4rem 0 .2rem; font-size: 1.05rem; line-height: 1.35; }
+.cmp .cmp-f-mapas { margin-top: 1rem; }
+.cmp-simples { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 1.2rem; margin: 1.2rem 0 .6rem; }
+.cmp-rfila:focus { outline: none; }
+.cmp-rfila:focus-visible rect.g-hit { stroke: #fff; stroke-width: 1; }

@@ -89,7 +89,7 @@ def prueba_bloques(fa: np.ndarray, fb: np.ndarray, rng: np.random.Generator, rep
     b = int(np.clip(radio, 2, max(2, min(ta.shape[0], tb.shape[0]) // 4)))
     ba, bb = _bloques(ta, b), _bloques(tb, b)
     if len(ba) < 4 or len(bb) < 4:
-        return {"omitida": "menos de 4 bloques por región"}
+        return {"omitida": "fewer than 4 blocks per region"}
     cat = np.concatenate
     obs = sd.wasserstein(cat(ba), cat(bb))
     pool, na = ba + bb, len(ba)
@@ -143,14 +143,14 @@ def comparar(cuerpo: str, lat: float, lon: float, lat_t: float, lon_t: float, la
     h0 = pp.resolucion_comun_m(r_obj, r_can)
     hs, omitidas = escalas(lado_km, h0)
     if not hs:
-        raise pp.VentanaInvalida("ninguna escala con 20–768 celdas por lado: cambia el lado de la ventana")
+        raise pp.VentanaInvalida("no scale with 20–768 cells per side: change the window side length")
     rng = np.random.default_rng(config.SEMILLA)
     por_escala, pruebas, visual = [], [], None
     for h in hs:
         vo = pp.extraer_ventana(r_obj, lat, lon, lado_km, h)
         vc = pp.extraer_ventana(r_can, lat_t, lon_t, lado_km, h)
         if min(vo.cobertura, vc.cobertura) < config.MIN_COBERTURA:
-            por_escala.append({"h_m": h, "omitida": f"cobertura {vo.cobertura:.1%} / {vc.cobertura:.1%}"})
+            por_escala.append({"h_m": h, "omitida": f"coverage {vo.cobertura:.1%} / {vc.cobertura:.1%}"})
             continue
         co, do = gm.campos(vo.z, h)
         cc, dc = gm.campos(vc.z, h)
@@ -226,22 +226,22 @@ def comparar(cuerpo: str, lat: float, lon: float, lat_t: float, lon_t: float, la
         resumen.append({"h_m": e["h_m"], "distribuciones_compatibles": comp, "n_distribuciones": len(VARS),
                         "estructura_dentro_de_variabilidad": est})
     return {
-        "tipo": "comparación detallada de un par (semejanza geomorfológica)",
+        "tipo": "detailed comparison of one pair (geomorphological resemblance)",
         "objetivo": {"cuerpo": cuerpo, "lat": lat, "lon": lon, "datos": r_obj.resumen(),
                      "huella": huella(lat, lon, lado_km, r_obj.radio_local_m(lat))},
         "candidato": {"cuerpo": buscar_en, "lat": lat_t, "lon": ((lon_t + 180) % 360) - 180, "datos": r_can.resumen(),
                       "huella": huella(lat_t, lon_t, lado_km, r_can.radio_local_m(lat_t))},
         "parametros": {"lado_km": lado_km, "h0_m": h0, "escalas_m": hs,
                        "escalas_omitidas_m": omitidas, "max_celdas_por_lado": MAX_CELDAS,
-                       "alfa": ALFA, "correccion": "Holm (1979) dentro de cada escala (5 pruebas); se rechaza si p ≤ α",
+                       "alfa": ALFA, "correccion": "Holm (1979) within each scale (5 tests); rejected if p ≤ α",
                        "permutaciones": PERMUTACIONES, "replicas_bootstrap": REPLICAS_BOOT,
                        "max_muestras_prueba": MAX_MUESTRAS_PRUEBA, "semilla": config.SEMILLA},
         "precision": {
             "resolucion_nativa_m": {"objetivo": r_obj.espaciado_nativo_m(), "candidato": r_can.espaciado_nativo_m()},
             "limita": "objetivo" if r_obj.espaciado_nativo_m() >= r_can.espaciado_nativo_m() else "candidato",
-            "nota": ("h₀ es el espaciado del MDE más grueso de los dos: por debajo de h₀ no hay información común. "
-                     "Para afinar en la Tierra: `python -m similitud descargar-detalle` (SRTMGL3 de 90 m o NASADEM "
-                     "de 30 m, Earthdata Login)."),
+            "nota": ("h₀ is the spacing of the coarser of the two DEMs: below h₀ there is no shared information. "
+                     "For finer detail on Earth: `python -m similitud descargar-detalle` (SRTMGL3 at 90 m or NASADEM "
+                     "at 30 m, Earthdata Login)."),
         },
         "escalas": por_escala,
         "resumen_por_escala": resumen,
@@ -254,12 +254,12 @@ def comparar(cuerpo: str, lat: float, lon: float, lat_t: float, lon_t: float, la
                                           "shepard2001", "szekely2013"]),
         },
         "limitaciones": [
-            "Semejanza geomorfológica a escalas ≥ h₀; no dice nada de materiales, origen, ambiente ni aptitud para una misión.",
-            "Las pruebas usan una submalla regular y bloques del tamaño del radio de autocorrelación; un bloque menor "
-            "subestimaría la dependencia espacial y produciría p-valores demasiado pequeños.",
-            "«Compatibles» significa que no se rechaza la igualdad de distribuciones con estos datos; no demuestra que sean iguales.",
-            "La exactitud vertical de cada MDE (no siempre publicada como cifra única) limita sobre todo la rugosidad y "
-            "las curvaturas a la escala más fina.",
+            "Geomorphological resemblance at scales ≥ h₀; it says nothing about materials, origin, environment or suitability for a mission.",
+            "The tests use a regular subgrid and blocks the size of the autocorrelation radius; a smaller block "
+            "would underestimate spatial dependence and give p-values that are too small.",
+            "“Compatible” means that equality of the distributions is not rejected with these data; it does not prove they are equal.",
+            "The vertical accuracy of each DEM (not always published as a single figure) mainly limits roughness and "
+            "curvatures at the finest scale.",
         ],
         "segundos": round(time.time() - t0, 1),
     }

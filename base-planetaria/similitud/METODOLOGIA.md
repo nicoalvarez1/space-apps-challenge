@@ -146,6 +146,40 @@ Pruebas sin datos terrestres (Luna↔Luna, Marte→Luna), con L = 200 km:
   exacto del top-k es sensible** a h×2, L×0,75–1,25, huecos y normalización (τ de Kendall entre 0,3 y 0,7). Hay
   que leerlo como un conjunto de candidatos casi equivalentes, no como un podio exacto.
 
+**Máscara de agua SRTMSWBD sobre SRTMGL30 (15-11-2026).** Mediciones guardadas en
+`cache/srtmswbd_agua30s_u2le.json`:
+
+- **Formato y registro**: 12 229 teselas, todas de 3601×3601 bytes y solo con los valores 0 y 255. En 20 918
+  pares de teselas vecinas, la línea compartida tiene 0 píxeles distintos (frente a 63 035 distintos con la
+  línea adyacente): confirma el registro por nodo.
+- **Alineación con SRTMGL30**:
+  - El 95,1 % de las celdas de 30″ con agua plena valen 0 m. El resto tiene otra cota (se supone que son lagos y
+    ríos por encima del nivel del mar; no se ha comprobado una por una).
+  - Las celdas sin agua valen 0 m solo en el 0,11 %.
+  - El índice de Jaccard entre «agua plena» y «0 m» es máximo sin desplazar (0,938, frente a ≤ 0,926 con
+    ±1 celda).
+  - Con el umbral de 0,5 quedan como tierra 193 462 celdas a 0 m. Se concentran en deltas y llanuras bajas
+    (Jiangsu, la orilla norte del Caspio, los deltas del Danubio, el Perla, el Mekong y el Nilo, Países Bajos,
+    Tabasco).
+- **Efecto del umbral** (de 777,6 M celdas): > 0,5 deja sin dato 41,49 M celdas con tesela SWBD; > 0 («cualquier
+  agua») deja 46,15 M, un 11 % más. Donde no hay máscara, la regla de 0 m deja sin dato 121,4 M celdas fuera de
+  60°N–56°S y 395,5 M en teselas sin gránulo, casi todas en océano abierto.
+- **Catálogo** (L = 200 km, h = 3,7 km, cobertura ≥ 95 %):
+
+  | Regla | Ventanas válidas |
+  |---|---|
+  | Sin máscara | 16 442 |
+  | 0 m = sin dato en todas partes | 10 892 |
+  | Máscara con > 0,5 (por defecto) | 8 401 |
+  | Máscara con > 0 | 5 729 |
+
+  Las 2505 ventanas que la regla de 0 m admite y la máscara no son interiores: mediana de 0 % de celdas a 0 m. Las
+  pierden los ríos y los lagos con cota de SWBD (mediana del 2,4 % de la ventana), cuyo efecto crece porque una
+  celda h solo es válida si lo son sus 25 muestras y las 4 celdas de cada muestra. Su cobertura mediana es 0,90.
+- **Jezero (L = 200 km)**: 8 de los 10 primeros análogos se mantienen, con el orden algo cambiado. Salen
+  19,5°N 96,2°E y 35,7°N 107,2°O, y entran 36,6°N 107,4°O y 33,0°N 55,5°E. El peor percentil del primero (28,5°N
+  103,4°O) pasa del 4,2 % al 5,7 %: el catálogo es otro y más pequeño.
+
 ## 10. Comparación detallada de un par (`comparacion.py`, `POST /api/similitud/comparar`)
 
 Se usa al pulsar un lugar terrestre en la web. Su objetivo es la máxima precisión **que permiten los datos**,

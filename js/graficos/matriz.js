@@ -18,7 +18,7 @@
 // ============================================================================
 import { RADIO_ZONA } from '../capas.js';
 import { muestra } from '../analitica.js';
-import { esc, nf, pct, SEQ, colorSeq, tintaSobreSeq, decimalesDe, conTip, tipHtml, figura, nombreCorto, fuenteDe } from './base.js';
+import { esc, nf, pct, pctTxt, masInfo, SEQ, colorSeq, tintaSobreSeq, decimalesDe, conTip, tipHtml, figura, nombreCorto, fuenteDe } from './base.js';
 
 const DEG = Math.PI / 180;
 const ORDENES = [['puesto', 'By rank'], ['asc', 'Low to high'], ['desc', 'High to low']];
@@ -61,7 +61,7 @@ export function pintar(el, ctx) {
     if (!v) return `<td class="g-mz-nd" data-k="${i},${j}" tabindex="-1"><span aria-hidden="true">—</span><span class="sr-only">no data</span></td>`;
     const N = pct(v.pct);
     const estilo = N == null ? '' : ` style="background:${colorSeq(v.pct)};color:${tintaSobreSeq(v.pct)}"`;
-    return `<td data-k="${i},${j}" tabindex="-1"${estilo}>${esc(k.def.tick(v.media))}<span class="sr-only">, ${N == null ? 'no percentile' : `percentile ${N}`}</span></td>`;
+    return `<td data-k="${i},${j}" tabindex="-1"${estilo}>${esc(k.def.tick(v.media))}<span class="sr-only">, ${N == null ? '' : `higher than or equal to ${pctTxt(v.pct)} % of the surface`}</span></td>`;
   };
   const cuerpoTabla = vista.map(({ f, i }) => {
     const s = f.sitio, es = s.id === sel;
@@ -71,22 +71,24 @@ export function pintar(el, ctx) {
 
   // ---- control de orden (el rótulo dice qué capa ordena) y leyenda de la escala
   const rotOrden = !kOrden ? ''
-    : orden === 'puesto' ? `Sorting by value uses the layer in detail: <b>${esc(kOrden.def.corto)}</b>. Click another column header to change it.`
-    : `Sorted by <b>${esc(kOrden.def.corto)}</b> (${esc(kOrden.def.unidad)}), the layer in detail, ${orden === 'asc' ? 'from low to high' : 'from high to low'}${sinDatoEnOrden ? '; sites without data go last' : ''}.`;
+    : orden === 'puesto' ? `Sorts by <b>${esc(kOrden.def.corto)}</b>; click a column header to change it.`
+    : `Sorted by <b>${esc(kOrden.def.corto)}</b>, ${orden === 'asc' ? 'low to high' : 'high to low'}${sinDatoEnOrden ? '; no data last' : ''}.`;
   const control = `<div class="g-ctl" role="group" aria-label="Order of the matrix rows">
       <span class="g-mz-rot">Row order</span>
       <div class="g-seg">${ORDENES.map(([clave, texto]) => `<button type="button" data-clave="${clave}" aria-pressed="${clave === orden}"${clave !== 'puesto' && !kOrden ? ' disabled' : ''}>${texto}</button>`).join('')}</div>
       <span class="g-mz-por">${rotOrden}</span>
     </div>`;
   const escala = `<div class="g-mz-ley">
-      <div class="g-mz-esc" role="img" aria-label="Color scale: from percentile 0 (dark) to percentile 100 (light)">
+      <div class="g-mz-esc" role="img" aria-label="Color scale: dark, among the lowest values ${esc(cuerpo.de)}; light, among the highest">
         <i style="background:linear-gradient(to right, ${SEQ.join(', ')})"></i>
-        <span><b>percentile 0</b><b>50</b><b>100</b></span>
+        <span><b>lowest</b><b>middle</b><b>highest</b></span>
       </div>
       ${hayHuecos ? '<span class="g-mz-ley-nd"><i aria-hidden="true"></i>no data</span>' : ''}
-      <p>The color tells whether the value is low or high for ${esc(cuerpo.nombre)}; it does not say whether it is good or bad.</p>
-      <p class="g-mz-tec">With focus on a cell, the arrow keys move through the matrix.</p>
     </div>`;
+  // Notas de lectura: plegadas con el pie
+  const notas = `<p class="g-pie">The color tells whether the value is low or high for ${esc(cuerpo.nombre)}; it does not say whether it is good or bad.
+      The scale is the percentile: the share of the surface ${esc(cuerpo.de)} with an equal or lower value (0 = lowest, 100 = highest).
+      With focus on a cell, the arrow keys move through the matrix.</p>`;
 
   // ---- pie: de dónde sale cada número (todo se deduce de los datos recibidos)
   const km = Math.round(RADIO_ZONA * DEG * Rkm);
@@ -109,8 +111,9 @@ export function pintar(el, ctx) {
 
   el.innerHTML = figura({
     clase: 'g-mz-fig',
-    titulo: `Measurement matrix: ${filas.length} sites × ${cols.length} measured layers ${cuerpo.de}`,
-    sub: `Each cell is the measured value of one layer at one site. The color places that value within the whole surface ${cuerpo.de}: dark, low; light, high.`,
+    titulo: `All ${filas.length} sites, ${cols.length} measurements`,
+    sub: `Light cells: high for ${cuerpo.nombre}. Dark cells: low. Point at a cell to read it.`,
+    mas: notas,
     cuerpo: `${control}${escala}
       <div class="g-mz-caja" role="region" tabindex="0" aria-label="Measurement matrix ${esc(cuerpo.de)}: scrollable table; inside the cells, the arrow keys move the focus">
         <table class="g-mz">
@@ -157,7 +160,7 @@ export function pintar(el, ctx) {
     if (!f || !k) return null;
     const d = k.def, v = f.v[d.id];
     if (!v) return tipHtml(f.sitio.name, [[d.corto, 'no data']], `No cell with data within ${radio}° of arc, nor the one that contains the site`);
-    const N = pct(v.pct), fs = [[d.corto, d.fmt(v.media)], [`Percentile on ${cuerpo.nombre}`, N ?? '—']];
+    const N = pct(v.pct), fs = [[d.corto, d.fmt(v.media)], [`Higher than or equal to`, N == null ? '—' : `${pctTxt(v.pct)} % of ${cuerpo.nombre}`]];
     // el rango va en formato breve (número y unidad corta): con el formato completo (p. ej. kelvin y °C) no cabe en una línea
     if (v.n > 1) fs.push(['Range within the area', `${d.breve(v.min)} … ${d.breve(v.max)}`]);
     if (v.sigma != null) fs.push(['Published uncertainty', `± ${d.fmt(v.sigma)}`]);

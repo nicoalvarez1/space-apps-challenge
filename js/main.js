@@ -1,16 +1,23 @@
 import { BODIES, OBJECTIVES, DURATIONS, METRICS, TRAIT_LABELS, SITES, ANALOGS } from './data.js';
-import { fetchSites, fetchTraining, estadoMotor, fetchAnalogosGeomorfologicos } from './api.js';
+import { fetchSites, fetchTraining, analogosTierra, comparacionTierra, analogosPrecalculados, indicePrecalculado, MOTOR_LOCAL } from './api.js';
 import { Viewer } from './scene.js';
 import { earthSiteData } from './cmr.js';
-import { abrirComparacion } from './comparacion.js';
+import { abrirComparacion, fechaCorta } from './comparacion.js';
 import { CAPAS_GLOBO, RAMPAS, RADIO_KM, RADIO_ZONA, capa, pintarCapa, catalogo } from './capas.js';
 import * as flujo from './proposito.js';   // pasos 2-4 (propósito, subapartado, criterios) y panel de criterios
 // Gráficos de los resultados con las capas reales del PDS (js/analitica.js, js/graficos/). El panel de comparación y los
 // gráficos de la ficha se cargan la primera vez que hacen falta (import dinámico).
-import { medirTodo, exageracionRelieve, pendienteCeldas } from './analitica.js';
+import { medirTodo, exageracionRelieve, pendienteCeldas, percentil } from './analitica.js';
 import { miniatura, RADIO_MINIATURA_KM } from './graficos/relieve.js';
 import { chispa } from './graficos/chispa.js';
-import { CUERPO, tip as tipGrafico } from './graficos/base.js';
+import { CUERPO, tip as tipGrafico, nombreCorto, masInfo, pctTxt } from './graficos/base.js';
+// Panel de la Tierra: análogos del motor de similitud dichos en llano y sus gráficos
+import { listaCandidatos, cercania, cercaniaTecnica, frase, mapasHtml, pintarMapas, graficoCriterios, tipCriterios, graficoDistribuciones, tipDistribuciones,
+  sostieneFalla, CRIT } from './graficos/analogo.js';
+// Lugar de entrenamiento (análogos de js/data.js): relieve cara a cara, clima NASA POWER y alternativas (js/graficos/tierra-*.js)
+import { pintar as pintarFamoso } from './graficos/tierra-panel.js';
+import { pintar as pintarClima } from './graficos/tierra-clima.js';
+import { climaPower } from './graficos/tierra-datos.js';
 
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -104,11 +111,16 @@ addEventListener('keydown', (e) => { if (e.key === 'Enter' && !$('#setup').hidde
 // Cifras de la portada: salen del catálogo real de capas y de los datos de la app
 function renderStats(capas) {
   const n = capas ? Object.keys(capas).length : null, inst = capas ? new Set(Object.values(capas).map((c) => c.fuente.mision)).size : null;
-  const tiles = [[n ?? '—', 'real data layers'], [inst ?? '—', 'orbiting instruments'], [SITES.moon.length + SITES.mars.length, 'candidate sites'], [ANALOGS.length, 'analogs on Earth']];
+  // análogos terrestres: los que el motor encontró para cada emplazamiento (precalculados); si no hay, los de referencia
+  const nAn = indiceAn ? Object.values(indiceAn.sitios).reduce((t, x) => t + x.candidatos.length, 0) : 0;
+  const tiles = [[n ?? '—', 'real data layers'], [inst ?? '—', 'orbiting instruments'], [SITES.moon.length + SITES.mars.length, 'candidate sites'],
+    nAn ? [nAn, 'Earth analogs found in NASA data'] : [ANALOGS.length, 'analogs on Earth']];
   $('#stats').innerHTML = tiles.map(([v, l]) => `<div><b>${v}</b><small>${l}</small></div>`).join('');
 }
+let capasPortada = null, indiceAn = null;
 renderStats(null);
-catalogo().then(renderStats).catch((e) => console.warn('Catálogo de capas no disponible', e));
+catalogo().then((c) => renderStats((capasPortada = c))).catch((e) => console.warn('Catálogo de capas no disponible', e));
+indicePrecalculado().then((d) => { indiceAn = d; renderStats(capasPortada); });
 $('#btn-skip').onclick = () => { if (viewer.tween && viewer.mode === 'flight') viewer.tween.t0 = performance.now() - viewer.tween.dur; };
 
 // ============================ SIMULACIÓN ===================================
@@ -168,13 +180,13 @@ function barraNota(s) {
 
 function showResults() {
   const b = BODIES[mission.body];
-  $('#res-sub').textContent = `${sites.length} regions analyzed · ${OBJECTIVES[mission.objective].name}`;
+  $('#res-sub').textContent = `${sites.length} places compared · best first · ${OBJECTIVES[mission.objective].name}`;
   $('#res-list').innerHTML = sites.map((s, i) => `
     <li data-id="${s.id}" style="--d:${i * 90}ms" tabindex="0">
       <span class="thumb"><canvas data-mini="${s.id}" width="96" height="96" aria-hidden="true"></canvas><span class="rk">${s.rank}</span></span>
       <div class="nm"><b>${esc(s.name)}</b><small>${esc(s.region)}<span class="lv"></span></small>${barraNota(s)}</div>
       <span class="sc">${s.score}</span></li>`).join('');
-  $('#res-layers').innerHTML = `<b>Layers:</b> ${b.layers.join(' · ')}`;
+  $('#res-layers').innerHTML = masInfo(`<p class="g-pie"><b>Layers:</b> ${b.layers.map(esc).join(' · ')}</p>`);   // la lista de capas, plegada
   $('#results').hidden = false;
   const real = sites.some((s) => Object.keys(s.real ?? {}).length);
   $('#res-leyenda').hidden = !real;                              // leyenda de la barra partida, solo si hay factores medidos
@@ -186,6 +198,7 @@ function showResults() {
   $('#layers').hidden = !viewer.bodies[mission.body]?.surfaceMat; renderLayers();
   viewer.controls.autoRotate = true;
   toast(`Best site: ${sites[0].name}`);
+  ctaResultados();
   flujo.alMostrarResultados(sites);
   setTimeout(pintarMiniaturas, 400);                             // después de la animación de entrada de la lista
 }
@@ -254,30 +267,77 @@ function radar(metrics) {
     <polygon points="${poly}" fill="rgba(93,255,208,.25)" stroke="#5dffd0" stroke-width="2"/></svg>`;
 }
 
+// Llamada principal al entrenamiento en la Tierra (arriba de la ficha y de los resultados): es la función central de
+// la web. En la ficha, data-pista recibe, si llega, el número real de análogos precalculados por el motor (renderDetail).
+function ctaEntreno(id, s, { res = false } = {}) {
+  return `<button type="button" class="cta-train${res ? ' res' : ''}" id="${id}">
+    <span class="cta-ico" aria-hidden="true">🌍</span>
+    <span class="cta-txt"><b>Where to train on Earth?</b>
+      <span class="cta-sub">${res ? `For <b>${esc(s.name)}</b> · analogs, terrain, climate` : 'Earth analogs · terrain side by side · climate'}</span>
+      ${res ? '' : '<span class="cta-dato" data-pista></span>'}</span>
+    <span class="cta-fl" aria-hidden="true">→</span></button>`;
+}
+const pistaAnalogos = (d) => {
+  // En llano; la cercanía exacta del más próximo («closer than X % of Earth’s N land windows…») queda en el panel de entrenamiento
+  return `<b>${d.analogos.length} places on Earth</b> with similar terrain, found in NASA elevation data`;
+};
+// En el panel de resultados: para el emplazamiento elegido o, si no hay, para el n.º 1
+function ctaResultados() {
+  const cont = $('#res-entreno'), s = current ?? sites[0];
+  if (!cont) return;
+  if (!s) { cont.hidden = true; cont.innerHTML = ''; return; }
+  cont.innerHTML = ctaEntreno('btn-train-res', s, { res: true }); cont.hidden = false;
+  $('#btn-train-res').onclick = () => {
+    current = s; flujo.alSeleccionar(s);
+    document.querySelectorAll('#res-list li').forEach((li) => li.classList.toggle('sel', li.dataset.id === s.id));
+    $('#results').hidden = true; openTraining(s);              // al volver («Back to the site») se abre la ficha de este lugar
+  };
+}
+
 function renderDetail(s) {
   const bars = Object.entries(s.metrics).map(([k, v]) => [k, v, s.weights?.[k] ?? 0]).sort((a, b) => b[2] - a[2])
     .map(([k, v, w]) => `<div class="row"><span>${METRICS[k].icon} ${METRICS[k].short} <small>${Math.round(w * 100)}%</small>${s.real?.[k] ? ` <abbr class="pds" title="${esc(s.real[k])}">PDS</abbr>` : ''}</span>
       <div class="t"><i class="${v < 45 ? 'low' : v < 65 ? 'mid' : ''}" style="width:${v}%"></i></div><span class="v">${v}</span></div>`).join('');
+  // Arriba, lo esencial (nombre, puntuación, descripción, entrenamiento, mapa y 4 datos clave en llano); todo lo demás,
+  // sin quitar nada, plegado tras «Learn more» (masInfo de js/graficos/base.js) en bloques con título.
+  const clave = (s.medidas ?? []).slice(0, 4);
+  const masFicha = `
+    <div data-g="corte"></div>
+    <h4>Score by factor <span class="muted">(weight for your objective)</span></h4>
+    ${radar(s.metrics)}
+    <div class="bars">${bars}</div>
+    ${Object.keys(s.real ?? {}).length ? '<p class="small muted"><abbr class="pds">PDS</abbr> = computed from measured data (hover to see the formula). The rest are demonstration estimates.</p>' : ''}
+    ${s.medidas?.length ? `<h4>All NASA PDS measurements <span class="muted">(mean within a ≈ ${zonaKm()} km radius)</span></h4>
+      <div class="facts">${s.medidas.map((m, i) => `<div class="fact"><small>${esc(m.nombre)} · ${esc(m.fuente)}</small><b>${esc(m.texto)}</b>${m.rango ? `<small class="rg">${esc(m.rango)}</small>` : ''}<span data-chispa="${i}"></span></div>`).join('')}</div>
+      <p class="small muted">The histogram of each measurement covers the whole surface ${esc(CUERPO[mission.body].de)} with published data, and the mark is this site: “higher than 90 %” (the 90th percentile) means that 90 % of that surface has an equal or lower value. It tells whether the value is low or high for that body, not whether it is good or bad.</p>
+      ${citas([...new Set(s.medidas.map((m) => m.cita).filter(Boolean))])}` : ''}
+    <h4>Reference data <span class="muted">(estimate)</span></h4><div class="facts">${(s.facts || []).map(([l, v]) => `<div class="fact"><small>${esc(l)}</small><b>${esc(v)}</b></div>`).join('')}</div>
+    ${s.pros?.length ? `<h4>Advantages</h4><ul class="pc">${s.pros.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>` : ''}
+    ${s.cons?.length ? `<h4>Risks</h4><ul class="pc con">${s.cons.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>` : ''}
+    ${flujo.fichaHtml(s)}`;
   $('#detail-body').innerHTML = `
     <div class="d-head"><div class="ring" style="--p:${s.score}"><b>${s.score}</b></div>
       <div><span class="tag ${s.rank === 1 ? '' : 'gold'}">#${s.rank} OF ${sites.length}</span><h2>${esc(s.name)}</h2>
       <small>${esc(s.region)} · ${Math.abs(s.lat).toFixed(1)}°${s.lat >= 0 ? 'N' : 'S'} ${Math.abs(s.lon).toFixed(1)}°${s.lon >= 0 ? 'E' : 'W'}</small></div></div>
+    ${ctaEntreno('btn-train', s)}
     <p class="desc">${esc(s.desc)}</p>
-    <section class="ficha-graf" id="ficha-graf" aria-label="Surroundings and terrain profile from measured data"><p class="g-cargando" role="status">Drawing the surroundings from the relief data…</p></section>
-    ${radar(s.metrics)}
-    ${s.medidas?.length ? `<h4>NASA PDS measurements <span class="muted">(mean within a ≈ ${zonaKm()} km radius)</span></h4>
-      <div class="facts">${s.medidas.map((m, i) => `<div class="fact"><small>${esc(m.nombre)} · ${esc(m.fuente)}</small><b>${esc(m.texto)}</b>${m.rango ? `<small class="rg">${esc(m.rango)}</small>` : ''}<span data-chispa="${i}"></span></div>`).join('')}</div>
-      <p class="small muted">The histogram of each measurement covers the whole surface ${esc(CUERPO[mission.body].de)} with published data, and the mark is this site: “90th percentile” means that 90 % of that surface has an equal or lower value. It tells whether the value is low or high for that body, not whether it is good or bad.</p>
-      <button type="button" class="btn ghost small-btn" id="btn-comparar-ficha">📊 Compare with the other sites</button>
-      ${citas([...new Set(s.medidas.map((m) => m.cita).filter(Boolean))])}` : ''}
-    <h4>Reference data <span class="muted">(estimate)</span></h4><div class="facts">${(s.facts || []).map(([l, v]) => `<div class="fact"><small>${esc(l)}</small><b>${esc(v)}</b></div>`).join('')}</div>
-    <h4>Factors for your objective <span class="muted">(weight)</span></h4><div class="bars">${bars}</div>
-    ${Object.keys(s.real ?? {}).length ? '<p class="small muted"><abbr class="pds">PDS</abbr> = computed from measured data (hover to see the formula). The rest are demonstration estimates.</p>' : ''}
-    ${s.pros?.length ? `<h4>Advantages</h4><ul class="pc">${s.pros.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>` : ''}
-    ${s.cons?.length ? `<h4>Risks</h4><ul class="pc con">${s.cons.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>` : ''}
-    ${flujo.fichaHtml(s)}
-    <button class="btn primary cta" id="btn-train">🌍 Where to train on Earth?</button>`;
+    <section class="ficha-graf" id="ficha-graf" aria-label="Surroundings from measured data"><p class="g-cargando" role="status">Drawing the surroundings from the relief data…</p></section>
+    ${clave.length ? `<h4>Key facts <span class="muted">(NASA measurements)</span></h4>
+      <div class="facts ficha-clave">${clave.map((m, i) => `<div class="fact"><small>${esc(m.nombre)}</small><b>${esc(m.texto)}</b><small class="llano" data-llano="${i}"></small></div>`).join('')}</div>
+      <button type="button" class="btn ghost small-btn" id="btn-comparar-ficha">📊 Compare with the other sites</button>` : ''}
+    ${masInfo(masFicha, 'ficha-mas')}
+    <button type="button" class="btn ghost small-btn cta-arriba" id="btn-train-arriba">↑ Back to “Where to train on Earth?”</button>`;
   $('#btn-train').onclick = () => openTraining(s);
+  $('#btn-train-arriba').onclick = () => {                       // vuelve arriba de la ficha y deja el foco en la llamada principal
+    $('#detail').scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    $('#btn-train').focus({ preventScroll: true });
+  };
+  // Indicio con datos reales: cuántos análogos tiene precalculados este emplazamiento y el más próximo
+  analogosPrecalculados(mission.body, s).then((d) => {
+    const hueco = document.querySelector('#detail-body [data-pista]');
+    if (!d?.analogos?.length || !hueco || current?.id !== s.id) return;
+    hueco.innerHTML = pistaAnalogos(d);
+  });
   const cmp = $('#btn-comparar-ficha'); if (cmp) cmp.onclick = () => abrirComparativa(s.id, cmp);
   graficosFicha(s); chispasFicha(s);
 }
@@ -291,14 +351,16 @@ async function graficosFicha(s) {
     const [entorno, corte, datos, ex] = await Promise.all([import('./graficos/entorno.js'), import('./graficos/corte.js'), medirTodo(body, [s]), exageracionRelieve(body)]);
     if ($('#ficha-graf') !== cont || mission.body !== body) return;   // la ficha ya es otra
     const pintar = (nombre, mod) => {
-      const viejo = cont.querySelector(`[data-g="${nombre}"]`), nuevo = viejo.cloneNode(false);
+      const viejo = $('#detail-body')?.querySelector(`[data-g="${nombre}"]`);
+      if (!viejo) return;
+      const nuevo = viejo.cloneNode(false);
       viejo.replaceWith(nuevo);                                   // contenedor nuevo: los escuchas del pintado anterior se van con él
       try {
         mod.pintar(nuevo, { body, cuerpo: CUERPO[body], Rkm: RADIO_KM[body], sitio: s, cols: datos.cols, fila: datos.filas[0], exageracion: ex,
           estado: (estadoFicha[nombre] ??= {}), repintar: () => pintar(nombre, mod) });
       } catch (e) { console.error(`Gráfico «${nombre}»`, e); nuevo.innerHTML = '<p class="g-vacio">This chart could not be drawn.</p>'; }
     };
-    cont.innerHTML = '<div data-g="entorno"></div><div data-g="corte"></div>';
+    cont.innerHTML = '<div data-g="entorno"></div>';                // el perfil (data-g="corte") está en «Learn more»
     pintar('entorno', entorno); pintar('corte', corte);
   } catch (e) {
     console.warn('Gráficos de la ficha no disponibles', e);
@@ -317,6 +379,8 @@ async function chispasFicha(s) {
       const hueco = document.querySelector(`#detail-body [data-chispa="${i}"]`);
       if (current?.id !== s.id || !hueco) return;
       hueco.innerHTML = chispa(c, m.valor, cuerpo);
+      const llano = document.querySelector(`#detail-body [data-llano="${i}"]`);   // la misma cifra, dicha en llano
+      if (llano) { const p = percentil(c, m.valor); llano.textContent = p !== p ? '' : p < 0.005 ? `Among the lowest 1 % ${cuerpo.de}` : `Higher than ${p > 0.995 ? '99' : pctTxt(p)} % ${cuerpo.de}`; }
     } catch (e) { console.warn('Distribución no disponible', m.capa, e); }
   }
 }
@@ -325,36 +389,142 @@ $('#detail-close').onclick = closeDetail;
 async function closeDetail() {
   tipGrafico(null);
   $('#detail').hidden = true; $('#results').hidden = false; current = null;
+  ctaResultados();
   document.querySelectorAll('#res-list li').forEach((li) => li.classList.remove('sel'));
   await viewer.backToBody();
 }
 
 // ============================ ENTRENAMIENTO ================================
-async function openTraining(site, pick = 0) {
+// Panel de la Tierra. Arriba, una sola historia para el público: el lugar de entrenamiento con nombre (js/data.js →
+// ANALOGS, renderFamosos). Al final, plegado, lo que el motor de similitud encuentra en el relieve medido por NASA (en vivo
+// o precalculado: js/api.js → analogosTierra): candidatos, ficha (js/graficos/analogo.js), NASA CMR e informe completo.
+let entreno = { run: 0, ficha: 0, site: null, r: null, sel: 0, vista: null };
+
+async function openTraining(site) {
   $('#detail').hidden = true; $('#training').hidden = false; $('#layers').hidden = true; hideTip();
-  $('#training-body').innerHTML = `<p class="muted">Looking for the Earth analog most similar to ${esc(site.name)}…</p>`;
-  const list = await fetchTraining(site, mission);
-  const a = list[pick];
+  const run = entreno.run + 1, body = mission.body;
+  entreno = { run, ficha: entreno.ficha, site, r: null, sel: 0, vista: null };
+  // Una sola historia: el lugar de entrenamiento con nombre (renderFamosos → js/graficos/tierra-panel.js) y, plegadas
+  // al final, las ventanas terrestres que encuentra el motor en el relieve de NASA (pintarAnalogos)
   $('#training-body').innerHTML = `
-    <span class="tag">RECOMMENDED TRAINING</span>
-    <h2 style="margin:.2rem 0 .1rem">${esc(a.name)}</h2><small class="muted">${esc(a.country)} · ${Math.abs(a.lat).toFixed(1)}°${a.lat >= 0 ? 'N' : 'S'} ${Math.abs(a.lon).toFixed(1)}°${a.lon >= 0 ? 'E' : 'W'}</small>
-    <div class="match" style="margin-top:.8rem"><b>${a.match}%</b><span class="muted">similarity with ${esc(site.name)} <small>(demonstration estimate from qualitative traits)</small></span></div>
-    <p class="desc">${esc(a.desc)}</p>
-    <section class="cmr" id="cmr" aria-live="polite"><h4>NASA data for this site <span class="muted">· CMR</span></h4><p class="muted small">Querying the NASA Earthdata catalog…</p></section>
-    <section class="motor" id="motor" aria-live="polite">${MOTOR_TIT}<p class="muted small">Checking the scientific engine…</p></section>
-    <h4>What they share</h4><div class="traits">${a.shared.map((t) => `<span>${esc(TRAIT_LABELS[t] || t)}</span>`).join('')}</div>
-    <h4>Training program</h4><ul class="acts">${a.activities.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
-    <div class="facts" style="margin-top:1rem"><div class="fact"><small>Best season</small><b>${esc(a.season)}</b></div><div class="fact"><small>Access</small><b>${esc(a.access)}</b></div></div>
-    <h4>Other options</h4>
-    ${list.map((x, i) => `<button class="alt ${i === pick ? 'sel' : ''}" data-i="${i}"><span>${esc(x.name)}</span><span>${x.match}%</span></button>`).join('')}
+    <span class="tag">EARTH TRAINING</span>
+    <h2 class="an-tit">Train on Earth for ${esc(site.name)}</h2>
+    <div id="famosos-body" class="an-famosos"><p class="g-cargando" role="status">Loading…</p></div>
+    <details class="an-plegable an-motor-plg" id="an-motor-plg"><summary>Places found by NASA terrain data</summary>
+      <p class="g-pie">The places on Earth whose terrain is statistically closest to the ${num(200)} km around <b class="ink">${esc(site.name)}</b>
+        (${NOMBRE_CUERPO[body]}), found by comparing NASA elevation data: ${body === 'moon' ? 'LRO LOLA' : 'MGS MOLA'} there, SRTM on Earth.
+        They share the shape of the land, not its rocks, air or gravity.</p>
+      <section id="an-motor" aria-live="polite"><p class="g-cargando" role="status">Searching Earth for the most similar terrain…</p></section></details>
     <button class="btn ghost cta" id="btn-train-back">← Back to the site</button>`;
-  $('#training-body').querySelectorAll('.alt').forEach((b) => (b.onclick = () => { if (+b.dataset.i !== pick) openTraining(site, +b.dataset.i); }));
   $('#btn-train-back').onclick = closeTraining;
   $('#training').scrollTop = 0;
-  renderCmr(a);
-  const vuelo = viewer.flyToEarth(a);   // borra los marcadores de análogos al empezar (síncrono)
-  renderMotor(site);
-  await vuelo;
+  // el bloque del motor se construye al abrirlo (mapas, CMR y clima de su candidato: muchas peticiones)
+  $('#an-motor-plg').addEventListener('toggle', (e) => { if (e.currentTarget.open && entreno.r) pintarAnalogos(); });
+  viewer.onMotorClick = (id) => {                                 // pulsar un candidato en el globo abre su bloque
+    const d = $('#an-motor-plg'), i = +String(id).split('-')[1] - 1;
+    if (d && !d.open && entreno.r?.analogos[i]) { entreno.sel = i; d.open = true; d.scrollIntoView({ block: 'start' }); } else elegirAnalogo(i);
+  };
+  renderFamosos(site, 0);
+  const clave = `${body}:${site.id}`;
+  const llegan = (r) => {
+    if (run !== entreno.run || !r.analogos?.length) return;
+    // la respuesta en vivo puede llegar después de la precalculada: se conserva el candidato elegido
+    entreno.r = r; entreno.sel = Math.min(entreno.sel, r.analogos.length - 1); motorCache.set(clave, r);
+    pintarAnalogos();
+  };
+  if (motorCache.get(clave)?.origen?.tipo === 'motor') { llegan(motorCache.get(clave)); return; }
+  analogosTierra(site, body, {
+    alLlegar: llegan,
+    alFallar: async (msg, est) => {
+      if (run !== entreno.run) return;
+      const box = $('#an-motor');
+      if (box) box.innerHTML = `<p class="small muted">${!MOTOR_LOCAL ? 'The Earth analogs for this site are not available.'
+        : !est ? 'No precomputed analogs for this site, and the similarity engine is not running. In a terminal: <code>cd base-planetaria && ../.venv/bin/python -m similitud servidor</code>'
+        : !est.datos?.earth?.srtmgl30_teselas ? 'The SRTMGL30 Earth elevation model is missing (NASA Earthdata, requires Earthdata Login): <code>python -m similitud descargar-tierra</code>'
+        : `The engine could not compute the analogs: ${esc(msg)}`}</p>`;
+      if (!MOTOR_LOCAL && $('#an-motor-plg')) $('#an-motor-plg').hidden = true;   // web publicada: sin motor, sin bloque
+    },
+  });
+}
+
+// Lista de candidatos y ficha del elegido
+function pintarAnalogos() {
+  const { r, sel } = entreno, box = $('#an-motor');
+  if (!box) return;
+  const o = r.origen ?? {}, pre = o.tipo === 'precalculado';
+  box.innerHTML = `
+    <p class="an-origen${pre ? ' pre' : ''}"><i aria-hidden="true"></i>We compared this terrain with ${r.datos.catalogo.ventanas_validas.toLocaleString('en-US')} places on Earth, each ${num(r.parametros.lado_km)} km wide. These are the closest.</p>
+    ${masInfo(`<p class="g-pie">${pre ? `Precomputed on ${fechaCorta(o.fecha)} by the similarity engine` : 'Computed live by the similarity engine'}: ${r.datos.catalogo.ventanas_validas.toLocaleString('en-US')} Earth land windows of ${num(r.parametros.lado_km)} km.</p>`)}
+    ${listaCandidatos(r, sel)}
+    <article class="an-ficha" id="an-ficha" aria-live="polite"></article>`;
+  box.querySelectorAll('[data-cand]').forEach((b) => (b.onclick = () => elegirAnalogo(+b.dataset.cand)));
+  if ($('#an-motor-plg')?.open) fichaAnalogo();
+  else viewer.showMotorAnalogs(r.analogos);                       // plegado: solo los marcadores en el globo
+}
+
+function elegirAnalogo(i) {
+  if (!entreno.r?.analogos[i] || $('#training').hidden) return;
+  entreno.sel = i;
+  if (!$('#an-motor-plg')?.open) return;
+  document.querySelectorAll('#an-motor [data-cand]').forEach((b) => { const s = +b.dataset.cand === i; b.classList.toggle('sel', s); b.setAttribute('aria-pressed', String(s)); });
+  fichaAnalogo();
+  document.getElementById('an-ficha')?.scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+}
+
+// (a) cabecera · (b) mapas · (c) criterios · (d) distribuciones · (e) se sostiene / falla · (f) NASA CMR · (g) método
+function fichaAnalogo() {
+  const { site, r, sel } = entreno, a = r.analogos[sel], el = $('#an-ficha'), tok = ++entreno.ficha;
+  if (!el) return;
+  const ctx = { sitio: site.name, sitioCorto: nombreCorto(site.name), rango: a.rango, body: mission.body };
+  const nCat = r.datos.catalogo.ventanas_validas;
+  const punto = { id: `tierra:${a.lat.toFixed(4)},${a.lon.toFixed(4)}`, name: `Earth match #${a.rango} · ${ll(a.lat, a.lon)}`, lat: a.lat, lon: a.lon };
+  el.innerHTML = `
+    <header class="an-cab"><span class="tag">EARTH MATCH #${a.rango} OF ${r.analogos.length}</span>
+      <h3>${ll(a.lat, a.lon)}</h3>
+      <small>${num(r.parametros.lado_km)} × ${num(r.parametros.lado_km)} km of land · ${esc(cercania(a))}</small>
+      <p class="an-frase">${esc(frase(a, site.name))}</p>
+      ${masInfo(`<p class="g-pie">${esc(frase(a, site.name, r.parametros.h_m / 1000))} ${esc(cercaniaTecnica(a, nCat))}.</p>`)}</header>
+    <h4 class="an-paso">1 · Why it looks alike</h4>
+    ${mapasHtml()}
+    <div data-an-crit>${graficoCriterios(r, a, ctx)}</div>
+    ${sostieneFalla(r, a, ctx)}
+    <section class="an-clima"><h4 class="an-paso">2 · When to go: the weather here</h4><div data-an-clima></div></section>
+    ${masInfo(`<div data-an-dist>${graficoDistribuciones(r, a, ctx)}</div>
+    <section class="cmr" id="cmr" data-para="${esc(punto.id)}" aria-live="polite"><h4>NASA data for this point <span class="muted">· CMR</span></h4><p class="muted small">Querying the NASA Earthdata catalog…</p></section>
+    <details class="an-plegable"><summary>Sources and method (full engine report)</summary><section class="motor" id="motor"></section></details>`, 'an-mas')}`;
+  tipCriterios(el.querySelector('[data-an-crit]'), a, site.name);
+  tipDistribuciones(el.querySelector('[data-an-dist]'), r, a, ctx);
+  pintarMotor(site, r);
+  const cctx = { body: r.objetivo.ventana.cuerpo, site, analogo: { lat: a.lat, lon: a.lon, rango: a.rango },
+    lado_km: r.parametros.lado_km, buscar_en: r.datos.busqueda.cuerpo };
+  const mapas = el.querySelector('[data-an-mapas]');
+  comparacionTierra(cctx, {
+    alLlegar: (comp) => { if (tok === entreno.ficha) pintarMapas(mapas, comp, { ...ctx, alAbrir: () => abrirComparacion(cctx) }); },
+    alFallar: (msg) => { if (tok === entreno.ficha) mapas.innerHTML = `<p class="g-vacio">The relief maps could not be loaded (${esc(msg)}).</p>`; },
+  });
+  renderCmr(punto);
+  pintarClima(el.querySelector('[data-an-clima]'), { analogo: punto, power: climaPower(a.lat, a.lon), cmr: earthSiteData(punto) }).catch((e) => console.warn('Clima', e));
+  if (entreno.vista !== punto.id) { entreno.vista = punto.id; viewer.flyToEarth(punto); }   // borra los marcadores (síncrono)
+  viewer.showMotorAnalogs(r.analogos.filter((x) => x !== a));     // el elegido ya lleva la estrella de flyToEarth
+}
+
+// Lugar de entrenamiento con nombre (rankAnalogs sobre las etiquetas escritas a mano en js/data.js): la historia principal
+// del panel (js/graficos/tierra-panel.js): tarjeta, relieve, cuándo ir, otros lugares y qué entrenar; CMR completo en #cmr-fam
+async function renderFamosos(site, pick = 0, desplazar = false) {
+  const caja = () => document.getElementById('famosos-body');
+  const list = await fetchTraining(site, mission);
+  if (!caja() || entreno.site !== site) return list;
+  const a = list[pick];
+  const alGlobo = () => { entreno.vista = `fam:${a.id}`; viewer.flyToEarth(a); if (entreno.r) viewer.showMotorAnalogs(entreno.r.analogos); };
+  pintarFamoso(caja(), {
+    body: mission.body, sitio: site, lista: list, pick, desplazar,
+    aviso: `Picked by hand from written traits, not by the engine: the % is a rough estimate.`,
+    alElegir: (i) => { if (i !== pick) renderFamosos(site, i, true); },
+    alGlobo,
+  });
+  renderCmr(a, 'cmr-fam');
+  if (!$('#an-motor-plg')?.open) alGlobo();                        // el globo acompaña al lugar elegido
+  return list;
 }
 
 // ---- motor científico de similitud geomorfológica (base-planetaria/similitud, opcional) ----------
@@ -364,34 +534,6 @@ const pct = (p) => `${(100 * p).toFixed(1)} %`;
 const num = (x) => (x == null ? '—' : Math.abs(x) >= 100 ? x.toFixed(0) : Math.abs(x) >= 1 ? x.toFixed(2) : x.toPrecision(2));
 const ll = (lat, lon) => `${Math.abs(lat).toFixed(2)}°${lat >= 0 ? 'N' : 'S'} ${Math.abs(lon).toFixed(2)}°${lon >= 0 ? 'E' : 'W'}`;
 const CLASE = { indistinguible: 'indistinguishable', muy_proxima: 'very close', proxima: 'close', distinta: 'different' };
-
-async function renderMotor(site) {
-  const box = () => document.getElementById('motor');
-  const clave = `${mission.body}:${site.id}`;
-  if (motorCache.has(clave)) return pintarMotor(site, motorCache.get(clave));
-  const est = await estadoMotor();
-  if (!box()) return;
-  if (!est) {
-    box().innerHTML = `${MOTOR_TIT}<p class="small muted">Not running. In a terminal: <code>cd base-planetaria && ../.venv/bin/python -m similitud servidor</code></p>`;
-    return;
-  }
-  if (!est.datos.earth.srtmgl30_teselas) {
-    box().innerHTML = `${MOTOR_TIT}<p class="small muted">The SRTMGL30 Earth elevation model is missing (NASA Earthdata, requires Earthdata Login): <code>python -m similitud descargar-tierra</code></p>`;
-    return;
-  }
-  box().innerHTML = `${MOTOR_TIT}<p class="small muted">Searches the whole Earth for 200 km windows with similar distributions of slope, roughness, curvature and spatial structure, using LOLA/MOLA and SRTMGL30 data.</p>
-    <button class="btn ghost" id="motor-go">Find geomorphological analogs</button>`;
-  $('#motor-go').onclick = async () => {
-    box().innerHTML = `${MOTOR_TIT}<p class="small muted">Computing… The first time, the Earth catalog is built and this takes several minutes.</p>`;
-    const pol = mission.body === 'moon' && Math.abs(site.lat) >= 78 ? (site.lat < 0 ? 'ldem_75s_240m' : 'ldem_75n_240m') : null;
-    const producto = pol && est.datos.moon.polares.includes(pol) ? pol : undefined;
-    try {
-      const r = await fetchAnalogosGeomorfologicos(site, mission.body, { producto });
-      motorCache.set(clave, r);
-      if (box()) pintarMotor(site, r);
-    } catch (e) { if (box()) box().innerHTML = `${MOTOR_TIT}<p class="small muted">Could not compute: ${esc(e.message)}</p>`; }
-  };
-}
 
 const NOMBRE_CUERPO = { moon: 'Moon', mars: 'Mars', earth: 'Earth' };
 const fmtCob = (x) => (x == null ? 'not available in the product' : pct(x));
@@ -422,7 +564,7 @@ function pintarMotor(site, r) {
     </table>
     <p class="small muted">Block bootstrap ${nref(['kunsch1989'])} (${v.bootstrap_bloques.replicas} replicates, seed ${v.bootstrap_bloques.semilla}): frequency in the top ${p.k} for each candidate,
       ${v.bootstrap_bloques.frecuencia_en_top_k_por_rango_original.slice(0, p.k).map((f) => pct(f)).join(' · ')}.
-      Effective sample size of the target ${nref(['bretherton1999'])}: ${Object.entries(v.dependencia_espacial_objetivo).map(([k, d]) => `${k} ${num(d.n_efectivo)} of ${d.n_pixeles}`).join(' · ')}.</p>` : '';
+      Effective sample size of the target ${nref(['bretherton1999'])}: ${Object.entries(v.dependencia_espacial_objetivo).map(([k, d]) => `${(CRIT[k]?.corto ?? k).toLowerCase()} ${num(d.n_efectivo)} of ${d.n_pixeles}`).join(' · ')}.</p>` : '';
   box.innerHTML = `${MOTOR_TIT}
     <div class="informe">
     <p class="small"><b>Type of similarity:</b> geomorphological. It does not assess environmental conditions (temperature, atmosphere, radiation) or suitability for a mission.</p>
@@ -446,7 +588,7 @@ function pintarMotor(site, r) {
     <ol class="small refs">${r.referencias.datos.map((c) => `<li>${enlazar(c)}</li>`).join('')}</ol>
     <h5>8 · Method references</h5>
     <ol class="small refs">${r.referencias.metodos.map((m) => `<li>${enlazar(m.cita)}${m.url ? ` <a href="${esc(m.url)}" target="_blank" rel="noopener">${esc(m.url)}</a>` : ''} <span class="muted">— ${esc(m.uso)}</span></li>`).join('')}</ol>
-    <p class="small muted">Challenge: <a href="${esc(r.recurso_oficial)}" target="_blank" rel="noopener">NASA Space Apps 2026, Resources tab</a> · computed in ${num(r.segundos)} s.</p>
+    <p class="small muted">Challenge: <a href="${esc(r.recurso_oficial)}" target="_blank" rel="noopener">NASA Space Apps 2026, Resources tab</a> · computed in ${num(r.segundos)} s${r.origen?.tipo === 'precalculado' ? `, precomputed on ${fechaCorta(r.origen.fecha)}` : ''}.</p>
     <a class="btn ghost" id="motor-geojson" download="analogos_${esc(site.id)}.geojson">Download map (GeoJSON)</a>
     </div>`;
   box.querySelector('#motor-geojson').href = URL.createObjectURL(new Blob([JSON.stringify(r.geojson)], { type: 'application/geo+json' }));
@@ -456,8 +598,6 @@ function pintarMotor(site, r) {
       lado_km: r.parametros.lado_km, buscar_en: r.datos.busqueda.cuerpo });
   };
   box.querySelectorAll('[data-cmp]').forEach((b) => (b.onclick = () => comparar(+b.dataset.cmp)));
-  viewer.onMotorClick = (id) => comparar(+String(id).split('-')[1]);   // pulsar el lugar en el globo
-  viewer.showMotorAnalogs(r.analogos);
 }
 
 // ---- datos reales de NASA CMR para el lugar de entrenamiento -------------
@@ -480,14 +620,14 @@ function clearChart(months) {
     <line x1="0" x2="${W}" y1="${base}" y2="${base}" class="axis"/>${bars}</svg>`;
 }
 
-async function renderCmr(a) {
-  const box = () => document.getElementById('cmr');
+async function renderCmr(a, id = 'cmr') {
+  const box = () => document.getElementById(id);
   try {
     const d = await earthSiteData(a);
-    if (!box() || $('#training-body h2')?.textContent !== a.name) return;   // el usuario cambió de lugar
+    if (!box() || box().dataset.para !== a.id) return;           // el usuario eligió otro lugar
     const img = d.image;
     const cap = img.date ? `${img.sensor} · ${fmtDate(img.date)} · ${Math.round(img.cloud)} % cloud` : `${img.sensor} · recent image`;
-    box().innerHTML = `<h4>NASA data for this site <span class="muted">· CMR</span></h4>
+    box().innerHTML = `<h4>NASA data for this point <span class="muted">· CMR</span></h4>
       <figure class="sat"><a href="${img.src}" target="_blank" rel="noopener"><img src="${img.src}" alt="Latest clear satellite image of ${esc(a.name)}" loading="lazy"></a>
         <figcaption>${esc(cap)}${img.id ? ` · <code>${esc(img.id)}</code>` : ''}</figcaption></figure>
       ${d.scenes ? `<div class="facts"><div class="fact"><small>Landsat/Sentinel-2 passes (24 months)</small><b>${d.scenes}</b></div>
@@ -500,13 +640,13 @@ async function renderCmr(a) {
         d.dem ? CITAS_CMR.astgtm : null, d.lstLast ? CITAS_CMR.mod11a1 : null].filter(Boolean))}`;
   } catch (e) {
     console.warn('CMR no disponible', e);
-    if (box()) box().innerHTML = '<h4>NASA data for this site</h4><p class="small muted">NASA CMR could not be queried (offline?).</p>';
+    if (box()?.dataset.para === a.id) box().innerHTML = '<h4>NASA data for this point</h4><p class="small muted">NASA CMR could not be queried (offline?).</p>';
   }
 }
 
 $('#training-close').onclick = closeTraining;
 async function closeTraining() {
-  const s = current; $('#training').hidden = true; viewer.clearAnalogs();
+  const s = current; tipGrafico(null); $('#training').classList.remove('tr-min'); $('#training').hidden = true; viewer.clearAnalogs();
   $('#layers').hidden = !viewer.bodies[mission.body]?.surfaceMat;
   if (s) { renderDetail(s); $('#detail').hidden = false; await viewer.backToBody(); await viewer.focusSite(s); }
 }
@@ -603,6 +743,9 @@ const BARRA_PX = 100;                                            // alto de la b
 function encuadrar() {
   const hoja = MOVIL.matches && HOJAS.find((el) => !el.hidden);
   viewer.shiftY = hoja ? Math.max(0, 0.5 - (BARRA_PX + hoja.getBoundingClientRect().top) / (2 * innerHeight)) : 0;
+  // En escritorio el panel de la Tierra es ancho (css/g-tierra.css): el globo se centra en el hueco que queda a la izquierda
+  const tr = $('#training');
+  viewer.shiftX = !MOVIL.matches && !tr.hidden ? -(tr.getBoundingClientRect().width + 16) / (2 * innerWidth) : 0;
 }
 const obsHojas = new ResizeObserver(encuadrar);                  // se abre, se cierra o cambia de alto (p. ej. al llegar los datos de CMR)
 HOJAS.forEach((el) => obsHojas.observe(el));

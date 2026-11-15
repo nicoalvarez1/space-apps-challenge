@@ -1,0 +1,152 @@
+/* ============================================================================
+   «¿Dónde entrenar en la Tierra?» (#training; js/main.js → openTraining y js/graficos/tierra-*.js).
+   El panel pasa a ser grande: en escritorio ocupa ~58 % del ancho a la derecha (el globo con el análogo queda a la
+   izquierda: viewer.shiftX) y en móvil casi toda la pantalla, con un botón para plegarlo y ver el globo.
+   Solo añade reglas con prefijo tr- / g-tr-; lo común (g-fig, g-tabla, g-tip, g-en-*) viene de graficos.css y g-entorno.css.
+   ============================================================================ */
+:root { --g-tierra: #6ab7ff; }               /* el análogo terrestre: el mismo azul que su marcador en el globo */
+
+/* ---------- panel ---------- */
+#training.panel.wide { padding: 1.3rem 1.5rem 1.5rem; overflow-x: hidden; background: rgba(8, 11, 24, .94); }
+@media (min-width: 1001px) { #training.panel.wide { width: min(58vw, 1100px); } }
+@media (min-width: 801px) and (max-width: 1000px) { #training.panel.wide { width: min(640px, calc(100% - 2rem)); } }
+@media (max-width: 800px) {
+  #training.panel.wide { top: 3.9rem; bottom: .6rem; max-height: none; padding: 1.1rem 1rem 1.2rem; }
+  #training.panel.wide.tr-min { top: auto; max-height: 32vh; }
+}
+#training .g-fig, #training .tr-sec, #training .tabla-scroll { min-width: 0; max-width: 100%; }
+
+/* ---------- cabecera ---------- */
+.tr-cab { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .5rem 1.4rem; align-items: end; padding-right: 2.2rem; }
+.tr-cab h2 { margin: .15rem 0 .15rem; font-size: clamp(1.35rem, 2.3vw, 1.95rem); line-height: 1.12; }
+.tr-donde { margin: 0; font-size: .8rem; color: var(--mute); }
+.tr-para { margin: .55rem 0 0; font-size: .86rem; line-height: 1.45; color: #c6cde4; }
+.tr-para b { color: var(--text); }
+.tr-match { text-align: right; max-width: 15rem; }
+.tr-match b { display: block; font: 600 2.1rem/1 var(--serif); color: var(--accent); }
+.tr-match small { display: block; margin-top: .25rem; font-size: .68rem; line-height: 1.35; color: var(--mute); }
+.tr-cab .traits { grid-column: 1 / -1; margin-top: .2rem; }
+.tr-cab .traits small { align-self: center; margin-right: .2rem; font-size: .7rem; color: var(--mute); }
+.tr-globo { display: none; }
+@media (max-width: 800px) {
+  .tr-cab { grid-template-columns: minmax(0, 1fr); padding-right: 2rem; }
+  .tr-match { text-align: left; max-width: none; display: flex; align-items: baseline; gap: .6rem; }
+  .tr-match b { font-size: 1.6rem; }
+  .tr-globo { display: inline-flex; margin-top: .6rem; }
+}
+
+/* índice de secciones: pegado arriba al desplazar el panel (el botón ✕ sigue por encima, a la derecha) */
+.tr-nav { position: sticky; top: -1.3rem; z-index: 2; display: flex; gap: .35rem; overflow-x: auto; scrollbar-width: none;
+  margin: .9rem -1.5rem .2rem; padding: .55rem 3rem .55rem 1.5rem; background: rgba(8, 11, 24, .96); border-bottom: 1px solid var(--line); }
+.tr-nav button { flex: none; padding: .25rem .7rem; border: 1px solid var(--line); border-radius: 4px; background: rgba(255, 255, 255, .04); color: #c6cde4; font-size: .74rem; }
+.tr-nav button:hover { color: var(--text); border-color: rgba(93, 255, 208, .5); }
+@media (max-width: 800px) { .tr-nav { top: -1.1rem; margin: .8rem -1rem .2rem; padding: .5rem 2.6rem .5rem 1rem; } }
+
+/* ---------- secciones ---------- */
+.tr-sec { margin-top: 1.5rem; padding-top: 1.1rem; border-top: 1px solid var(--line); scroll-margin-top: 3.2rem; }
+.tr-sec > h3 { margin: 0 0 .2rem; font: 600 1.18rem/1.25 var(--serif); }
+.tr-por { margin: 0 0 .9rem; max-width: 85ch; font-size: .78rem; line-height: 1.5; color: #c6cde4; }
+.tr-sec > .g-fig + .g-fig, .tr-sec .g-tr-cara + .g-fig { margin-top: 1.3rem; }
+.tr-dos { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 0 1.6rem; }
+.tr-dos > section { min-width: 0; }
+#training .cta { max-width: 26rem; }
+
+/* ---------- cara a cara ---------- */
+.g-tr-mapas { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: .8rem; }
+.g-tr-mfig { margin: 0; min-width: 0; }
+.g-tr-mfig figcaption { margin-bottom: .3rem; font-size: .76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.g-en-halo .g-tr-traza { stroke: rgba(4, 7, 18, .55); stroke-width: 2.5px; }
+.g-en-trazo .g-tr-traza { stroke: rgba(255, 255, 255, .6); stroke-width: 1px; }
+@media (max-width: 800px) { .g-tr-mapa .g-en-svg text { font-size: 6px; } }
+.g-tr-m-agua { flex: none; width: 12px; height: 10px; border-radius: 2px;
+  background: repeating-linear-gradient(135deg, rgb(80, 146, 230) 0 2px, rgb(46, 112, 196) 2px 7px); }
+.g-ley i.g-tr-m-agua { width: 12px; height: 10px; border-radius: 2px; }
+
+.g-tr-perfil { position: relative; cursor: crosshair; touch-action: pan-y; border-radius: 6px; }
+.g-tr-perfil:focus { outline: none; }
+.g-tr-perfil:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.g-tr-lp { fill: none; stroke: var(--g-enfasis); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.g-tr-le { fill: none; stroke: var(--g-tierra); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.g-tr-agua { fill: rgb(46, 112, 196); }
+.g-tr-regla { stroke: #c6cde4; stroke-width: 1; }
+.g-tr-pp { fill: var(--g-enfasis); stroke: var(--g-superficie); stroke-width: 2; }
+.g-tr-pt { fill: var(--g-tierra); stroke: var(--g-superficie); stroke-width: 2; }
+.g-ley i.g-tr-m-lp, .g-ley i.g-tr-m-le { width: 14px; height: 2px; border-radius: 2px; background: var(--g-enfasis); }
+.g-ley i.g-tr-m-le { background: var(--g-tierra); }
+.g-tr-tab th:not(:first-child), .g-tr-tab td { text-align: right; }
+
+/* ---------- clima ---------- */
+.g-tr-anual { grid-template-columns: repeat(auto-fit, minmax(128px, 1fr)); margin: 0 0 1rem; }
+.g-tr-cl { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: .9rem 1.2rem;
+  cursor: crosshair; touch-action: pan-y; border-radius: 6px; }
+.g-tr-cl:focus { outline: none; }
+.g-tr-cl:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.g-tr-pan { min-width: 0; }
+.g-tr-ptit { display: block; margin-bottom: .15rem; font-size: .74rem; font-weight: 600; color: var(--text); }
+.g-tr-ptit span { font-weight: 400; color: var(--mute); }
+.g-tr-pan-vacio .g-vacio { margin: .3rem 0; }
+.g-tr-mejor { fill: rgba(93, 255, 208, .07); }
+.g-tr-mejor-m { stroke: var(--accent); stroke-width: 2; stroke-linecap: round; }
+.g-tr-mes { fill: rgba(255, 255, 255, .09); }
+.g-tr-col { fill: #6d7fb0; }
+.g-tr-col.sel { fill: var(--accent); }
+.g-tr-nd { fill: var(--line); }
+.g-tr-banda { fill: #3d4763; }
+.g-tr-lin { fill: none; stroke: #e8ecf8; stroke-width: 1.5; stroke-linejoin: round; }
+.g-tr-pto { fill: #e8ecf8; stroke: var(--g-superficie); stroke-width: 1; }
+.g-tr-epoca { margin: 1rem 0 0; padding: .55rem .75rem; border-left: 2px solid var(--gold); background: rgba(255, 200, 87, .06); font-size: .8rem; line-height: 1.45; }
+
+/* ---------- alternativas ---------- */
+.g-tr-alt { min-width: 780px; }
+.g-tr-alt thead th small { font-size: .62rem; }
+.g-tr-alt td { vertical-align: middle; min-width: 92px; }
+.g-tr-alt tr[data-i] { cursor: pointer; }
+.g-tr-alt tr[data-i]:hover > * { background: rgba(255, 255, 255, .04); }
+.g-tr-alt tr.sel > th { box-shadow: inset 3px 0 0 var(--accent); }
+.g-tr-elegir { display: block; width: 100%; padding: 0; border: 0; background: none; color: var(--text); text-align: left; }
+.g-tr-elegir b { display: block; font-size: .8rem; line-height: 1.3; }
+.g-tr-elegir small { font-size: .64rem; }
+button.g-tr-elegir:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+.g-tr-b { position: relative; display: block; height: 8px; margin: .15rem 0 .25rem; border-radius: 2px; background: rgba(160, 190, 255, .08); }
+.g-tr-b > i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 2px; background: #6d7fb0; }
+.g-tr-alt tr.sel .g-tr-b > i { background: var(--accent); }
+.g-tr-fref .g-tr-b > i { background: #e8ecf8; }
+.g-tr-ref { position: absolute; top: -3px; bottom: -3px; width: 2px; margin-left: -1px; border-radius: 1px; background: #fff; box-shadow: 0 0 0 1px var(--g-superficie); }
+.g-tr-med { background: #e8ecf8; }
+.g-tr-bv { font: .72rem var(--mono); color: var(--text); white-space: nowrap; }
+.g-tr-bv small { font-size: .62rem; }
+.g-tr-fref > * { border-top: 1px dashed rgba(160, 190, 255, .35); }
+.g-tr-nota { font-size: .68rem; }
+
+/* ---------- dentro del bloque plegable de los análogos de referencia (js/main.js → renderFamosos) ---------- */
+.an-famosos .tr-cab { padding-right: 0; margin-top: .4rem; }
+.an-famosos .tr-nav { margin-left: -.7rem; margin-right: -.7rem; padding-left: .7rem; padding-right: .7rem; }
+.an-famosos > summary { font-size: .9rem; }
+/* clima del punto elegido por el motor (js/main.js → fichaAnalogo) */
+.an-clima { margin-top: 1.2rem; }
+
+/* ---------- historia compacta (js/graficos/tierra-panel.js): tarjeta, otros lugares, actividades ---------- */
+.tr-tarjeta { display: grid; grid-template-columns: minmax(0, 14rem) minmax(0, 1fr); gap: 1rem 1.3rem; align-items: center; margin-top: 1rem; scroll-margin-top: 1rem; }
+.tr-tarjeta h3 { margin: .2rem 0 .1rem; font: 600 clamp(1.3rem, 2.2vw, 1.75rem)/1.15 var(--serif); }
+.tr-tarjeta .tr-por { margin: .7rem 0 .4rem; }
+.tr-tarjeta .traits { margin-bottom: .8rem; }
+.tr-foto { min-width: 0; }
+.tr-foto img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; border: 1px solid var(--line); background: #000; }
+.tr-foto-pie { display: block; margin-top: .3rem; font-size: .66rem; color: var(--mute); }
+@media (max-width: 520px) { .tr-tarjeta { grid-template-columns: minmax(0, 1fr); } .tr-foto img { aspect-ratio: 16 / 9; } }
+.traits .chip { font-size: .72rem; padding: .2rem .6rem; border-radius: 99px; border: 1px solid var(--accent); color: var(--accent); background: none; white-space: normal; }
+.tr-acts .chip { border-color: var(--line); color: #c6cde4; }
+.tr-nota { margin-top: .7rem; }
+.tr-frase { margin: .6rem 0 .3rem; }
+.tr-frase b { color: var(--text); font-weight: 600; }
+.g-ley i.g-tr-m-mejor { width: 12px; height: 10px; border-radius: 2px; background: rgba(93, 255, 208, .25); }
+.g-tr-clima-c .g-tr-cl { max-width: 26rem; }
+.tr-otros { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr)); gap: .45rem; }
+.tr-otro { display: flex; flex-direction: column; align-items: flex-start; gap: .1rem; width: 100%; height: 100%; padding: .55rem .7rem; text-align: left;
+  border: 1px solid var(--line); border-radius: 6px; background: rgba(255, 255, 255, .03); color: var(--text); cursor: pointer; font: inherit; }
+.tr-otro:hover, .tr-otro:focus-visible { border-color: rgba(93, 255, 208, .55); }
+.tr-otro b { font-size: .86rem; }
+.tr-otro-p { font-size: .72rem; color: var(--mute); }
+.tr-otro-c { font: .7rem var(--mono); color: #c6cde4; }
+details.an-motor-plg { margin-top: 1.6rem; }
+details.an-motor-plg > summary { font-size: .92rem; }

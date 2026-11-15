@@ -53,7 +53,7 @@ def _prueba(nombre, r_obj, r_bus, lat, lon, centros, lado, h, r0, k, t_obj=None,
     except pp.VentanaInvalida as e:
         return {"prueba": nombre, "omitida": str(e)}
     if f_obj is None or any(f is None for f in firmas):
-        return {"prueba": nombre, "omitida": "muestra insuficiente tras la perturbación"}
+        return {"prueba": nombre, "omitida": "not enough samples after the perturbation"}
     return {"prueba": nombre, **_comparar(r0, _rangos(_matriz(f_obj, firmas)), k)}
 
 
@@ -86,29 +86,29 @@ def validar(r_obj, r_bus, lat, lon, lado, h, centros, k, campos_obj, campos_list
     pruebas = []
 
     # resolución y tamaño de ventana
-    pruebas.append(_prueba("resolución h×2", r_obj, r_bus, lat, lon, centros, lado, 2 * h, r0, k))
+    pruebas.append(_prueba("cell size h×2", r_obj, r_bus, lat, lon, centros, lado, 2 * h, r0, k))
     for fct in (0.75, 1.25):
-        pruebas.append(_prueba(f"ventana L×{fct}", r_obj, r_bus, lat, lon, centros, lado * fct, h, r0, k))
+        pruebas.append(_prueba(f"window L×{fct}", r_obj, r_bus, lat, lon, centros, lado * fct, h, r0, k))
     # incertidumbre vertical (σ de prueba, no exactitud publicada)
     for i, s in enumerate((1.0, 5.0, 20.0)):
-        pruebas.append(_prueba(f"ruido vertical σ = {s:g} m", r_obj, r_bus, lat, lon, centros, lado, h, r0, k,
+        pruebas.append(_prueba(f"vertical noise σ = {s:g} m", r_obj, r_bus, lat, lon, centros, lado, h, r0, k,
                                t_obj=_ruido(s, config.SEMILLA + i), t_cand=_ruido(s, config.SEMILLA + 100 + i)))
     # cobertura incompleta del objetivo
     for fr in (0.10, 0.25):
-        pruebas.append(_prueba(f"huecos {fr:.0%} en el objetivo", r_obj, r_bus, lat, lon, centros, lado, h, r0, k,
+        pruebas.append(_prueba(f"{fr:.0%} gaps in the target", r_obj, r_bus, lat, lon, centros, lado, h, r0, k,
                                t_obj=_huecos(fr, config.SEMILLA)))
     # referencia vertical (Marte: areoide frente a esfera)
     if r_obj.cuerpo == "mars":
         from .data_loader import cargar_mola
         try:
             alt = cargar_mola("esfera")
-            p = _prueba("referencia vertical: esfera 3396 km en vez de areoide", r_obj, r_bus, lat, lon, centros,
+            p = _prueba("vertical reference: 3396 km sphere instead of areoid", r_obj, r_bus, lat, lon, centros,
                         lado, h, r0, k, r_obj_alt=alt)
             f_esf = _firma(alt, lat, lon, lado, h)
             p["distancia_objetivo_areoide_vs_esfera"] = dict(zip(CRITERIOS, map(float, _matriz(f_obj, [f_esf])[0])))
             pruebas.append(p)
         except Exception as e:  # noqa: BLE001  (falta MEGR: se informa, no se oculta)
-            pruebas.append({"prueba": "referencia vertical", "omitida": str(e)})
+            pruebas.append({"prueba": "vertical reference", "omitida": str(e)})
 
     # normalización: solo forma (distribuciones tipificadas y variograma / varianza)
     def firma_tipificada(c):
@@ -116,15 +116,15 @@ def validar(r_obj, r_bus, lat, lon, lado, h, centros, k, campos_obj, campos_list
         var = np.nanvar(c["elev_rel"])
         return Firma(q, sa.log_variograma(c["elev_rel"], h) - math.log(var if var > 0 else 1.0), sa.moran_i(c["pendiente"]))
     d_tip = _matriz(firma_tipificada(campos_obj), [firma_tipificada(c) for c in campos_lista])
-    pruebas.append({"prueba": "normalización: distribuciones tipificadas (solo forma)", **_comparar(r0, _rangos(d_tip), k)})
+    pruebas.append({"prueba": "normalization: standardized distributions (shape only)", **_comparar(r0, _rangos(d_tip), k)})
 
     # métrica alternativa para las distribuciones
-    for nombre, fn in (("KS", sd.ks), ("energía 1-D", sd.energia)):
+    for nombre, fn in (("KS", sd.ks), ("1-D energy", sd.energia)):
         d_alt = d0.copy()
         for j, v in enumerate(VARS):
             a = gm.valores(campos_obj[v])
             d_alt[:, j] = [fn(a, gm.valores(c[v])) for c in campos_lista]
-        pruebas.append({"prueba": f"métrica: {nombre} en lugar de W₁", **_comparar(r0, _rangos(d_alt), k)})
+        pruebas.append({"prueba": f"metric: {nombre} instead of W₁", **_comparar(r0, _rangos(d_alt), k)})
 
     # bootstrap de bloques sobre los campos del objetivo (incertidumbre muestral con autocorrelación)
     lc = sa.longitud_correlacion(campos_obj["elev_rel"], h)
@@ -146,7 +146,7 @@ def validar(r_obj, r_bus, lat, lon, lado, h, centros, k, campos_obj, campos_list
         en_top[np.argsort(_rangos(d_b))[:k]] += 1
     bootstrap = {"replicas": rep_bootstrap, "bloque_celdas": b, "semilla": config.SEMILLA,
                  "frecuencia_en_top_k_por_rango_original": [float(en_top[i] / rep_bootstrap) for i in np.argsort(r0)],
-                 "nota": "remuestreo de bloques del objetivo (bloque = radio de autocorrelación positiva de la pendiente)"}
+                 "nota": "block resampling of the target (block = radius of positive autocorrelation of slope)"}
 
     dependencia = {v: {"n_pixeles": sa.n_efectivo(campos_obj[v])["n"],
                        "n_efectivo": round(sa.n_efectivo(campos_obj[v])["n_efectivo"], 1)} for v in VARS}
@@ -155,4 +155,4 @@ def validar(r_obj, r_bus, lat, lon, lado, h, centros, k, campos_obj, campos_list
             "dependencia_espacial_objetivo": dependencia, "longitud_correlacion_objetivo": lc,
             "resumen": {"tau_kendall_min": min(taus) if taus else None,
                         "tau_kendall_mediana": float(np.median(taus)) if taus else None},
-            "ambito": f"lista corta de {len(centros)} candidatos; top-k = {k}"}
+            "ambito": f"short list of {len(centros)} candidates; top-k = {k}"}

@@ -38,7 +38,7 @@ export function pintar(el, ctx) {
   const { def, capa: c } = k;
   const breve = (v) => def.breve(v).trim();               // las unidades largas se omiten en «breve» y dejan un espacio al final
   const paso = Math.max(2, Math.abs(c.meta.dlat)), p = perfilLatitud(c, paso), nb = p.lat.length, dPaso = decimalesDe([paso]);
-  const titulo = `${def.corto}: how it changes with latitude`;
+  const titulo = `${def.corto}: from pole to pole`;
   const conDato = (b) => Number.isFinite(p.media[b]) && Number.isFinite(p.q25[b]) && Number.isFinite(p.q75[b]);
   const franjaDe = (lat) => Math.min(nb - 1, Math.max(0, Math.floor((lat + 90) / paso)));        // igual que perfilLatitud()
   const limites = (b) => [-90 + b * paso, Math.min(90, -90 + (b + 1) * paso)];
@@ -147,8 +147,8 @@ export function pintar(el, ctx) {
 
   // ---- textos: leyenda, nota de los que no tienen dato, pie y tabla
   const ley = leyenda([
-    { clase: 'g-m-linea', texto: 'Mean per latitude band' },
-    { clase: 'g-m-planeta', texto: 'Between the 25 % and 75 % quartiles' },
+    { clase: 'g-m-linea', texto: 'Average at that latitude' },
+    { clase: 'g-m-planeta', texto: 'Where the middle half of values lie' },
     { clase: 'g-m-ctx', texto: 'Sites' },
     ...(s ? [{ clase: 'g-m-sel', texto: nombreCorto(s.f.sitio.name) }] : []),
   ]);
@@ -172,8 +172,8 @@ export function pintar(el, ctx) {
   });
 
   el.innerHTML = figura({
-    titulo, sub: 'Line: mean over all longitudes in each latitude band. A site can lie far from the mean of its latitude.',
-    cuerpo: ley + svg + nota, pie, tablaHtml, clase: 'g-la',
+    titulo, sub: 'Line: the average at each distance from the equator. Dots: the sites.',
+    cuerpo: ley + svg, mas: nota, pie, tablaHtml, clase: 'g-la',
   });
 
   // Un solo conTip para puntos y franjas: dos escuchas sobre el mismo contenedor se ocultarían el tooltip el uno al otro

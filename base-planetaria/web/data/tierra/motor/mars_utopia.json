@@ -1,0 +1,4602 @@
+{
+ "objetivo": {
+  "ventana": {
+   "cuerpo": "mars",
+   "producto": "MEGT90N000EB",
+   "centro": {
+    "lat": 46.0,
+    "lon_este": 118.0,
+    "lon_180": 118.0
+   },
+   "lado_km": 200.041,
+   "celdas_por_lado": 54,
+   "resolucion_analisis_m": 3704.5,
+   "muestras_por_celda": 4,
+   "cobertura_valida": 1.0,
+   "fraccion_con_observacion_directa": 0.9585
+  },
+  "descriptores": {
+   "estadisticos": {
+    "elev_rel": {
+     "n": 2916,
+     "media": 2.0756814953013847e-12,
+     "desv_tipica": 36.60002464852343,
+     "min": -62.32830102254047,
+     "p02": -55.9961397546791,
+     "p05": -48.39676452689173,
+     "p25": -23.70978754765315,
+     "mediana": -5.722809667755882,
+     "p75": 12.591861446962184,
+     "p95": 75.98098792225437,
+     "p98": 94.17340251532347,
+     "max": 164.64523390285194,
+     "rango_intercuartilico": 36.301648994615334,
+     "rango_p02_p98": 150.16954227000258
+    },
+    "pendiente": {
+     "n": 2704,
+     "media": 0.1367783616345943,
+     "desv_tipica": 0.10782656590740952,
+     "min": 0.0016988378417539972,
+     "p02": 0.01431438348417932,
+     "p05": 0.022235374207358514,
+     "p25": 0.059541281493121566,
+     "mediana": 0.10645691113839512,
+     "p75": 0.18504743400777102,
+     "p95": 0.3389883314955374,
+     "p98": 0.43659818922985577,
+     "max": 0.8718013874676507,
+     "rango_intercuartilico": 0.12550615251464944,
+     "rango_p02_p98": 0.4222838057456765
+    },
+    "rugosidad": {
+     "n": 2704,
+     "media": 4.117099225149663,
+     "desv_tipica": 3.1766634543103676,
+     "min": 0.217679218233804,
+     "p02": 0.674236207313982,
+     "p05": 1.0735782127104732,
+     "p25": 2.2169302139844302,
+     "mediana": 3.325161896053757,
+     "p75": 4.868534849800784,
+     "p95": 10.244169699576569,
+     "p98": 13.89566096178896,
+     "max": 32.59823580305439,
+     "rango_intercuartilico": 2.6516046358163536,
+     "rango_p02_p98": 13.22142475447498
+    },
+    "curv_perfil": {
+     "n": 2704,
+     "media": -5.5790738054819395e-05,
+     "desv_tipica": 0.0007302933677337825,
+     "min": -0.005526673701723232,
+     "p02": -0.0016633918053286206,
+     "p05": -0.0011233626142154833,
+     "p25": -0.00039574684440143906,
+     "mediana": -5.15432394590106e-05,
+     "p75": 0.00029419678191288664,
+     "p95": 0.0009633988432077208,
+     "p98": 0.0014645241854470037,
+     "max": 0.006120821386529244,
+     "rango_intercuartilico": 0.0006899436263143256,
+     "rango_p02_p98": 0.003127915990775624
+    },
+    "curv_planta": {
+     "n": 2704,
+     "media": 6.600479191267369e-05,
+     "desv_tipica": 0.0007011281556702823,
+     "min": -0.004716928843945785,
+     "p02": -0.0011919021352291496,
+     "p05": -0.000861876032110285,
+     "p25": -0.00025288577769439266,
+     "mediana": 2.4606377848850974e-05,
+     "p75": 0.00030437867156531443,
+     "p95": 0.0011266129199934902,
+     "p98": 0.0018116145548042707,
+     "max": 0.007689062704594323,
+     "rango_intercuartilico": 0.0005572644492597072,
+     "rango_p02_p98": 0.0030035166900334205
+    },
+    "curv_media": {
+     "n": 2704,
+     "media": 5.107026928927154e-06,
+     "desv_tipica": 0.0005627341333066518,
+     "min": -0.0040231422580462185,
+     "p02": -0.0010008940289242228,
+     "p05": -0.0007434011152427833,
+     "p25": -0.00026749230653280774,
+     "mediana": -1.8552927666770177e-05,
+     "p75": 0.00024406831926768844,
+     "p95": 0.0008082785935922971,
+     "p98": 0.0012765751804727232,
+     "max": 0.004961748627608162,
+     "rango_intercuartilico": 0.0005115606258004962,
+     "rango_p02_p98": 0.002277469209396946
+    },
+    "relieve_local": {
+     "n": 2704,
+     "media": 26.94137642848946,
+     "desv_tipica": 19.073346462106127,
+     "min": 1.454366961355845,
+     "p02": 4.791386782954596,
+     "p05": 6.658076465870681,
+     "p25": 13.721296336819933,
+     "mediana": 21.791308816742912,
+     "p75": 34.828429290649865,
+     "p95": 63.598794014718024,
+     "p98": 80.94455483940983,
+     "max": 147.93495880132832,
+     "rango_intercuartilico": 21.107132953829932,
+     "rango_p02_p98": 76.15316805645523
+    }
+   },
+   "unidades": {
+    "elev_rel": "m",
+    "pendiente": "°",
+    "rugosidad": "m",
+    "curv_perfil": "1/km",
+    "curv_planta": "1/km",
+    "curv_media": "1/km",
+    "relieve_local": "m"
+   },
+   "hurst": {
+    "H": 0.6428142983126139,
+    "r2": 0.9871564405881771,
+    "rango_ajuste_m": [
+     3704.4613373579646,
+     14817.845349431858
+    ]
+   },
+   "longitud_correlacion": {
+    "longitud_m": 33988.30382948752,
+    "censurada": false
+   },
+   "anisotropia": {
+    "gamma_por_direccion_m2": {
+     "0": 754.5280835376185,
+     "45": 590.1476466365897,
+     "90": 788.1507687698979,
+     "135": 1009.7300531467831
+    },
+    "razon": 1.710978699824538
+   },
+   "moran_pendiente": 0.6965515951760917,
+   "n_efectivo": {
+    "elev_rel": {
+     "n": 2916,
+     "n_efectivo": 15.775936320677248,
+     "radio_celdas": 16
+    },
+    "pendiente": {
+     "n": 2704,
+     "n_efectivo": 34.07948529138713,
+     "radio_celdas": 25
+    },
+    "rugosidad": {
+     "n": 2704,
+     "n_efectivo": 38.37254447878871,
+     "radio_celdas": 12
+    },
+    "curv_perfil": {
+     "n": 2704,
+     "n_efectivo": 1357.4509341909318,
+     "radio_celdas": 2
+    },
+    "curv_planta": {
+     "n": 2704,
+     "n_efectivo": 759.4298935300756,
+     "radio_celdas": 6
+    }
+   },
+   "diagnostico": {
+    "plano_ventana": {
+     "media_m": -4921.416692250765,
+     "pendiente_este": -5.452335460976527e-05,
+     "pendiente_norte": -4.1166818739847646e-05,
+     "inclinacion_regional_grados": 0.00391439765158322
+    },
+    "celdas_interiores_validas": 2704,
+    "fraccion_plana": 0.011834319526627219,
+    "curvatura_indefinida_por_gradiente_nulo": 0
+   },
+   "variograma": {
+    "r_m": [
+     3704.4613373579646,
+     5238.899464578407,
+     7408.922674715929,
+     10477.798929156814,
+     14817.845349431858,
+     20955.597858313628,
+     29635.690698863717,
+     41911.195716627255,
+     59271.38139772743,
+     83822.39143325451
+    ],
+    "gamma_m2": [
+     60.313080602568455,
+     103.86097734772797,
+     176.45318714306995,
+     256.9058861145439,
+     355.8628182010938,
+     524.8181176748666,
+     758.6915417463441,
+     1038.7288811386975,
+     1235.844391385856,
+     1314.100218430392
+    ]
+   }
+  },
+  "huella": [
+   [
+    115.49496,
+    47.66037
+   ],
+   [
+    116.12094,
+    47.67209
+   ],
+   [
+    116.74716,
+    47.68046
+   ],
+   [
+    117.37354,
+    47.68548
+   ],
+   [
+    118.0,
+    47.68715
+   ],
+   [
+    118.62646,
+    47.68548
+   ],
+   [
+    119.25284,
+    47.68046
+   ],
+   [
+    119.87906,
+    47.67209
+   ],
+   [
+    120.50504,
+    47.66037
+   ],
+   [
+    120.48519,
+    47.23886
+   ],
+   [
+    120.46574,
+    46.81734
+   ],
+   [
+    120.44668,
+    46.39581
+   ],
+   [
+    120.428,
+    45.97428
+   ],
+   [
+    120.40969,
+    45.55275
+   ],
+   [
+    120.39174,
+    45.13121
+   ],
+   [
+    120.37414,
+    44.70967
+   ],
+   [
+    120.35688,
+    44.28812
+   ],
+   [
+    115.64312,
+    44.28812
+   ],
+   [
+    116.23212,
+    44.29894
+   ],
+   [
+    116.82131,
+    44.30666
+   ],
+   [
+    117.41062,
+    44.3113
+   ],
+   [
+    118.0,
+    44.31285
+   ],
+   [
+    118.58938,
+    44.3113
+   ],
+   [
+    119.17869,
+    44.30666
+   ],
+   [
+    119.76788,
+    44.29894
+   ],
+   [
+    120.35688,
+    44.28812
+   ],
+   [
+    115.62586,
+    44.70967
+   ],
+   [
+    115.60826,
+    45.13121
+   ],
+   [
+    115.59031,
+    45.55275
+   ],
+   [
+    115.572,
+    45.97428
+   ],
+   [
+    115.55332,
+    46.39581
+   ],
+   [
+    115.53426,
+    46.81734
+   ],
+   [
+    115.51481,
+    47.23886
+   ],
+   [
+    115.49496,
+    47.66037
+   ],
+   [
+    115.49496,
+    47.66037
+   ]
+  ]
+ },
+ "parametros": {
+  "lado_km": 200.0,
+  "h_m": 3704.4613373579646,
+  "celdas_por_lado": 54,
+  "k": 5,
+  "lista_corta": 30,
+  "separacion_minima_km": 200.0,
+  "desplazamiento_referencia_km": 50.0,
+  "cuantiles": 200,
+  "cobertura_minima": 0.95,
+  "semilla": 20261114
+ },
+ "datos": {
+  "objetivo": {
+   "cuerpo": "mars",
+   "producto": "MEGT90N000EB",
+   "fuente": {
+    "citas": [
+     "Smith, D. E. et al. (2003). MGS MOLA Mission Experiment Gridded Data Record, MGS-M-MOLA-5-MEGDR-L3-V1.0, product MEGT90N000EB v2.0. NASA Planetary Data System, PDS Geosciences Node. https://pds-geosciences.wustl.edu/missions/mgs/mola.html",
+     "Smith, D. E. et al. (2001). Mars Orbiter Laser Altimeter: Experiment summary after the first year of global mapping of Mars. Journal of Geophysical Research, 106(E10), 23689–23722. https://doi.org/10.1029/2000JE001364"
+    ],
+    "nombre": "MGS MOLA Mission Experiment Gridded Data Record MEGT90N000EB (+ MEGC, MEGR)",
+    "agencia": "NASA (MGS / MOLA Science Team, GSFC); archivo PDS Geosciences Node",
+    "recurso_oficial": "NASA Planetary Data System (PDS)",
+    "cuerpo": "mars",
+    "url": "https://pds-geosciences.wustl.edu/mgs/urn-nasa-pds-mgs_mola_topography_derived/meg016/megt90n000eb.img",
+    "variables": {
+     "topografia": "m (radio − areoide)",
+     "conteos": "disparos MOLA por celda"
+    },
+    "resolucion": "16 px/° = 3,705 km/px en el ecuador",
+    "cobertura": "global",
+    "coordenadas": "cilíndrica simple, planetocéntrica, longitud este, esfera 3396 km",
+    "referencia_vertical": "areoide GMM3 (mgm1025) hasta grado y orden 50",
+    "incertidumbre": "en el ecuador ~55 % de las celdas con ≥ 1 disparo y huecos de hasta 12 km entre trazas; celdas sin disparo = valor interpolado (etiqueta MEGT)",
+    "formato": "PDS3 IMG, int16 MSB",
+    "acceso": "HTTPS público, sin cuenta",
+    "version": "v2.0; datos 1997-09-15 → 2001-06-30; producto 2003-04-03",
+    "verificacion": "V",
+    "clave": "mola_megdr_16ppd",
+    "listado_en": "https://www.spaceappschallenge.org/2026/challenges/permanent-moon-base-locations-and-mars/?tab=resources"
+   },
+   "filas": 2880,
+   "columnas": 5760,
+   "espaciado_nativo_m": 3704.5,
+   "referencia_vertical": "radius − areoid (GMM3 up to degree 50)",
+   "superficie_horizontal": "sphere R = 3396.0 km",
+   "conteos_de_observacion": true,
+   "criterio_validez": "todas las celdas tienen valor",
+   "archivo": "megt90n000eb.img",
+   "data_set_id": "MGS-M-MOLA-5-MEGDR-L3-V1.0",
+   "product_id": "MEGT90N000EB.IMG",
+   "product_version_id": "2.0",
+   "start_time": "1997-09-15T19:10:00.000",
+   "stop_time": "2001-06-30T11:10:40.000",
+   "product_creation_time": "2003-04-03T01:00:00"
+  },
+  "busqueda": {
+   "cuerpo": "earth",
+   "producto": "SRTMGL30 V002",
+   "fuente": {
+    "citas": [
+     "NASA JPL (2013). NASA Shuttle Radar Topography Mission Global 30 arc second V002 [data set]. NASA Land Processes Distributed Active Archive Center. https://doi.org/10.5067/MEASURES/SRTM/SRTMGL30.002"
+    ],
+    "nombre": "NASA Shuttle Radar Topography Mission Global 30 arc second V002 (SRTMGL30)",
+    "agencia": "NASA / NGA; distribuye NASA LP DAAC",
+    "recurso_oficial": "NASA Earthdata Search",
+    "cuerpo": "earth",
+    "cmr": "C2763266346-LPCLOUD",
+    "doi": "10.5067/MEaSUREs/SRTM/SRTMGL30.002",
+    "url": "https://data.lpdaac.earthdatacloud.nasa.gov/lp-prod-protected/SRTMGL30.002/",
+    "variables": {
+     "altura": "m"
+    },
+    "resolucion": "30″ (≈ 926 m en latitud)",
+    "cobertura": "27 teselas de 90°N a 60°S (no incluye la Antártida)",
+    "coordenadas": "geográficas WGS84",
+    "referencia_vertical": "geoide EGM96 (documentación LP DAAC; se lee de la cabecera cuando consta)",
+    "incertidumbre": "sin mapa de nº de observaciones; al norte de 60°N procede de fuentes no SRTM (GTOPO30)",
+    "formato": "int16 big-endian sin cabecera (un .DEM por zip, 6000×4800); geometría del nombre + guía de usuario §2.1.4 + caja CMR de cada gránulo. El mar viene como 0 m, sin valor propio",
+    "acceso": "HTTPS con Earthdata Login (cuenta gratuita; credenciales en ~/.netrc)",
+    "version": "V002; adquisición SRTM 2000-02-11",
+    "verificacion": "V (colección, granulos, acceso; formato interno: tamaño, caja CMR, orden de bytes y vacío comprobados en los 27 archivos); D (registro por celda: lo fija la caja CMR, no los valores)",
+    "clave": "srtmgl30",
+    "listado_en": "https://www.spaceappschallenge.org/2026/challenges/permanent-moon-base-locations-and-mars/?tab=resources"
+   },
+   "filas": 18000,
+   "columnas": 43200,
+   "espaciado_nativo_m": 930.8,
+   "referencia_vertical": "height above the EGM96 geoid (LP DAAC documentation); WGS84 geodetic latitudes",
+   "superficie_horizontal": "WGS84 ellipsoid (a = 6378137 m, 1/f = 298.257223563)",
+   "conteos_de_observacion": false,
+   "criterio_validez": "celda ≠ -32768 (vacío documentado; 0 celdas en el mosaico) y no agua: con tesela SRTMSWBD, fracción de agua ≤ 0.5 (si es mayor, sin dato); sin tesela SRTMSWBD (al norte de 60°N, entre 56°S y 60°S y en las teselas de 1° sin gránulo), 0 m = sin dato: ahí el mar solo se distingue por valer 0 m, y se pierde también la tierra que esté exactamente a 0 m",
+   "teselas": 27,
+   "mosaico": "srtmgl30_mosaico_i2le.bin",
+   "cobertura_lat": [
+    -60.0,
+    90.0
+   ],
+   "geometria": {
+    "origen": {
+     "nombre + formato documentado (sin .hdr)": 27
+    },
+    "caja_cmr": "27/27 teselas coinciden con la caja publicada en CMR",
+    "referencia_formato": "The Shuttle Radar Topography Mission (SRTM) Collection User Guide, LP DAAC, rev. octubre 2015, §2.1.4. https://lpdaac.usgs.gov/documents/179/SRTM_User_Guide_V3.pdf",
+    "orden_bytes_discriminado_por_datos": "27/27 teselas sin .hdr",
+    "continuidad_costuras": {
+     "costuras_medidas": 9,
+     "mediana_dh_costura_m": [
+      15.0,
+      3.0,
+      2.0,
+      3.0,
+      4.0,
+      11.0,
+      6.0,
+      11.0,
+      8.0
+     ],
+     "mediana_dh_interior_m": [
+      12.0,
+      3.0,
+      2.0,
+      3.0,
+      4.0,
+      11.0,
+      5.0,
+      11.0,
+      8.0
+     ]
+    }
+   },
+   "mascara_agua": {
+    "aplicada": true,
+    "producto": "SRTMSWBD V003",
+    "fuente": {
+     "citas": [
+      "NASA JPL (2013). NASA Shuttle Radar Topography Mission Water Body Data Shapefiles & Raster Files V003 [data set]. NASA Land Processes Distributed Active Archive Center. https://doi.org/10.5067/MEaSUREs/SRTM/SRTMSWBD.003"
+     ],
+     "nombre": "NASA Shuttle Radar Topography Mission Water Body Data Shapefiles & Raster Files V003 (SRTMSWBD)",
+     "agencia": "NASA JPL / NGA (SRTM Water Body Database, máscara con la que NGA editó SRTM v2); distribuye NASA LP DAAC",
+     "recurso_oficial": "NASA Earthdata Search",
+     "cuerpo": "earth",
+     "cmr": "C2763268445-LPCLOUD",
+     "doi": "10.5067/MEaSUREs/SRTM/SRTMSWBD.003",
+     "url": "https://data.lpdaac.earthdatacloud.nasa.gov/lp-prod-protected/SRTMSWBD.003/",
+     "variables": {
+      "agua": "píxel de 1″: 255 = agua, 0 = tierra (comprobado frente a SRTMGL30)"
+     },
+     "resolucion": "1″ (≈ 31 m); el motor la agrega a la rejilla de 30″ de SRTMGL30 como fracción de agua por celda",
+     "cobertura": "60°N–56°S (caja de la colección en CMR); 12 229 teselas de 1°. Faltan teselas: las 2068 de SRTMGL3 sin gránulo son casi todas tierra sin agua (2048 sin ninguna celda a 0 m en SRTMGL30), pero dos son sobre todo mar (s11w139, n59e170), y sobre océano abierto no hay tesela",
+     "coordenadas": "geográficas WGS84",
+     "referencia_vertical": "no aplica (máscara)",
+     "incertidumbre": "máscara binaria sin medida de exactitud; fecha de referencia SRTM (febrero de 2000). Uso en el motor: celda de 30″ sin dato si fracción de agua > data_loader.UMBRAL_AGUA (0,5)",
+     "formato": "zip con un único NnnEeee.raw: 3601×3601 bytes uint8 sin cabecera, fila 0 al norte, registro por nodo (las líneas de borde se repiten en la tesela vecina). Tamaño en la guía de usuario (tabla 1); valores, orientación y registro comprobados con los datos",
+     "acceso": "HTTPS con Earthdata Login (cuenta gratuita; credenciales en ~/.netrc); 371 MB en total. Se guarda FUERA del repositorio, en $SRTMSWBD_DIR (por defecto ~/.cache/landfall/srtmswbd), porque sus 12 229 archivos harían recargar sin parar el servidor de desarrollo de la web",
+     "version": "V003; publicación 2013-11-20; adquisición SRTM 2000-02-11 → 2000-02-21",
+     "verificacion": "V (colección, DOI, 12 229 gránulos, cajas CMR, acceso; formato en las 12 229 teselas: 3601×3601 bytes y solo valores 0/255; registro por nodo: 0 píxeles distintos en las líneas compartidas de 20 918 pares de vecinas, frente a 63 035 en la línea adyacente; 255 = agua y orientación: el 95 % de las celdas de 30″ con agua plena valen 0 m en SRTMGL30 frente al 0,1 % de las celdas sin agua, y el índice de Jaccard agua/0 m es máximo sin desplazar). La guía de usuario solo da el tamaño 3601/3601 (tabla 1): el resto se comprueba con los datos",
+     "clave": "srtmswbd",
+     "listado_en": "https://www.spaceappschallenge.org/2026/challenges/permanent-moon-base-locations-and-mars/?tab=resources"
+    },
+    "archivo": "srtmswbd_agua30s_u2le.bin",
+    "teselas": 12229,
+    "huella": "f3ee0a38b64be0f2fa5f92b8eb60066b4ceef409",
+    "umbral_fraccion_agua": 0.5,
+    "regla": "celda con tesela SWBD: sin dato si fracción de agua > 0.5; sin tesela o fuera de -56…60° de latitud: 0 m = sin dato",
+    "celdas_a_sin_dato_por_la_mascara": 41486897,
+    "efecto_por_umbral": {
+     "> 0.5": 41486897,
+     "> 0.0": 46148488
+    },
+    "celdas_a_sin_dato_sin_mascara_0m": {
+     "fuera_de_cobertura": 121381323,
+     "sin_tesela": 395495519
+    },
+    "registro": "por nodo, 3601×3601: se usan las filas y columnas 0…3599 de cada tesela; la 3601.ª es la 1.ª de la vecina. Cada celda: sus 30×30 píxeles desde los bordes norte y oeste (desplazamiento de 0,5″ ≈ 15 m al NO respecto al centro)",
+    "bordes_compartidos": {
+     "sur": {
+      "pares_de_teselas": 10354,
+      "pixeles_comparados": 37284754,
+      "distintos_en_la_linea_compartida": 0,
+      "pares_con_alguna_diferencia": 0,
+      "control_linea_adyacente_distintos": 39082,
+      "control_pares_con_diferencia": 4032
+     },
+     "este": {
+      "pares_de_teselas": 10564,
+      "pixeles_comparados": 38040964,
+      "distintos_en_la_linea_compartida": 0,
+      "pares_con_alguna_diferencia": 0,
+      "control_linea_adyacente_distintos": 23953,
+      "control_pares_con_diferencia": 4009
+     }
+    },
+    "alineacion": {
+     "desplazamiento_optimo": "+0,+0",
+     "jaccard_agua_plena_vs_0m_por_desplazamiento_filas_columnas": {
+      "-1,-1": 0.9142,
+      "-1,+0": 0.92335,
+      "-1,+1": 0.91428,
+      "+0,-1": 0.92594,
+      "+0,+0": 0.93799,
+      "+0,+1": 0.92622,
+      "+1,-1": 0.91483,
+      "+1,+0": 0.92434,
+      "+1,+1": 0.91505
+     }
+    }
+   },
+   "nota": "Sin mapa de observaciones: no se distingue medición de relleno. Agua según la máscara SWBD de NGA (mar, lagos y ríos que contiene); el hielo figura como superficie. sin_dato = -32768 es el vacío documentado (GUIA_SRTM §2.1.4). Estos archivos no traen ningún −9999 ni valor de océano propio: el mar figura como 0 m, indistinguible de la tierra a 0 m."
+  },
+  "catalogo": {
+   "fuente": "srtmgl30",
+   "producto": "SRTMGL30 V002",
+   "cuerpo": "earth",
+   "lado_km": 200.0,
+   "h_m": 3704.4613373579646,
+   "paso_km": 100.0,
+   "min_cobertura": 0.95,
+   "cuantiles": 200,
+   "centros_evaluados": 50677,
+   "ventanas_validas": 8401,
+   "descartes": {
+    "cobertura_aproximada": 39112,
+    "cobertura": 3164,
+    "muestra_insuficiente": 0
+   },
+   "k_submuestreo": 5,
+   "segundos": 82.5,
+   "version_firma": "1"
+  }
+ },
+ "criterios": [
+  {
+   "id": "elev_rel",
+   "nombre": "relative elevation distribution",
+   "metrica": "Wasserstein-1",
+   "unidades": "m"
+  },
+  {
+   "id": "pendiente",
+   "nombre": "slope distribution",
+   "metrica": "Wasserstein-1",
+   "unidades": "°"
+  },
+  {
+   "id": "rugosidad",
+   "nombre": "roughness distribution",
+   "metrica": "Wasserstein-1",
+   "unidades": "m"
+  },
+  {
+   "id": "curv_perfil",
+   "nombre": "profile curvature distribution",
+   "metrica": "Wasserstein-1",
+   "unidades": "1/km"
+  },
+  {
+   "id": "curv_planta",
+   "nombre": "plan curvature distribution",
+   "metrica": "Wasserstein-1",
+   "unidades": "1/km"
+  },
+  {
+   "id": "variograma",
+   "nombre": "variogram (structure across scales)",
+   "metrica": "RMS of ln γ(r) at half-octave lags",
+   "unidades": "dimensionless (ln)"
+  },
+  {
+   "id": "moran_pendiente",
+   "nombre": "spatial clustering of slopes (Moran’s I)",
+   "metrica": "|I_A − I_B|",
+   "unidades": "dimensionless"
+  }
+ ],
+ "metodo_ordenacion": "percentile of each distance in the catalog → leximax ordering (worst percentile, then the next…), compatible with Pareto dominance; no weights and no similarity percentage. Candidates whose centers are closer than L are suppressed.",
+ "analogos": [
+  {
+   "rango": 1,
+   "ventana": {
+    "cuerpo": "earth",
+    "producto": "SRTMGL30 V002",
+    "centro": {
+     "lat": 10.4991,
+     "lon_este": 23.4184,
+     "lon_180": 23.4184
+    },
+    "lado_km": 200.041,
+    "celdas_por_lado": 54,
+    "resolucion_analisis_m": 3704.5,
+    "muestras_por_celda": 25,
+    "cobertura_valida": 0.9993,
+    "fraccion_con_observacion_directa": null
+   },
+   "lat": 10.499108662648384,
+   "lon": 23.418367346938766,
+   "peor_percentil": 0.04856564694679205,
+   "criterio_peor": "curv_planta",
+   "ventanas_que_la_dominan": 0,
+   "criterios": {
+    "elev_rel": {
+     "nombre": "relative elevation distribution",
+     "metrica": "Wasserstein-1",
+     "unidades": "m",
+     "distancia": 5.772909495234489,
+     "percentil_catalogo": 0.04213784073324604,
+     "referencia_intrinseca": 14.202084744218737,
+     "clase": "indistinguible",
+     "lectura": "within the target’s own variability",
+     "referencias": [
+      "vallender1974"
+     ]
+    },
+    "pendiente": {
+     "nombre": "slope distribution",
+     "metrica": "Wasserstein-1",
+     "unidades": "°",
+     "distancia": 0.019521237562876194,
+     "percentil_catalogo": 0.032377097964528034,
+     "referencia_intrinseca": 0.09870738691650331,
+     "clase": "indistinguible",
+     "lectura": "within the target’s own variability",
+     "referencias": [
+      "evans1979",
+      "florinsky2016",
+      "vallender1974"
+     ]
+    },
+    "rugosidad": {
+     "nombre": "roughness distribution",
+     "metrica": "Wasserstein-1",
+     "unidades": "m",
+     "distancia": 0.6374030843377113,
+     "percentil_catalogo": 0.035471967622902036,
+     "referencia_intrinseca": 1.9570174247026444,
+     "clase": "indistinguible",
+     "lectura": "within the target’s own variability",
+     "referencias": [
+      "evans1979",
+      "vallender1974"
+     ]
+    },
+    "curv_perfil": {
+     "nombre": "profile curvature distribution",
+     "metrica": "Wasserstein-1",
+     "unidades": "1/km",
+     "distancia": 9.050384500881137e-05,
+     "percentil_catalogo": 0.043090108320438046,
+     "referencia_intrinseca": 0.00034906622620610504,
+     "clase": "indistinguible",
+     "lectura": "within the target’s own variability",
+     "referencias": [
+      "evans1979",
+      "florinsky2016",
+      "vallender1974"
+     ]
+    },
+    "curv_planta": {
+     "nombre": "plan curvature distribution",
+     "metrica": "Wasserstein-1",
+     "unidades": "1/km",
+     "distancia": 8.262497747352882e-05,
+     "percentil_catalogo": 0.04856564694679205,
+     "referencia_intrinseca": 0.00010240980856110582,
+     "clase": "indistinguible",
+     "lectura": "within the target’s own variability",
+     "referencias": [
+      "evans1979",
+      "florinsky2016",
+      "vallender1974"
+     ]
+    },
+    "variograma": {
+     "nombre": "variogram (structure across scales)",
+     "metrica": "RMS of ln γ(r) at half-octave lags",
+     "unidades": "dimensionless (ln)",
+     "distancia": 0.2686531439882636,
+     "percentil_catalogo": 0.03761456969408404,
+     "referencia_intrinseca": 2.439980441113468,
+     "clase": "indistinguible",
+     "lectura": "within the target’s own variability",
+     "referencias": [
+      "marcotte1996"
+     ]
+    },
+    "moran_pendiente": {
+     "nombre": "spatial clustering of slopes (Moran’s I)",
+     "metrica": "|I_A − I_B|",
+     "unidades": "dimensionless",
+     "distancia": 3.3924847943511693e-05,
+     "percentil_catalogo": 0.0004761337935960005,
+     "referencia_intrinseca": 0.04648488759994507,
+     "clase": "indistinguible",
+     "lectura": "within the target’s own variability",
+     "referencias": [
+      "moran1950"
+     ]
+    }
+   },
+   "metricas_exactas": {
+    "elev_rel": {
+     "wasserstein_1": 5.842488082289673,
+     "ks": 0.0997080929018701,
+     "energia_1d": 0.7644421142031987,
+     "ks_p_valor_n_efectivo": 0.9999943127317432,
+     "ks_p_valor_ingenuo_pixeles": 4.305241831625779e-13,
+     "n_efectivo": [
+      15.775936320677248,
+      15.47279633509283
+     ],
+     "n_pixeles": [
+      2916,
+      2914
+     ],
+     "wasserstein_1_tipificado": 0.1322248925737745,
+     "cota_error_cribado": 2.9866617824586648
+    },
+    "pendiente": {
+     "wasserstein_1": 0.019639746023176776,
+     "ks": 0.11347560600332346,
+     "energia_1d": 0.045901085769962,
+     "ks_p_valor_n_efectivo": 0.9962538000614569,
+     "ks_p_valor_ingenuo_pixeles": 1.2938919883481204e-15,
+     "n_efectivo": [
+      34.07948529138713,
+      18.223121030028263
+     ],
+     "n_pixeles": [
+      2704,
+      2692
+     ],
+     "wasserstein_1_tipificado": 0.12655103591052483,
+     "cota_error_cribado": 0.011128209557997138
+    },
+    "rugosidad": {
+     "wasserstein_1": 0.6436663756746824,
+     "ks": 0.14578809006743626,
+     "energia_1d": 0.26028240336616587,
+     "ks_p_valor_n_efectivo": 0.9647530266927334,
+     "ks_p_valor_ingenuo_pixeles": 1.698277417938758e-25,
+     "n_efectivo": [
+      38.37254447878871,
+      14.789039177396294
+     ],
+     "n_pixeles": [
+      2704,
+      2692
+     ],
+     "wasserstein_1_tipificado": 0.08262639889925544,
+     "cota_error_cribado": 0.37947797671566613
+    },
+    "curv_perfil": {
+     "wasserstein_1": 9.30339467161895e-05,
+     "ks": 0.1116781478322798,
+     "energia_1d": 0.0031519267681280505,
+     "ks_p_valor_n_efectivo": 5.83962727924161e-07,
+     "ks_p_valor_ingenuo_pixeles": 3.884005989168625e-15,
+     "n_efectivo": [
+      1357.4509341909318,
+      1066.0434601327754
+     ],
+     "n_pixeles": [
+      2704,
+      2692
+     ],
+     "wasserstein_1_tipificado": 0.14213502834008213,
+     "cota_error_cribado": 0.00012011500254557292
+    },
+    "curv_planta": {
+     "wasserstein_1": 8.294187897459496e-05,
+     "ks": 0.055556349297062546,
+     "energia_1d": 0.001980458653705853,
+     "ks_p_valor_n_efectivo": 0.11835269867244055,
+     "ks_p_valor_ingenuo_pixeles": 0.00045734346445016884,
+     "n_efectivo": [
+      759.4298935300756,
+      1120.366951288301
+     ],
+     "n_pixeles": [
+      2704,
+      2692
+     ],
+     "wasserstein_1_tipificado": 0.06464893281521061,
+     "cota_error_cribado": 0.00013470897777872543
+    },
+    "variograma": {
+     "distancia": 0.2686530999231579
+    },
+    "moran_pendiente": {
+     "distancia": 3.3950632087442756e-05
+    },
+    "curvaturas_bivariante": {
+     "energia_1_km": 0.0034427581234054813,
+     "nota": "energy distance on (k_v, k_h), both in 1/km; regular subgrid of ≤ 2000 cells"
+    }
+   },
+   "descriptores": {
+    "estadisticos": {
+     "elev_rel": {
+      "n": 2914,
+      "media": -1.7228588722671805e-13,
+      "desv_tipica": 39.44327264053991,
+      "min": -71.95476835494236,
+      "p02": -62.036120000275496,
+      "p05": -54.0519188209105,
+      "p25": -29.129787063683892,
+      "mediana": -5.18548545489341,
+      "p75": 24.08108370333582,
+      "p95": 64.92674737184005,
+      "p98": 86.78228400410025,
+      "max": 298.40405321139815,
+      "rango_intercuartilico": 53.21087076701971,
+      "rango_p02_p98": 148.81840400437574
+     },
+     "pendiente": {
+      "n": 2692,
+      "media": 0.15641739402647642,
+      "desv_tipica": 0.1320104571431778,
+      "min": 0.0008241257204096976,
+      "p02": 0.017357196164022478,
+      "p05": 0.027911750408730833,
+      "p25": 0.06616015927538554,
+      "mediana": 0.1350139850603454,
+      "p75": 0.2015575164556895,
+      "p95": 0.3645773968353535,
+      "p98": 0.5305005766363647,
+      "max": 1.3563634876939406,
+      "rango_intercuartilico": 0.13539735718030396,
+      "rango_p02_p98": 0.5131433804723423
+     },
+     "rugosidad": {
+      "n": 2692,
+      "media": 4.315884136243026,
+      "desv_tipica": 4.39315556433411,
+      "min": 0.08285618642528518,
+      "p02": 0.3184859785721716,
+      "p05": 0.40580466784232694,
+      "p25": 1.6832702681064085,
+      "mediana": 3.484383880920157,
+      "p75": 5.263897040433871,
+      "p95": 12.443442763887552,
+      "p98": 18.785520318452537,
+      "max": 43.59789494473792,
+      "rango_intercuartilico": 3.580626772327463,
+      "rango_p02_p98": 18.467034339880367
+     },
+     "curv_perfil": {
+      "n": 2692,
+      "media": -0.00011409331504968131,
+      "desv_tipica": 0.0007709275249054647,
+      "min": -0.004761082119793449,
+      "p02": -0.001969817499111375,
+      "p05": -0.0011466965080259815,
+      "p25": -0.00036449131234523766,
+      "mediana": -6.71387992960172e-05,
+      "p75": 0.00011865285302950523,
+      "p95": 0.000886826448143575,
+      "p98": 0.0014196170109533645,
+      "max": 0.007614423301068658,
+      "rango_intercuartilico": 0.0004831441653747429,
+      "rango_p02_p98": 0.0033894345100647398
+     },
+     "curv_planta": {
+      "n": 2692,
+      "media": 9.820078303411998e-05,
+      "desv_tipica": 0.0008434016336813616,
+      "min": -0.004691013913041104,
+      "p02": -0.0013251445338525495,
+      "p05": -0.0009690800436882084,
+      "p25": -0.00023995603234528866,
+      "mediana": 1.6156928707147033e-05,
+      "p75": 0.0003511576271219586,
+      "p95": 0.0013329015360396452,
+      "p98": 0.001988935686264125,
+      "max": 0.009844790094163874,
+      "rango_intercuartilico": 0.0005911136594672472,
+      "rango_p02_p98": 0.0033140802201166745
+     },
+     "curv_media": {
+      "n": 2692,
+      "media": -7.94626600778066e-06,
+      "desv_tipica": 0.0006382288958910666,
+      "min": -0.004028642362806479,
+      "p02": -0.0011217307386564173,
+      "p05": -0.0008147464216832534,
+      "p25": -0.0002969462066762669,
+      "mediana": -2.939810279494464e-05,
+      "p75": 0.0001996022302291722,
+      "p95": 0.0008434908623510392,
+      "p98": 0.001313530392853487,
+      "max": 0.008729606697616266,
+      "rango_intercuartilico": 0.0004965484369054391,
+      "rango_p02_p98": 0.0024352611315099043
+     },
+     "relieve_local": {
+      "n": 2692,
+      "media": 30.38564303302481,
+      "desv_tipica": 24.462585507614932,
+      "min": 1.2366473194514924,
+      "p02": 3.8880871285441754,
+      "p05": 5.196210955340183,
+      "p25": 15.803085542995802,
+      "mediana": 26.94291445282923,
+      "p75": 36.536160845786725,
+      "p95": 72.10971212630469,
+      "p98": 107.23189191715134,
+      "max": 257.63640869252174,
+      "rango_intercuartilico": 20.733075302790922,
+      "rango_p02_p98": 103.34380478860717
+     }
+    },
+    "unidades": {
+     "elev_rel": "m",
+     "pendiente": "°",
+     "rugosidad": "m",
+     "curv_perfil": "1/km",
+     "curv_planta": "1/km",
+     "curv_media": "1/km",
+     "relieve_local": "m"
+    },
+    "hurst": {
+     "H": 0.60110342502361,
+     "r2": 0.9815898183421956,
+     "rango_ajuste_m": [
+      3704.4613373579646,
+      14817.845349431858
+     ]
+    },
+    "longitud_correlacion": {
+     "longitud_m": 40175.92236142945,
+     "censurada": false
+    },
+    "anisotropia": {
+     "gamma_por_direccion_m2": {
+      "0": 595.4109472568792,
+      "45": 739.5090170534663,
+      "90": 1017.8066014979366,
+      "135": 910.6659298793777
+     },
+     "razon": 1.7094186900443777
+    },
+    "moran_pendiente": 0.6965855458081791,
+    "n_efectivo": {
+     "elev_rel": {
+      "n": 2914,
+      "n_efectivo": 15.47279633509283,
+      "radio_celdas": 19
+     },
+     "pendiente": {
+      "n": 2692,
+      "n_efectivo": 18.223121030028263,
+      "radio_celdas": 25
+     },
+     "rugosidad": {
+      "n": 2692,
+      "n_efectivo": 14.789039177396294,
+      "radio_celdas": 26
+     },
+     "curv_perfil": {
+      "n": 2692,
+      "n_efectivo": 1066.0434601327754,
+      "radio_celdas": 2
+     },
+     "curv_planta": {
+      "n": 2692,
+      "n_efectivo": 1120.366951288301,
+      "radio_celdas": 2
+     }
+    },
+    "diagnostico": {
+     "plano_ventana": {
+      "media_m": 539.6058501699961,
+      "pendiente_este": 0.0001693961313898787,
+      "pendiente_norte": 2.1217962543842574e-05,
+      "inclinacion_regional_grados": 0.009781524117657458
+     },
+     "celdas_interiores_validas": 2692,
+     "fraccion_plana": 0.008172362555720654,
+     "curvatura_indefinida_por_gradiente_nulo": 0
+    },
+    "variograma": {
+     "r_m": [
+      3704.4613373579646,
+      5238.899464578407,
+      7408.922674715929,
+      10477.798929156814,
+      14817.845349431858,
+      20955.597858313628,
+      29635.690698863717,
+      41911.195716627255,
+      59271.38139772743,
+      83822.39143325451
+     ],
+     "gamma_m2": [
+      91.51949704703705,
+      147.72632619097521,
+      252.49678570454813,
+      364.99848802944894,
+      467.5713022032471,
+      605.8058926999943,
+      783.4732278205281,
+      1036.6776883568778,
+      1336.2600364766963,
+      1711.2243485308984
+     ]
+    }
+   },
+   "explicacion": "At cell size h = 3.70 km and window L = 200 km: median slope 0.14° versus 0.11° in the target (W₁ = 0.020°); standard deviation of relief 39 m versus 37 m; median roughness 3.5 m versus 3.3 m; variograms differ by a typical factor of ×1.31. Very close or indistinguishable in: relative elevation distribution, slope distribution, roughness distribution, profile curvature distribution, plan curvature distribution, variogram (structure across scales), spatial clustering of slopes (Moran’s I). This is a geomorphological resemblance at this scale: it does not imply the same geological origin, equivalent environmental conditions or suitability for a mission.",
+   "huella": [
+    [
+     22.49893,
+     11.39909
+    ],
+    [
+     22.72879,
+     11.39968
+    ],
+    [
+     22.95865,
+     11.40011
+    ],
+    [
+     23.18851,
+     11.40036
+    ],
+    [
+     23.41837,
+     11.40045
+    ],
+    [
+     23.64823,
+     11.40036
+    ],
+    [
+     23.87809,
+     11.40011
+    ],
+    [
+     24.10795,
+     11.39968
+    ],
+    [
+     24.33781,
+     11.39909
+    ],
+    [
+     24.3371,
+     11.17377
+    ],
+    [
+     24.33641,
+     10.94844
+    ],
+    [
+     24.33572,
+     10.72312
+    ],
+    [
+     24.33505,
+     10.49779
+    ],
+    [
+     24.33439,
+     10.27247
+    ],
+    [
+     24.33373,
+     10.04715
+    ],
+    [
+     24.33309,
+     9.82182
+    ],
+    [
+     24.33246,
+     9.5965
+    ],
+    [
+     22.50427,
+     9.5965
+    ],
+    [
+     22.7328,
+     9.59706
+    ],
+    [
+     22.96132,
+     9.59745
+    ],
+    [
+     23.18984,
+     9.59769
+    ],
+    [
+     23.41837,
+     9.59777
+    ],
+    [
+     23.64689,
+     9.59769
+    ],
+    [
+     23.87541,
+     9.59745
+    ],
+    [
+     24.10394,
+     9.59706
+    ],
+    [
+     24.33246,
+     9.5965
+    ],
+    [
+     22.50364,
+     9.82182
+    ],
+    [
+     22.503,
+     10.04715
+    ],
+    [
+     22.50235,
+     10.27247
+    ],
+    [
+     22.50169,
+     10.49779
+    ],
+    [
+     22.50101,
+     10.72312
+    ],
+    [
+     22.50033,
+     10.94844
+    ],
+    [
+     22.49963,
+     11.17377
+    ],
+    [
+     22.49893,
+     11.39909
+    ],
+    [
+     22.49893,
+     11.39909
+    ]
+   ]
+  },
+  {
+   "rango": 2,
+   "ventana": {
+    "cuerpo": "earth",
+    "producto": "SRTMGL30 V002",
+    "centro": {
+     "lat": 22.2165,
+     "lon_este": 29.7561,
+     "lon_180": 29.7561
+    },
+    "lado_km": 200.041,
+    "celdas_por_lado": 54,
+    "resolucion_analisis_m": 3704.5,
+    "muestras_por_celda": 25,
+    "cobertura_valida": 1.0,
+    "fraccion_con_observacion_directa": null
+   },
+   "lat": 22.216493529145502,
+   "lon": 29.756097560975604,
+   "peor_percentil": 0.05356505177955005,
+   "criterio_peor": "curv_perfil",
+   "ventanas_que_la_dominan": 0,
+   "criterios": {
+    "elev_rel": {
+     "nombre": "relative elevation distribution",
+     "metrica": "Wasserstein-1",
+     "unidades": "m",
+     "distancia": 3.3890621280297637,
+     "percentil_catalogo": 0.004166170693965004,
+     "referencia_intrinseca": 14.202084744218737,
+     "clase": "indistinguible",
+     "lectura": "within the target’s own variability",
+     "referencias": [
+      "vallender1974"
+     ]
+    },
+    "pendiente": {
+     "nombre": "slope distribution",
+     "metrica": "Wasserstein-1",
+     "unidades": "°",
+     "distancia": 0.005959548237733543,
+     "percentil_catalogo": 0.0007142006903940007,
+     "referencia_intrinseca": 0.09870738691650331,
+     "clase": "indistinguible",
+     "lectura": "within the target’s own variability",
+     "referencias": [
+      "evans1979",
+      "florinsky2016",
+      "vallender1974"
+     ]
+    },
+    "rugosidad": {
+     "nombre": "roughness distribution",
+     "metrica": "Wasserstein-1",
+     "unidades": "m",
+     "distancia": 0.5209946967661381,
+     "percentil_catalogo": 0.01999761933103202,
+     "referencia_intrinseca": 1.9570174247026444,
+     "clase": "indistinguible",
+     "lectura": "within the target’s own variability",
+     "referencias": [
+      "evans1979",
+      "vallender1974"
+     ]
+    },
+    "curv_perfil": {
+     "nombre": "profile curvature distribution",
+     "metrica": "Wasserstein-1",
+     "unidades": "1/km",
+     "distancia": 9.971478300826675e-05,
+     "percentil_catalogo": 0.05356505177955005,
+     "referencia_intrinseca": 0.00034906622620610504,
+     "clase": "indistinguible",
+     "lectura": "within the target’s own variability",
+     "referencias": [
+      "evans1979",
+      "florinsky2016",
+      "vallender1974"
+     ]
+    },
+    "curv_planta": {
+     "nombre": "plan curvature distribution",
+     "metrica": "Wasserstein-1",
+     "unidades": "1/km",
+     "distancia": 7.320735881197749e-05,
+     "percentil_catalogo": 0.03701940245208904,
+     "referencia_intrinseca": 0.00010240980856110582,
+     "clase": "indistinguible",
+     "lectura": "within the target’s own variability",
+     "referencias": [
+      "evans1979",
+      "florinsky2016",
+      "vallender1974"
+     ]
+    },
+    "variograma": {
+     "nombre": "variogram (structure across scales)",
+     "metrica": "RMS of ln γ(r) at half-octave lags",
+     "unidades": "dimensionless (ln)",
+     "distancia": 0.10068408904063088,
+     "percentil_catalogo": 0.0036900369003690036,
+     "referencia_intrinseca": 2.439980441113468,
+     "clase": "indistinguible",
+     "lectura": "within the target’s own variability",
+     "referencias": [
+      "marcotte1996"
+     ]
+    },
+    "moran_pendiente": {
+     "nombre": "spatial clustering of slopes (Moran’s I)",
+     "metrica": "|I_A − I_B|",
+     "unidades": "dimensionless",
+     "distancia": 0.0014573457923882094,
+     "percentil_catalogo": 0.00952267587192001,
+     "referencia_intrinseca": 0.04648488759994507,
+     "clase": "indistinguible",
+     "lectura": "within the target’s own variability",
+     "referencias": [
+      "moran1950"
+     ]
+    }
+   },
+   "metricas_exactas": {
+    "elev_rel": {
+     "wasserstein_1": 3.4309656444791248,
+     "ks": 0.09190672153635115,
+     "energia_1d": 0.49963572444551024,
+     "ks_p_valor_n_efectivo": 0.9999996521806405,
+     "ks_p_valor_ingenuo_pixeles": 3.427374758405848e-11,
+     "n_efectivo": [
+      15.775936320677248,
+      14.77718630324746
+     ],
+     "n_pixeles": [
+      2916,
+      2916
+     ],
+     "wasserstein_1_tipificado": 0.09388658747542175,
+     "cota_error_cribado": 2.397317339199514
+    },
+    "pendiente": {
+     "wasserstein_1": 0.006218579388457475,
+     "ks": 0.04252958579881655,
+     "energia_1d": 0.014615790397092763,
+     "ks_p_valor_n_efectivo": 1.0,
+     "ks_p_valor_ingenuo_pixeles": 0.014544683430681108,
+     "n_efectivo": [
+      34.07948529138713,
+      11.14455025909154
+     ],
+     "n_pixeles": [
+      2704,
+      2704
+     ],
+     "wasserstein_1_tipificado": 0.036963194892797716,
+     "cota_error_cribado": 0.008131783357359743
+    },
+    "rugosidad": {
+     "wasserstein_1": 0.5249980400903375,
+     "ks": 0.1327662721893491,
+     "energia_1d": 0.2728249165840867,
+     "ks_p_valor_n_efectivo": 0.9831443265066855,
+     "ks_p_valor_ingenuo_pixeles": 2.900692953627399e-21,
+     "n_efectivo": [
+      38.37254447878871,
+      15.57809692322718
+     ],
+     "n_pixeles": [
+      2704,
+      2704
+     ],
+     "wasserstein_1_tipificado": 0.050437564538094934,
+     "cota_error_cribado": 0.30713392635170433
+    },
+    "curv_perfil": {
+     "wasserstein_1": 0.00010175592998322861,
+     "ks": 0.09097633136094677,
+     "energia_1d": 0.003109627744044266,
+     "ks_p_valor_n_efectivo": 3.256805503404311e-05,
+     "ks_p_valor_ingenuo_pixeles": 3.2833029339041283e-10,
+     "n_efectivo": [
+      1357.4509341909318,
+      1283.2237835559517
+     ],
+     "n_pixeles": [
+      2704,
+      2704
+     ],
+     "wasserstein_1_tipificado": 0.11959689814638144,
+     "cota_error_cribado": 0.00012180246847484819
+    },
+    "curv_planta": {
+     "wasserstein_1": 7.457625102881647e-05,
+     "ks": 0.04696745562130178,
+     "energia_1d": 0.001643720526515259,
+     "ks_p_valor_n_efectivo": 0.2170325775029382,
+     "ks_p_valor_ingenuo_pixeles": 0.004933579106200789,
+     "n_efectivo": [
+      759.4298935300756,
+      1442.4376476273046
+     ],
+     "n_pixeles": [
+      2704,
+      2704
+     ],
+     "wasserstein_1_tipificado": 0.11517771032376795,
+     "cota_error_cribado": 0.00010419472180611214
+    },
+    "variograma": {
+     "distancia": 0.10068406182898126
+    },
+    "moran_pendiente": {
+     "distancia": 0.0014573200082442783
+    },
+    "curvaturas_bivariante": {
+     "energia_1_km": 0.002437199302788155,
+     "nota": "energy distance on (k_v, k_h), both in 1/km; regular subgrid of ≤ 2000 cells"
+    }
+   },
+   "descriptores": {
+    "estadisticos": {
+     "elev_rel": {
+      "n": 2916,
+      "media": -1.6967253695626645e-13,
+      "desv_tipica": 36.3251188985635,
+      "min": -105.74333527308525,
+      "p02": -62.300277263272775,
+      "p05": -51.070948363027036,
+      "p25": -24.742908935796223,
+      "mediana": -0.8246192965678887,
+      "p75": 14.705722235057493,
+      "p95": 69.74152571880207,
+      "p98": 102.6611117526294,
+      "max": 146.74659764142518,
+      "rango_intercuartilico": 39.448631170853716,
+      "rango_p02_p98": 164.96138901590217
+     },
+     "pendiente": {
+      "n": 2704,
+      "media": 0.13102124796998404,
+      "desv_tipica": 0.10112919853040016,
+      "min": 0.0016536626341665185,
+      "p02": 0.016512138099870417,
+      "p05": 0.022381314372154876,
+      "p25": 0.05370594299212706,
+      "mediana": 0.10633236495347936,
+      "p75": 0.18195774942940604,
+      "p95": 0.31705899093858386,
+      "p98": 0.39356357341060816,
+      "max": 0.7579077844802183,
+      "rango_intercuartilico": 0.128251806437279,
+      "rango_p02_p98": 0.37705143531073776
+     },
+     "rugosidad": {
+      "n": 2704,
+      "media": 3.5924879412339283,
+      "desv_tipica": 3.0346908281267635,
+      "min": 0.11626051711270384,
+      "p02": 0.3709397229335555,
+      "p05": 0.5728683179839167,
+      "p25": 1.682540297591721,
+      "mediana": 2.818246569193398,
+      "p75": 4.583446547627717,
+      "p95": 9.183959270106694,
+      "p98": 12.21999624859579,
+      "max": 29.16248920263299,
+      "rango_intercuartilico": 2.900906250035996,
+      "rango_p02_p98": 11.849056525662235
+     },
+     "curv_perfil": {
+      "n": 2704,
+      "media": -2.783549897937837e-06,
+      "desv_tipica": 0.0007014409900156653,
+      "min": -0.006750291398090175,
+      "p02": -0.0013833056911831379,
+      "p05": -0.0009321075151974904,
+      "p25": -0.0002588990386367231,
+      "mediana": -1.966089798963841e-05,
+      "p75": 0.00021640068062632513,
+      "p95": 0.0009766009707730323,
+      "p98": 0.0015447762522408088,
+      "max": 0.0059627072086269875,
+      "rango_intercuartilico": 0.0004752997192630482,
+      "rango_p02_p98": 0.0029280819434239465
+     },
+     "curv_planta": {
+      "n": 2704,
+      "media": -6.258954235930028e-08,
+      "desv_tipica": 0.000601141248804607,
+      "min": -0.004471513488378526,
+      "p02": -0.0014203253805348058,
+      "p05": -0.0010166579670672403,
+      "p25": -0.0002285917317012892,
+      "mediana": 7.950557635408089e-07,
+      "p75": 0.00024838854566894205,
+      "p95": 0.0009422331805003316,
+      "p98": 0.0013891037952658096,
+      "max": 0.003961439324303795,
+      "rango_intercuartilico": 0.0004769802773702313,
+      "rango_p02_p98": 0.0028094291758006154
+     },
+     "curv_media": {
+      "n": 2704,
+      "media": -1.423069720148568e-06,
+      "desv_tipica": 0.0005066961747500122,
+      "min": -0.003367489434205497,
+      "p02": -0.0010853284039090728,
+      "p05": -0.0007281025728601998,
+      "p25": -0.00020289164930236794,
+      "mediana": -6.144550325437153e-06,
+      "p75": 0.00020203504190766588,
+      "p95": 0.0007477171035040748,
+      "p98": 0.0011448307908712022,
+      "max": 0.003433967010434709,
+      "rango_intercuartilico": 0.0004049266912100338,
+      "rango_p02_p98": 0.002230159194780275
+     },
+     "relieve_local": {
+      "n": 2704,
+      "media": 25.47186453390539,
+      "desv_tipica": 17.335615805187693,
+      "min": 2.6498667988592786,
+      "p02": 4.194825244724523,
+      "p05": 5.675746518150147,
+      "p25": 12.403718422464422,
+      "mediana": 21.648026972204207,
+      "p75": 34.33982275008398,
+      "p95": 57.739075648233325,
+      "p98": 73.357972081881,
+      "max": 130.43684589971656,
+      "rango_intercuartilico": 21.93610432761956,
+      "rango_p02_p98": 69.16314683715648
+     }
+    },
+    "unidades": {
+     "elev_rel": "m",
+     "pendiente": "°",
+     "rugosidad": "m",
+     "curv_perfil": "1/km",
+     "curv_planta": "1/km",
+     "curv_media": "1/km",
+     "relieve_local": "m"
+    },
+    "hurst": {
+     "H": 0.6494328940789843,
+     "r2": 0.9873429962348774,
+     "rango_ajuste_m": [
+      3704.4613373579646,
+      14817.845349431858
+     ]
+    },
+    "longitud_correlacion": {
+     "longitud_m": 34997.00963896188,
+     "censurada": false
+    },
+    "anisotropia": {
+     "gamma_por_direccion_m2": {
+      "0": 581.3236149778468,
+      "45": 466.2527246999141,
+      "90": 920.0404842191672,
+      "135": 1021.4553653915334
+     },
+     "razon": 2.19077618484472
+    },
+    "moran_pendiente": 0.6950942751678474,
+    "n_efectivo": {
+     "elev_rel": {
+      "n": 2916,
+      "n_efectivo": 14.77718630324746,
+      "radio_celdas": 16
+     },
+     "pendiente": {
+      "n": 2704,
+      "n_efectivo": 11.14455025909154,
+      "radio_celdas": 27
+     },
+     "rugosidad": {
+      "n": 2704,
+      "n_efectivo": 15.57809692322718,
+      "radio_celdas": 25
+     },
+     "curv_perfil": {
+      "n": 2704,
+      "n_efectivo": 1283.2237835559517,
+      "radio_celdas": 2
+     },
+     "curv_planta": {
+      "n": 2704,
+      "n_efectivo": 1442.4376476273046,
+      "radio_celdas": 2
+     }
+    },
+    "diagnostico": {
+     "plano_ventana": {
+      "media_m": 267.27602339786074,
+      "pendiente_este": -1.722513957222416e-05,
+      "pendiente_norte": -0.0008037425021130265,
+      "inclinacion_regional_grados": 0.04606161755624079
+     },
+     "celdas_interiores_validas": 2704,
+     "fraccion_plana": 0.008136094674556213,
+     "curvatura_indefinida_por_gradiente_nulo": 0
+    },
+    "variograma": {
+     "r_m": [
+      3704.4613373579646,
+      5238.899464578407,
+      7408.922674715929,
+      10477.798929156814,
+      14817.845349431858,
+      20955.597858313628,
+      29635.690698863717,
+      41911.195716627255,
+      59271.38139772743,
+      83822.39143325451
+     ],
+     "gamma_m2": [
+      53.34247614143917,
+      90.14381014964286,
+      156.0052784511441,
+      231.35210547638187,
+      316.15372655372187,
+      472.387862914308,
+      717.8414454964196,
+      1003.6700068709964,
+      1239.0791484747883,
+      1457.6851838970797
+     ]
+    }
+   },
+   "explicacion": "At cell size h = 3.70 km and window L = 200 km: median slope 0.11° versus 0.11° in the target (W₁ = 0.006°); standard deviation of relief 36 m versus 37 m; median roughness 2.8 m versus 3.3 m; variograms differ by a typical factor of ×1.11. Very close or indistinguishable in: relative elevation distribution, slope distribution, roughness distribution, profile curvature distribution, plan curvature distribution, variogram (structure across scales), spatial clustering of slopes (Moran’s I). This is a geomorphological resemblance at this scale: it does not imply the same geological origin, equivalent environmental conditions or suitability for a mission.",
+   "huella": [
+    [
+     28.77612,
+     23.11488
+    ],
+    [
+     29.02111,
+     23.11617
+    ],
+    [
+     29.2661,
+     23.11709
+    ],
+    [
+     29.5111,
+     23.11765
+    ],
+    [
+     29.7561,
+     23.11783
+    ],
+    [
+     30.0011,
+     23.11765
+    ],
+    [
+     30.24609,
+     23.11709
+    ],
+    [
+     30.49109,
+     23.11617
+    ],
+    [
+     30.73608,
+     23.11488
+    ],
+    [
+     30.73446,
+     22.88956
+    ],
+    [
+     30.73286,
+     22.66424
+    ],
+    [
+     30.73127,
+     22.43892
+    ],
+    [
+     30.7297,
+     22.2136
+    ],
+    [
+     30.72814,
+     21.98828
+    ],
+    [
+     30.7266,
+     21.76296
+    ],
+    [
+     30.72508,
+     21.53764
+    ],
+    [
+     30.72357,
+     21.31232
+    ],
+    [
+     28.78863,
+     21.31232
+    ],
+    [
+     29.03049,
+     21.31356
+    ],
+    [
+     29.27236,
+     21.31445
+    ],
+    [
+     29.51423,
+     21.31498
+    ],
+    [
+     29.7561,
+     21.31516
+    ],
+    [
+     29.99797,
+     21.31498
+    ],
+    [
+     30.23984,
+     21.31445
+    ],
+    [
+     30.4817,
+     21.31356
+    ],
+    [
+     30.72357,
+     21.31232
+    ],
+    [
+     28.78712,
+     21.53764
+    ],
+    [
+     28.78559,
+     21.76296
+    ],
+    [
+     28.78405,
+     21.98828
+    ],
+    [
+     28.78249,
+     22.2136
+    ],
+    [
+     28.78092,
+     22.43892
+    ],
+    [
+     28.77934,
+     22.66424
+    ],
+    [
+     28.77773,
+     22.88956
+    ],
+    [
+     28.77612,
+     23.11488
+    ],
+    [
+     28.77612,
+     23.11488
+    ]
+   ]
+  },
+  {
+   "rango": 3,
+   "ventana": {
+    "cuerpo": "earth",
+    "producto": "SRTMGL30 V002",
+    "centro": {
+     "lat": -21.949,
+     "lon_este": 135.7297,
+     "lon_180": 135.7297
+    },
+    "lado_km": 200.041,
+    "celdas_por_lado": 54,
+    "resolucion_analisis_m": 3704.5,
+    "muestras_por_celda": 25,
+    "cobertura_valida": 1.0,
+    "fraccion_con_observacion_directa": null
+   },
+   "lat": -21.94903404457441,
+   "lon": 135.72972972972974,
+   "peor_percentil": 0.06011189144149506,
+   "criterio_peor": "curv_planta",
+   "ventanas_que_la_dominan": 0,
+   "criterios": {
+    "elev_rel": {
+     "nombre": "relative elevation distribution",
+     "metrica": "Wasserstein-1",
+     "unidades": "m",
+     "distancia": 5.5404932137206195,
+     "percentil_catalogo": 0.03559100107130104,
+     "referencia_intrinseca": 14.202084744218737,
+     "clase": "indistinguible",
+     "lectura": "within the target’s own variability",
+     "referencias": [
+      "vallender1974"
+     ]
+    },
+    "pendiente": {
+     "nombre": "slope distribution",
+     "metrica": "Wasserstein-1",
+     "unidades": "°",
+     "distancia": 0.024452672414481638,
+     "percentil_catalogo": 0.05582668729913105,
+     "referencia_intrinseca": 0.09870738691650331,
+     "clase": "indistinguible",
+     "lectura": "within the target’s own variability",
+     "referencias": [
+      "evans1979",
+      "florinsky2016",
+      "vallender1974"
+     ]
+    },
+    "rugosidad": {
+     "nombre": "roughness distribution",
+     "metrica": "Wasserstein-1",
+     "unidades": "m",
+     "distancia": 0.7854924361407757,
+     "percentil_catalogo": 0.05570765385073206,
+     "referencia_intrinseca": 1.9570174247026444,
+     "clase": "indistinguible",
+     "lectura": "within the target’s own variability",
+     "referencias": [
+      "evans1979",
+      "vallender1974"
+     ]
+    },
+    "curv_perfil": {
+     "nombre": "profile curvature distribution",
+     "metrica": "Wasserstein-1",
+     "unidades": "1/km",
+     "distancia": 7.453925912585646e-05,
+     "percentil_catalogo": 0.023687656231401025,
+     "referencia_intrinseca": 0.00034906622620610504,
+     "clase": "indistinguible",
+     "lectura": "within the target’s own variability",
+     "referencias": [
+      "evans1979",
+      "florinsky2016",
+      "vallender1974"
+     ]
+    },
+    "curv_planta": {
+     "nombre": "plan curvature distribution",
+     "metrica": "Wasserstein-1",
+     "unidades": "1/km",
+     "distancia": 9.057211265655951e-05,
+     "percentil_catalogo": 0.06011189144149506,
+     "referencia_intrinseca": 0.00010240980856110582,
+     "clase": "indistinguible",
+     "lectura": "within the target’s own variability",
+     "referencias": [
+      "evans1979",
+      "florinsky2016",
+      "vallender1974"
+     ]
+    },
+    "variograma": {
+     "nombre": "variogram (structure across scales)",
+     "metrica": "RMS of ln γ(r) at half-octave lags",
+     "unidades": "dimensionless (ln)",
+     "distancia": 0.19761267092811105,
+     "percentil_catalogo": 0.01999761933103202,
+     "referencia_intrinseca": 2.439980441113468,
+     "clase": "indistinguible",
+     "lectura": "within the target’s own variability",
+     "referencias": [
+      "marcotte1996"
+     ]
+    },
+    "moran_pendiente": {
+     "nombre": "spatial clustering of slopes (Moran’s I)",
+     "metrica": "|I_A − I_B|",
+     "unidades": "dimensionless",
+     "distancia": 0.006282978823312857,
+     "percentil_catalogo": 0.04237590763004404,
+     "referencia_intrinseca": 0.04648488759994507,
+     "clase": "indistinguible",
+     "lectura": "within the target’s own variability",
+     "referencias": [
+      "moran1950"
+     ]
+    }
+   },
+   "metricas_exactas": {
+    "elev_rel": {
+     "wasserstein_1": 5.538136864475936,
+     "ks": 0.08573388203017833,
+     "energia_1d": 0.7080266673277009,
+     "ks_p_valor_n_efectivo": 0.9999978354480129,
+     "ks_p_valor_ingenuo_pixeles": 8.562170306792507e-10,
+     "n_efectivo": [
+      15.775936320677248,
+      27.501191533625704
+     ],
+     "n_pixeles": [
+      2916,
+      2916
+     ],
+     "wasserstein_1_tipificado": 0.10656641682379647,
+     "cota_error_cribado": 2.260901825539674
+    },
+    "pendiente": {
+     "wasserstein_1": 0.02441548092520769,
+     "ks": 0.11982248520710065,
+     "energia_1d": 0.06037641927583891,
+     "ks_p_valor_n_efectivo": 0.947940789489235,
+     "ks_p_valor_ingenuo_pixeles": 2.1264568434942664e-17,
+     "n_efectivo": [
+      34.07948529138713,
+      37.00704038440822
+     ],
+     "n_pixeles": [
+      2704,
+      2704
+     ],
+     "wasserstein_1_tipificado": 0.04240533278597135,
+     "cota_error_cribado": 0.008990345011009884
+    },
+    "rugosidad": {
+     "wasserstein_1": 0.7882178464263574,
+     "ks": 0.1238905325443787,
+     "energia_1d": 0.31842095409747834,
+     "ks_p_valor_n_efectivo": 0.9525329785218712,
+     "ks_p_valor_ingenuo_pixeles": 1.4308012104425041e-18,
+     "n_efectivo": [
+      38.37254447878871,
+      27.92340444540484
+     ],
+     "n_pixeles": [
+      2704,
+      2704
+     ],
+     "wasserstein_1_tipificado": 0.0928287658540957,
+     "cota_error_cribado": 0.30302285250204053
+    },
+    "curv_perfil": {
+     "wasserstein_1": 7.423508342928813e-05,
+     "ks": 0.13313609467455623,
+     "energia_1d": 0.0030648250610644115,
+     "ks_p_valor_n_efectivo": 7.061498338171339e-11,
+     "ks_p_valor_ingenuo_pixeles": 2.2194634246524284e-21,
+     "n_efectivo": [
+      1357.4509341909318,
+      1332.5021242475605
+     ],
+     "n_pixeles": [
+      2704,
+      2704
+     ],
+     "wasserstein_1_tipificado": 0.09719237231392713,
+     "cota_error_cribado": 0.00011129932389735889
+    },
+    "curv_planta": {
+     "wasserstein_1": 9.068445002889628e-05,
+     "ks": 0.05584319526627213,
+     "energia_1d": 0.002183259885813115,
+     "ks_p_valor_n_efectivo": 0.0836152753282709,
+     "ks_p_valor_ingenuo_pixeles": 0.0004115085670355484,
+     "n_efectivo": [
+      759.4298935300756,
+      1493.006727060925
+     ],
+     "n_pixeles": [
+      2704,
+      2704
+     ],
+     "wasserstein_1_tipificado": 0.07429497451966066,
+     "cota_error_cribado": 0.00011514586722193509
+    },
+    "variograma": {
+     "distancia": 0.19761267244073757
+    },
+    "moran_pendiente": {
+     "distancia": 0.006283004607456788
+    },
+    "curvaturas_bivariante": {
+     "energia_1_km": 0.0036599906340278065,
+     "nota": "energy distance on (k_v, k_h), both in 1/km; regular subgrid of ≤ 2000 cells"
+    }
+   },
+   "descriptores": {
+    "estadisticos": {
+     "elev_rel": {
+      "n": 2916,
+      "media": -2.5482070348027515e-13,
+      "desv_tipica": 30.24677736842784,
+      "min": -62.00896376779383,
+      "p02": -45.71527138487259,
+      "p05": -38.35336753119002,
+      "p25": -21.909485831119895,
+      "mediana": -4.688043707552794,
+      "p75": 16.921940508366447,
+      "p95": 53.14477355373033,
+      "p98": 76.94230459359716,
+      "max": 163.19786641474855,
+      "rango_intercuartilico": 38.83142633948634,
+      "rango_p02_p98": 122.65757597846974
+     },
+     "pendiente": {
+      "n": 2704,
+      "media": 0.16104416408582503,
+      "desv_tipica": 0.11283437491140443,
+      "min": 0.00196324411523742,
+      "p02": 0.032520905275827086,
+      "p05": 0.042733336532593466,
+      "p25": 0.07375914106776751,
+      "mediana": 0.13698125031587713,
+      "p75": 0.2108568943529191,
+      "p95": 0.38314104321192655,
+      "p98": 0.4803454889565537,
+      "max": 0.9299296966913175,
+      "rango_intercuartilico": 0.13709775328515159,
+      "rango_p02_p98": 0.44782458368072664
+     },
+     "rugosidad": {
+      "n": 2704,
+      "media": 4.505308134790681,
+      "desv_tipica": 3.965654191196822,
+      "min": 0.17618170640449293,
+      "p02": 0.3233041189230916,
+      "p05": 0.4463491347133888,
+      "p25": 1.8118998775476491,
+      "mediana": 3.546395036439125,
+      "p75": 5.875240823972815,
+      "p95": 12.270513569084335,
+      "p98": 16.275516553506094,
+      "max": 28.400195621992008,
+      "rango_intercuartilico": 4.063340946425166,
+      "rango_p02_p98": 15.952212434583002
+     },
+     "curv_perfil": {
+      "n": 2704,
+      "media": -0.00010022955342695118,
+      "desv_tipica": 0.00072770467880083,
+      "min": -0.0040328712565920995,
+      "p02": -0.001678206625119431,
+      "p05": -0.0011791187682431803,
+      "p25": -0.0003899629596743203,
+      "mediana": -8.454890677992008e-05,
+      "p75": 0.00010074374650326324,
+      "p95": 0.0010627946791593522,
+      "p98": 0.0017224682188763565,
+      "max": 0.0065794984346272045,
+      "rango_intercuartilico": 0.0004907067061775836,
+      "rango_p02_p98": 0.0034006748439957876
+     },
+     "curv_planta": {
+      "n": 2704,
+      "media": 0.00010132754473827989,
+      "desv_tipica": 0.0008090617544995376,
+      "min": -0.004004316969271598,
+      "p02": -0.0014412897216845382,
+      "p05": -0.000997572443261256,
+      "p25": -0.00023523359238300913,
+      "mediana": 7.142020847627159e-06,
+      "p75": 0.0003628735782867068,
+      "p95": 0.0015164107822709008,
+      "p98": 0.002245075469347477,
+      "max": 0.006618864926575312,
+      "rango_intercuartilico": 0.000598107170669716,
+      "rango_p02_p98": 0.0036863651910320153
+     },
+     "curv_media": {
+      "n": 2704,
+      "media": 5.489956556643507e-07,
+      "desv_tipica": 0.00061064826654271,
+      "min": -0.0027928028168951228,
+      "p02": -0.0011760335696155094,
+      "p05": -0.000813090708364062,
+      "p25": -0.00028241885722912806,
+      "mediana": -4.183861251799013e-05,
+      "p75": 0.0001711195865271693,
+      "p95": 0.0010309664235581978,
+      "p98": 0.0017565672823713142,
+      "max": 0.003892298020576699,
+      "rango_intercuartilico": 0.00045353844375629735,
+      "rango_p02_p98": 0.0029326008519868236
+     },
+     "relieve_local": {
+      "n": 2704,
+      "media": 31.33886143178578,
+      "desv_tipica": 21.151423664786286,
+      "min": 3.95815917521395,
+      "p02": 6.751078966639724,
+      "p05": 8.006397459729087,
+      "p25": 15.831588598897127,
+      "mediana": 27.04088299823306,
+      "p75": 40.67972571316706,
+      "p95": 72.75548245433404,
+      "p98": 88.74761174342694,
+      "max": 149.63944137079437,
+      "rango_intercuartilico": 24.84813711426993,
+      "rango_p02_p98": 81.99653277678722
+     }
+    },
+    "unidades": {
+     "elev_rel": "m",
+     "pendiente": "°",
+     "rugosidad": "m",
+     "curv_perfil": "1/km",
+     "curv_planta": "1/km",
+     "curv_media": "1/km",
+     "relieve_local": "m"
+    },
+    "hurst": {
+     "H": 0.6001127761799779,
+     "r2": 0.9869656150872397,
+     "rango_ajuste_m": [
+      3704.4613373579646,
+      14817.845349431858
+     ]
+    },
+    "longitud_correlacion": {
+     "longitud_m": 22961.47193345483,
+     "censurada": false
+    },
+    "anisotropia": {
+     "gamma_por_direccion_m2": {
+      "0": 620.3503739255774,
+      "45": 733.37845915,
+      "90": 743.4270053452237,
+      "135": 611.0499374656796
+     },
+     "razon": 1.2166387062055453
+    },
+    "moran_pendiente": 0.7028345997835485,
+    "n_efectivo": {
+     "elev_rel": {
+      "n": 2916,
+      "n_efectivo": 27.501191533625704,
+      "radio_celdas": 14
+     },
+     "pendiente": {
+      "n": 2704,
+      "n_efectivo": 37.00704038440822,
+      "radio_celdas": 14
+     },
+     "rugosidad": {
+      "n": 2704,
+      "n_efectivo": 27.92340444540484,
+      "radio_celdas": 14
+     },
+     "curv_perfil": {
+      "n": 2704,
+      "n_efectivo": 1332.5021242475605,
+      "radio_celdas": 2
+     },
+     "curv_planta": {
+      "n": 2704,
+      "n_efectivo": 1493.006727060925,
+      "radio_celdas": 2
+     }
+    },
+    "diagnostico": {
+     "plano_ventana": {
+      "media_m": 384.2058016379448,
+      "pendiente_este": -0.0011022744620330892,
+      "pendiente_norte": -0.0004229690099194676,
+      "inclinacion_regional_grados": 0.06764568107031597
+     },
+     "celdas_interiores_validas": 2704,
+     "fraccion_plana": 0.0011094674556213018,
+     "curvatura_indefinida_por_gradiente_nulo": 0
+    },
+    "variograma": {
+     "r_m": [
+      3704.4613373579646,
+      5238.899464578407,
+      7408.922674715929,
+      10477.798929156814,
+      14817.845349431858,
+      20955.597858313628,
+      29635.690698863717,
+      41911.195716627255,
+      59271.38139772743,
+      83822.39143325451
+     ],
+     "gamma_m2": [
+      77.59240965193813,
+      125.50812663592802,
+      209.23599843397872,
+      301.5698179099218,
+      400.60923629085585,
+      542.1264530870073,
+      695.3729468439263,
+      820.5007359444868,
+      923.2920727418626,
+      1002.664362837126
+     ]
+    }
+   },
+   "explicacion": "At cell size h = 3.70 km and window L = 200 km: median slope 0.14° versus 0.11° in the target (W₁ = 0.024°); standard deviation of relief 30 m versus 37 m; median roughness 3.5 m versus 3.3 m; variograms differ by a typical factor of ×1.22. Very close or indistinguishable in: relative elevation distribution, slope distribution, roughness distribution, profile curvature distribution, plan curvature distribution, variogram (structure across scales), spatial clustering of slopes (Moran’s I). This is a geomorphological resemblance at this scale: it does not imply the same geological origin, equivalent environmental conditions or suitability for a mission.",
+   "huella": [
+    [
+     134.76401,
+     -21.04489
+    ],
+    [
+     135.00544,
+     -21.04612
+    ],
+    [
+     135.24687,
+     -21.047
+    ],
+    [
+     135.4883,
+     -21.04752
+    ],
+    [
+     135.72973,
+     -21.0477
+    ],
+    [
+     135.97116,
+     -21.04752
+    ],
+    [
+     136.21259,
+     -21.047
+    ],
+    [
+     136.45402,
+     -21.04612
+    ],
+    [
+     136.69545,
+     -21.04489
+    ],
+    [
+     136.69694,
+     -21.27022
+    ],
+    [
+     136.69844,
+     -21.49554
+    ],
+    [
+     136.69996,
+     -21.72086
+    ],
+    [
+     136.70149,
+     -21.94618
+    ],
+    [
+     136.70304,
+     -22.1715
+    ],
+    [
+     136.7046,
+     -22.39682
+    ],
+    [
+     136.70618,
+     -22.62214
+    ],
+    [
+     136.70777,
+     -22.84746
+    ],
+    [
+     134.75169,
+     -22.84746
+    ],
+    [
+     134.99619,
+     -22.84873
+    ],
+    [
+     135.2407,
+     -22.84964
+    ],
+    [
+     135.48522,
+     -22.85019
+    ],
+    [
+     135.72973,
+     -22.85037
+    ],
+    [
+     135.97424,
+     -22.85019
+    ],
+    [
+     136.21876,
+     -22.84964
+    ],
+    [
+     136.46327,
+     -22.84873
+    ],
+    [
+     136.70777,
+     -22.84746
+    ],
+    [
+     134.75328,
+     -22.62214
+    ],
+    [
+     134.75486,
+     -22.39682
+    ],
+    [
+     134.75642,
+     -22.1715
+    ],
+    [
+     134.75797,
+     -21.94618
+    ],
+    [
+     134.7595,
+     -21.72086
+    ],
+    [
+     134.76102,
+     -21.49554
+    ],
+    [
+     134.76252,
+     -21.27022
+    ],
+    [
+     134.76401,
+     -21.04489
+    ],
+    [
+     134.76401,
+     -21.04489
+    ]
+   ]
+  },
+  {
+   "rango": 4,
+   "ventana": {
+    "cuerpo": "earth",
+    "producto": "SRTMGL30 V002",
+    "centro": {
+     "lat": -29.1597,
+     "lon_este": 130.8621,
+     "lon_180": 130.8621
+    },
+    "lado_km": 200.041,
+    "celdas_por_lado": 54,
+    "resolucion_analisis_m": 3704.5,
+    "muestras_por_celda": 25,
+    "cobertura_valida": 0.966,
+    "fraccion_con_observacion_directa": null
+   },
+   "lat": -29.159732423957255,
+   "lon": 130.8620689655172,
+   "peor_percentil": 0.06058802523509106,
+   "criterio_peor": "elev_rel",
+   "ventanas_que_la_dominan": 0,
+   "criterios": {
+    "elev_rel": {
+     "nombre": "relative elevation distribution",
+     "metrica": "Wasserstein-1",
+     "unidades": "m",
+     "distancia": 6.416836876943708,
+     "percentil_catalogo": 0.06058802523509106,
+     "referencia_intrinseca": 14.202084744218737,
+     "clase": "indistinguible",
+     "lectura": "within the target’s own variability",
+     "referencias": [
+      "vallender1974"
+     ]
+    },
+    "pendiente": {
+     "nombre": "slope distribution",
+     "metrica": "Wasserstein-1",
+     "unidades": "°",
+     "distancia": 0.015578454919159412,
+     "percentil_catalogo": 0.017735983811451018,
+     "referencia_intrinseca": 0.09870738691650331,
+     "clase": "indistinguible",
+     "lectura": "within the target’s own variability",
+     "referencias": [
+      "evans1979",
+      "florinsky2016",
+      "vallender1974"
+     ]
+    },
+    "rugosidad": {
+     "nombre": "roughness distribution",
+     "metrica": "Wasserstein-1",
+     "unidades": "m",
+     "distancia": 0.6954532895982265,
+     "percentil_catalogo": 0.04297107487203904,
+     "referencia_intrinseca": 1.9570174247026444,
+     "clase": "indistinguible",
+     "lectura": "within the target’s own variability",
+     "referencias": [
+      "evans1979",
+      "vallender1974"
+     ]
+    },
+    "curv_perfil": {
+     "nombre": "profile curvature distribution",
+     "metrica": "Wasserstein-1",
+     "unidades": "1/km",
+     "distancia": 6.954134438274196e-05,
+     "percentil_catalogo": 0.017735983811451018,
+     "referencia_intrinseca": 0.00034906622620610504,
+     "clase": "indistinguible",
+     "lectura": "within the target’s own variability",
+     "referencias": [
+      "evans1979",
+      "florinsky2016",
+      "vallender1974"
+     ]
+    },
+    "curv_planta": {
+     "nombre": "plan curvature distribution",
+     "metrica": "Wasserstein-1",
+     "unidades": "1/km",
+     "distancia": 6.723735782536266e-05,
+     "percentil_catalogo": 0.02868706106415903,
+     "referencia_intrinseca": 0.00010240980856110582,
+     "clase": "indistinguible",
+     "lectura": "within the target’s own variability",
+     "referencias": [
+      "evans1979",
+      "florinsky2016",
+      "vallender1974"
+     ]
+    },
+    "variograma": {
+     "nombre": "variogram (structure across scales)",
+     "metrica": "RMS of ln γ(r) at half-octave lags",
+     "unidades": "dimensionless (ln)",
+     "distancia": 0.2611705534346814,
+     "percentil_catalogo": 0.03606713486489704,
+     "referencia_intrinseca": 2.439980441113468,
+     "clase": "indistinguible",
+     "lectura": "within the target’s own variability",
+     "referencias": [
+      "marcotte1996"
+     ]
+    },
+    "moran_pendiente": {
+     "nombre": "spatial clustering of slopes (Moran’s I)",
+     "metrica": "|I_A − I_B|",
+     "unidades": "dimensionless",
+     "distancia": 0.006820466409616421,
+     "percentil_catalogo": 0.04630401142721104,
+     "referencia_intrinseca": 0.04648488759994507,
+     "clase": "indistinguible",
+     "lectura": "within the target’s own variability",
+     "referencias": [
+      "moran1950"
+     ]
+    }
+   },
+   "metricas_exactas": {
+    "elev_rel": {
+     "wasserstein_1": 6.42284642505663,
+     "ks": 0.10511028718933109,
+     "energia_1d": 0.8063436396672876,
+     "ks_p_valor_n_efectivo": 0.9995420073183088,
+     "ks_p_valor_ingenuo_pixeles": 2.89580673890033e-14,
+     "n_efectivo": [
+      15.775936320677248,
+      31.989185734322906
+     ],
+     "n_pixeles": [
+      2916,
+      2817
+     ],
+     "wasserstein_1_tipificado": 0.1026743041018635,
+     "cota_error_cribado": 1.945365973226976
+    },
+    "pendiente": {
+     "wasserstein_1": 0.01569580580943484,
+     "ks": 0.08011979219866072,
+     "energia_1d": 0.03908559871932189,
+     "ks_p_valor_n_efectivo": 0.9992881574020771,
+     "ks_p_valor_ingenuo_pixeles": 1.052831696918954e-07,
+     "n_efectivo": [
+      34.07948529138713,
+      46.435142374952605
+     ],
+     "n_pixeles": [
+      2704,
+      2491
+     ],
+     "wasserstein_1_tipificado": 0.10723220233069355,
+     "cota_error_cribado": 0.007386416823720039
+    },
+    "rugosidad": {
+     "wasserstein_1": 0.6951921256101476,
+     "ks": 0.14706092821732197,
+     "energia_1d": 0.3379034766419048,
+     "ks_p_valor_n_efectivo": 0.9049901525498102,
+     "ks_p_valor_ingenuo_pixeles": 6.0034189555709695e-25,
+     "n_efectivo": [
+      38.37254447878871,
+      21.360460656178894
+     ],
+     "n_pixeles": [
+      2704,
+      2491
+     ],
+     "wasserstein_1_tipificado": 0.22719148291498673,
+     "cota_error_cribado": 0.24925466090893608
+    },
+    "curv_perfil": {
+     "wasserstein_1": 7.043133311453155e-05,
+     "ks": 0.04335504265058343,
+     "energia_1d": 0.0016019037094579039,
+     "ks_p_valor_n_efectivo": 0.2620992214933819,
+     "ks_p_valor_ingenuo_pixeles": 0.014780696742055581,
+     "n_efectivo": [
+      1357.4509341909318,
+      880.7969317792599
+     ],
+     "n_pixeles": [
+      2704,
+      2491
+     ],
+     "wasserstein_1_tipificado": 0.1183636552277545,
+     "cota_error_cribado": 8.818517437995589e-05
+    },
+    "curv_planta": {
+     "wasserstein_1": 7.00238496703171e-05,
+     "ks": 0.033340588247869896,
+     "energia_1d": 0.0014811351456264824,
+     "ks_p_valor_n_efectivo": 0.6482210342181784,
+     "ks_p_valor_ingenuo_pixeles": 0.10978105703532523,
+     "n_efectivo": [
+      759.4298935300756,
+      1332.9904781403204
+     ],
+     "n_pixeles": [
+      2704,
+      2491
+     ],
+     "wasserstein_1_tipificado": 0.10232322398865007,
+     "cota_error_cribado": 9.675570501562595e-05
+    },
+    "variograma": {
+     "distancia": 0.26117058089540857
+    },
+    "moran_pendiente": {
+     "distancia": 0.00682044062547249
+    },
+    "curvaturas_bivariante": {
+     "energia_1_km": 0.002393972198869049,
+     "nota": "energy distance on (k_v, k_h), both in 1/km; regular subgrid of ≤ 2000 cells"
+    }
+   },
+   "descriptores": {
+    "estadisticos": {
+     "elev_rel": {
+      "n": 2817,
+      "media": -1.8435267117939015e-13,
+      "desv_tipica": 27.701963979098178,
+      "min": -55.78663183592397,
+      "p02": -40.864239312224335,
+      "p05": -36.05081069737734,
+      "p25": -20.834631941095324,
+      "mediana": -4.803606580811504,
+      "p75": 16.759753691817934,
+      "p95": 51.70581190407741,
+      "p98": 69.59031763492673,
+      "max": 106.31302788407879,
+      "rango_intercuartilico": 37.59438563291326,
+      "rango_p02_p98": 110.45455694715108
+     },
+     "pendiente": {
+      "n": 2491,
+      "media": 0.14950221857456564,
+      "desv_tipica": 0.11131732554090042,
+      "min": 0.0017136565109676372,
+      "p02": 0.01480506486775365,
+      "p05": 0.02309387531296855,
+      "p25": 0.05800248398026153,
+      "mediana": 0.11724757789360286,
+      "p75": 0.22249636638168552,
+      "p95": 0.36515113051810133,
+      "p98": 0.42947397257651715,
+      "max": 0.6088944716290787,
+      "rango_intercuartilico": 0.16449388240142399,
+      "rango_p02_p98": 0.4146689077087635
+     },
+     "rugosidad": {
+      "n": 2491,
+      "media": 4.498039306481883,
+      "desv_tipica": 2.9547524589513143,
+      "min": 0.31336611615153875,
+      "p02": 0.5873169881900172,
+      "p05": 0.8045271148156615,
+      "p25": 2.201819602256449,
+      "mediana": 3.965129489957917,
+      "p75": 6.147010647641428,
+      "p95": 9.956532513322642,
+      "p98": 12.291281190969658,
+      "max": 17.783741713118168,
+      "rango_intercuartilico": 3.9451910453849792,
+      "rango_p02_p98": 11.703964202779641
+     },
+     "curv_perfil": {
+      "n": 2491,
+      "media": -2.7948822880958486e-05,
+      "desv_tipica": 0.0007193786751336799,
+      "min": -0.0032820879798147237,
+      "p02": -0.0014682599541522283,
+      "p05": -0.001184465618584748,
+      "p25": -0.00043060852555524697,
+      "mediana": -5.024950650288882e-05,
+      "p75": 0.0002931586081240103,
+      "p95": 0.001288059235961273,
+      "p98": 0.0018252079392945182,
+      "max": 0.0027074518079239804,
+      "rango_intercuartilico": 0.0007237671336792573,
+      "rango_p02_p98": 0.0032934678934467467
+     },
+     "curv_planta": {
+      "n": 2491,
+      "media": 3.8656893282874805e-05,
+      "desv_tipica": 0.0006971122597678563,
+      "min": -0.002990611496951918,
+      "p02": -0.001587627561522786,
+      "p05": -0.001073816933638447,
+      "p25": -0.0002615823104123399,
+      "mediana": 2.8324979706809933e-06,
+      "p75": 0.0003217939075416782,
+      "p95": 0.0012745293521471469,
+      "p98": 0.0017973274271182028,
+      "max": 0.0039545379576331665,
+      "rango_intercuartilico": 0.0005833762179540181,
+      "rango_p02_p98": 0.003384954988640989
+     },
+     "curv_media": {
+      "n": 2491,
+      "media": 5.3540352009581574e-06,
+      "desv_tipica": 0.0005505111794239929,
+      "min": -0.0020446247286941884,
+      "p02": -0.0011287966727699867,
+      "p05": -0.0008417514675145769,
+      "p25": -0.00030067710772485064,
+      "mediana": -2.6866459079177268e-05,
+      "p75": 0.00025263195922518595,
+      "p95": 0.0010204088992680554,
+      "p98": 0.0013517930585172614,
+      "max": 0.002029360160220561,
+      "rango_intercuartilico": 0.0005533090669500365,
+      "rango_p02_p98": 0.002480589731287248
+     },
+     "relieve_local": {
+      "n": 2491,
+      "media": 29.513342828868755,
+      "desv_tipica": 18.758408545042098,
+      "min": 2.099563820445269,
+      "p02": 4.685669869851018,
+      "p05": 6.497732844300913,
+      "p25": 13.30545891057318,
+      "mediana": 26.357261157994287,
+      "p75": 42.69799932139847,
+      "p95": 64.60549326721173,
+      "p98": 72.04394860810595,
+      "max": 104.79660205746302,
+      "rango_intercuartilico": 29.39254041082529,
+      "rango_p02_p98": 67.35827873825494
+     }
+    },
+    "unidades": {
+     "elev_rel": "m",
+     "pendiente": "°",
+     "rugosidad": "m",
+     "curv_perfil": "1/km",
+     "curv_planta": "1/km",
+     "curv_media": "1/km",
+     "relieve_local": "m"
+    },
+    "hurst": {
+     "H": 0.6262797028210434,
+     "r2": 0.9827101851172109,
+     "rango_ajuste_m": [
+      3704.4613373579646,
+      14817.845349431858
+     ]
+    },
+    "longitud_correlacion": {
+     "longitud_m": 21955.93499692467,
+     "censurada": false
+    },
+    "anisotropia": {
+     "gamma_por_direccion_m2": {
+      "0": 683.1180530211807,
+      "45": 712.2658347480918,
+      "90": 533.6005306325983,
+      "135": 446.58148624070907
+     },
+     "razon": 1.594929160059667
+    },
+    "moran_pendiente": 0.6897311545506192,
+    "n_efectivo": {
+     "elev_rel": {
+      "n": 2817,
+      "n_efectivo": 31.989185734322906,
+      "radio_celdas": 12
+     },
+     "pendiente": {
+      "n": 2491,
+      "n_efectivo": 46.435142374952605,
+      "radio_celdas": 13
+     },
+     "rugosidad": {
+      "n": 2491,
+      "n_efectivo": 21.360460656178894,
+      "radio_celdas": 22
+     },
+     "curv_perfil": {
+      "n": 2491,
+      "n_efectivo": 880.7969317792599,
+      "radio_celdas": 3
+     },
+     "curv_planta": {
+      "n": 2491,
+      "n_efectivo": 1332.9904781403204,
+      "radio_celdas": 2
+     }
+    },
+    "diagnostico": {
+     "plano_ventana": {
+      "media_m": 256.43928097763956,
+      "pendiente_este": -1.6997230900352573e-05,
+      "pendiente_norte": 0.001027345862119259,
+      "inclinacion_regional_grados": 0.0588706169697003
+     },
+     "celdas_interiores_validas": 2491,
+     "fraccion_plana": 0.009634684865515858,
+     "curvatura_indefinida_por_gradiente_nulo": 0
+    },
+    "variograma": {
+     "r_m": [
+      3704.4613373579646,
+      5238.899464578407,
+      7408.922674715929,
+      10477.798929156814,
+      14817.845349431858,
+      20955.597858313628,
+      29635.690698863717,
+      41911.195716627255,
+      59271.38139772743,
+      83822.39143325451
+     ],
+     "gamma_m2": [
+      64.0173066692243,
+      105.92945340226449,
+      184.25755950847858,
+      268.69341101223097,
+      352.2265890095248,
+      470.7316296896027,
+      600.9523300281256,
+      730.2224469379009,
+      791.9569793617212,
+      769.9364589784856
+     ]
+    }
+   },
+   "explicacion": "At cell size h = 3.70 km and window L = 200 km: median slope 0.12° versus 0.11° in the target (W₁ = 0.016°); standard deviation of relief 28 m versus 37 m; median roughness 4.0 m versus 3.3 m; variograms differ by a typical factor of ×1.30. Very close or indistinguishable in: relative elevation distribution, slope distribution, roughness distribution, profile curvature distribution, plan curvature distribution, variogram (structure across scales), spatial clustering of slopes (Moran’s I). This is a geomorphological resemblance at this scale: it does not imply the same geological origin, equivalent environmental conditions or suitability for a mission.",
+   "huella": [
+    [
+     129.83884,
+     -28.25451
+    ],
+    [
+     130.09464,
+     -28.25621
+    ],
+    [
+     130.35045,
+     -28.25742
+    ],
+    [
+     130.60626,
+     -28.25815
+    ],
+    [
+     130.86207,
+     -28.2584
+    ],
+    [
+     131.11788,
+     -28.25815
+    ],
+    [
+     131.37369,
+     -28.25742
+    ],
+    [
+     131.6295,
+     -28.25621
+    ],
+    [
+     131.88529,
+     -28.25451
+    ],
+    [
+     131.88749,
+     -28.47983
+    ],
+    [
+     131.8897,
+     -28.70514
+    ],
+    [
+     131.89193,
+     -28.93046
+    ],
+    [
+     131.89419,
+     -29.15578
+    ],
+    [
+     131.89646,
+     -29.38109
+    ],
+    [
+     131.89876,
+     -29.60641
+    ],
+    [
+     131.90108,
+     -29.83173
+    ],
+    [
+     131.90341,
+     -30.05704
+    ],
+    [
+     129.82072,
+     -30.05704
+    ],
+    [
+     130.08105,
+     -30.0588
+    ],
+    [
+     130.34139,
+     -30.06006
+    ],
+    [
+     130.60173,
+     -30.06082
+    ],
+    [
+     130.86207,
+     -30.06107
+    ],
+    [
+     131.12241,
+     -30.06082
+    ],
+    [
+     131.38275,
+     -30.06006
+    ],
+    [
+     131.64309,
+     -30.0588
+    ],
+    [
+     131.90341,
+     -30.05704
+    ],
+    [
+     129.82306,
+     -29.83173
+    ],
+    [
+     129.82538,
+     -29.60641
+    ],
+    [
+     129.82767,
+     -29.38109
+    ],
+    [
+     129.82995,
+     -29.15578
+    ],
+    [
+     129.8322,
+     -28.93046
+    ],
+    [
+     129.83444,
+     -28.70514
+    ],
+    [
+     129.83665,
+     -28.47983
+    ],
+    [
+     129.83884,
+     -28.25451
+    ],
+    [
+     129.83884,
+     -28.25451
+    ]
+   ]
+  },
+  {
+   "rango": 5,
+   "ventana": {
+    "cuerpo": "earth",
+    "producto": "SRTMGL30 V002",
+    "centro": {
+     "lat": 23.1178,
+     "lon_este": 42.6703,
+     "lon_180": 42.6703
+    },
+    "lado_km": 200.041,
+    "celdas_por_lado": 54,
+    "resolucion_analisis_m": 3704.5,
+    "muestras_por_celda": 25,
+    "cobertura_valida": 1.0,
+    "fraccion_con_observacion_directa": null
+   },
+   "lat": 23.11783082656836,
+   "lon": 42.670299727520444,
+   "peor_percentil": 0.06273062730627306,
+   "criterio_peor": "moran_pendiente",
+   "ventanas_que_la_dominan": 0,
+   "criterios": {
+    "elev_rel": {
+     "nombre": "relative elevation distribution",
+     "metrica": "Wasserstein-1",
+     "unidades": "m",
+     "distancia": 5.262072742208838,
+     "percentil_catalogo": 0.02928222830615403,
+     "referencia_intrinseca": 14.202084744218737,
+     "clase": "indistinguible",
+     "lectura": "within the target’s own variability",
+     "referencias": [
+      "vallender1974"
+     ]
+    },
+    "pendiente": {
+     "nombre": "slope distribution",
+     "metrica": "Wasserstein-1",
+     "unidades": "°",
+     "distancia": 0.018933299537748097,
+     "percentil_catalogo": 0.03059159623854303,
+     "referencia_intrinseca": 0.09870738691650331,
+     "clase": "indistinguible",
+     "lectura": "within the target’s own variability",
+     "referencias": [
+      "evans1979",
+      "florinsky2016",
+      "vallender1974"
+     ]
+    },
+    "rugosidad": {
+     "nombre": "roughness distribution",
+     "metrica": "Wasserstein-1",
+     "unidades": "m",
+     "distancia": 0.19483950346708298,
+     "percentil_catalogo": 0.00035710034519700033,
+     "referencia_intrinseca": 1.9570174247026444,
+     "clase": "indistinguible",
+     "lectura": "within the target’s own variability",
+     "referencias": [
+      "evans1979",
+      "vallender1974"
+     ]
+    },
+    "curv_perfil": {
+     "nombre": "profile curvature distribution",
+     "metrica": "Wasserstein-1",
+     "unidades": "1/km",
+     "distancia": 8.262712744624423e-05,
+     "percentil_catalogo": 0.03368646589691703,
+     "referencia_intrinseca": 0.00034906622620610504,
+     "clase": "indistinguible",
+     "lectura": "within the target’s own variability",
+     "referencias": [
+      "evans1979",
+      "florinsky2016",
+      "vallender1974"
+     ]
+    },
+    "curv_planta": {
+     "nombre": "plan curvature distribution",
+     "metrica": "Wasserstein-1",
+     "unidades": "1/km",
+     "distancia": 4.829525517550337e-05,
+     "percentil_catalogo": 0.007618140697536008,
+     "referencia_intrinseca": 0.00010240980856110582,
+     "clase": "indistinguible",
+     "lectura": "within the target’s own variability",
+     "referencias": [
+      "evans1979",
+      "florinsky2016",
+      "vallender1974"
+     ]
+    },
+    "variograma": {
+     "nombre": "variogram (structure across scales)",
+     "metrica": "RMS of ln γ(r) at half-octave lags",
+     "unidades": "dimensionless (ln)",
+     "distancia": 0.11993741948196604,
+     "percentil_catalogo": 0.005713605523152005,
+     "referencia_intrinseca": 2.439980441113468,
+     "clase": "indistinguible",
+     "lectura": "within the target’s own variability",
+     "referencias": [
+      "marcotte1996"
+     ]
+    },
+    "moran_pendiente": {
+     "nombre": "spatial clustering of slopes (Moran’s I)",
+     "metrica": "|I_A − I_B|",
+     "unidades": "dimensionless",
+     "distancia": 0.009402784676298293,
+     "percentil_catalogo": 0.06273062730627306,
+     "referencia_intrinseca": 0.04648488759994507,
+     "clase": "indistinguible",
+     "lectura": "within the target’s own variability",
+     "referencias": [
+      "moran1950"
+     ]
+    }
+   },
+   "metricas_exactas": {
+    "elev_rel": {
+     "wasserstein_1": 5.307538159686009,
+     "ks": 0.09739368998628262,
+     "energia_1d": 0.6757217194829588,
+     "ks_p_valor_n_efectivo": 0.9999591874489455,
+     "ks_p_valor_ingenuo_pixeles": 1.6258771738249719e-12,
+     "n_efectivo": [
+      15.775936320677248,
+      25.156474404605337
+     ],
+     "n_pixeles": [
+      2916,
+      2916
+     ],
+     "wasserstein_1_tipificado": 0.15055173439948788,
+     "cota_error_cribado": 2.439195199150965
+    },
+    "pendiente": {
+     "wasserstein_1": 0.019033777253224506,
+     "ks": 0.15606508875739644,
+     "energia_1d": 0.05731950411093758,
+     "ks_p_valor_n_efectivo": 0.890650162075334,
+     "ks_p_valor_ingenuo_pixeles": 3.2133687417598645e-29,
+     "n_efectivo": [
+      34.07948529138713,
+      20.17597976590728
+     ],
+     "n_pixeles": [
+      2704,
+      2704
+     ],
+     "wasserstein_1_tipificado": 0.10341988407761252,
+     "cota_error_cribado": 0.008944165587616501
+    },
+    "rugosidad": {
+     "wasserstein_1": 0.1990859756485395,
+     "ks": 0.03439349112426036,
+     "energia_1d": 0.08532196020327464,
+     "ks_p_valor_n_efectivo": 1.0,
+     "ks_p_valor_ingenuo_pixeles": 0.07990273329636409,
+     "n_efectivo": [
+      38.37254447878871,
+      17.84565461900421
+     ],
+     "n_pixeles": [
+      2704,
+      2704
+     ],
+     "wasserstein_1_tipificado": 0.05250911383201358,
+     "cota_error_cribado": 0.30655301325123596
+    },
+    "curv_perfil": {
+     "wasserstein_1": 8.184740438403825e-05,
+     "ks": 0.06952662721893488,
+     "energia_1d": 0.0023261109818842178,
+     "ks_p_valor_n_efectivo": 0.0037576345854626893,
+     "ks_p_valor_ingenuo_pixeles": 3.857666077643413e-06,
+     "n_efectivo": [
+      1357.4509341909318,
+      1221.5228551142795
+     ],
+     "n_pixeles": [
+      2704,
+      2704
+     ],
+     "wasserstein_1_tipificado": 0.06429809793234317,
+     "cota_error_cribado": 0.00011882069851019309
+    },
+    "curv_planta": {
+     "wasserstein_1": 5.130023069950245e-05,
+     "ks": 0.04178994082840237,
+     "energia_1d": 0.0013651499196092435,
+     "ks_p_valor_n_efectivo": 0.40791791071653866,
+     "ks_p_valor_ingenuo_pixeles": 0.017235899405443476,
+     "n_efectivo": [
+      759.4298935300756,
+      1088.661595891996
+     ],
+     "n_pixeles": [
+      2704,
+      2704
+     ],
+     "wasserstein_1_tipificado": 0.08962914566749486,
+     "cota_error_cribado": 0.00010042866771968078
+    },
+    "variograma": {
+     "distancia": 0.11993738311472159
+    },
+    "moran_pendiente": {
+     "distancia": 0.009402810460442224
+    },
+    "curvaturas_bivariante": {
+     "energia_1_km": 0.0019948530593919163,
+     "nota": "energy distance on (k_v, k_h), both in 1/km; regular subgrid of ≤ 2000 cells"
+    }
+   },
+   "descriptores": {
+    "estadisticos": {
+     "elev_rel": {
+      "n": 2916,
+      "media": -6.532704570862133e-13,
+      "desv_tipica": 34.78073726137674,
+      "min": -117.83082581198198,
+      "p02": -65.48992605802992,
+      "p05": -51.12889288954469,
+      "p25": -24.88922745840091,
+      "mediana": -2.54029940221659,
+      "p75": 22.432776384298364,
+      "p95": 59.94600948464233,
+      "p98": 73.8074630914431,
+      "max": 143.03467909281858,
+      "rango_intercuartilico": 47.322003842699274,
+      "rango_p02_p98": 139.29738914947302
+     },
+     "pendiente": {
+      "n": 2704,
+      "media": 0.15271558393863852,
+      "desv_tipica": 0.10637755342309119,
+      "min": 0.0005919652349533778,
+      "p02": 0.026176161821218808,
+      "p05": 0.03938641827927713,
+      "p25": 0.08313658234754019,
+      "mediana": 0.13204877741791754,
+      "p75": 0.19182647271590608,
+      "p95": 0.33025623261020487,
+      "p98": 0.4886489066007008,
+      "max": 0.9193225331323568,
+      "rango_intercuartilico": 0.10868989036836589,
+      "rango_p02_p98": 0.462472744779482
+     },
+     "rugosidad": {
+      "n": 2704,
+      "media": 3.9640439622010413,
+      "desv_tipica": 3.2204451170945005,
+      "min": 0.12350881266213991,
+      "p02": 0.31572105975599624,
+      "p05": 0.6449490871943226,
+      "p25": 2.1620925013886696,
+      "mediana": 3.2451490204468865,
+      "p75": 4.761699707651104,
+      "p95": 9.76809243804785,
+      "p98": 14.145427646459273,
+      "max": 29.05355487808875,
+      "rango_intercuartilico": 2.5996072062624345,
+      "rango_p02_p98": 13.829706586703278
+     },
+     "curv_perfil": {
+      "n": 2704,
+      "media": -6.716605625377974e-05,
+      "desv_tipica": 0.0006510933775482782,
+      "min": -0.004475488574256107,
+      "p02": -0.00147112876168255,
+      "p05": -0.0009533229686195268,
+      "p25": -0.0003408086119289471,
+      "mediana": -6.0280816678465616e-05,
+      "p75": 0.0001984445243914724,
+      "p95": 0.0009077304513294746,
+      "p98": 0.0012933091521811508,
+      "max": 0.007641156039530035,
+      "rango_intercuartilico": 0.0005392531363204195,
+      "rango_p02_p98": 0.0027644379138637007
+     },
+     "curv_planta": {
+      "n": 2704,
+      "media": 5.961458972227351e-05,
+      "desv_tipica": 0.0006642800424536767,
+      "min": -0.0031215612244901722,
+      "p02": -0.0011370940211005108,
+      "p05": -0.0008677145980298639,
+      "p25": -0.0003072189173292378,
+      "mediana": 1.4549998452610947e-05,
+      "p75": 0.0003582694352352446,
+      "p95": 0.0011678954457391047,
+      "p98": 0.001669252173567335,
+      "max": 0.004558180770905878,
+      "rango_intercuartilico": 0.0006654883525644824,
+      "rango_p02_p98": 0.0028063461946678456
+     },
+     "curv_media": {
+      "n": 2704,
+      "media": -3.775733265753109e-06,
+      "desv_tipica": 0.0005192080009301652,
+      "min": -0.003474858622083862,
+      "p02": -0.0009393544081881416,
+      "p05": -0.0006874560890097578,
+      "p25": -0.0002854454820410415,
+      "mediana": -3.9129354239390816e-05,
+      "p75": 0.0002156017374001604,
+      "p95": 0.0008183038499580111,
+      "p98": 0.0011564628302555826,
+      "max": 0.005197568846887395,
+      "rango_intercuartilico": 0.0005010472194412019,
+      "rango_p02_p98": 0.0020958172384437242
+     },
+     "relieve_local": {
+      "n": 2704,
+      "media": 29.315170532503846,
+      "desv_tipica": 19.059360607252703,
+      "min": 0.7730385541266287,
+      "p02": 6.911831998363175,
+      "p05": 8.303490915370265,
+      "p25": 18.109317058529967,
+      "mediana": 25.33134672151664,
+      "p75": 34.69740091426752,
+      "p95": 64.32259235923948,
+      "p98": 93.48412560845364,
+      "max": 168.82934316164926,
+      "rango_intercuartilico": 16.58808385573755,
+      "rango_p02_p98": 86.57229361009047
+     }
+    },
+    "unidades": {
+     "elev_rel": "m",
+     "pendiente": "°",
+     "rugosidad": "m",
+     "curv_perfil": "1/km",
+     "curv_planta": "1/km",
+     "curv_media": "1/km",
+     "relieve_local": "m"
+    },
+    "hurst": {
+     "H": 0.6738445321186747,
+     "r2": 0.9896794575007447,
+     "rango_ajuste_m": [
+      3704.4613373579646,
+      14817.845349431858
+     ]
+    },
+    "longitud_correlacion": {
+     "longitud_m": 26579.599391509688,
+     "censurada": false
+    },
+    "anisotropia": {
+     "gamma_por_direccion_m2": {
+      "0": 909.2775497046591,
+      "45": 1059.577066576736,
+      "90": 824.7128653241817,
+      "135": 611.9164355855957
+     },
+     "razon": 1.7315715103529377
+    },
+    "moran_pendiente": 0.7059544056365339,
+    "n_efectivo": {
+     "elev_rel": {
+      "n": 2916,
+      "n_efectivo": 25.156474404605337,
+      "radio_celdas": 13
+     },
+     "pendiente": {
+      "n": 2704,
+      "n_efectivo": 20.17597976590728,
+      "radio_celdas": 27
+     },
+     "rugosidad": {
+      "n": 2704,
+      "n_efectivo": 17.84565461900421,
+      "radio_celdas": 27
+     },
+     "curv_perfil": {
+      "n": 2704,
+      "n_efectivo": 1221.5228551142795,
+      "radio_celdas": 2
+     },
+     "curv_planta": {
+      "n": 2704,
+      "n_efectivo": 1088.661595891996,
+      "radio_celdas": 3
+     }
+    },
+    "diagnostico": {
+     "plano_ventana": {
+      "media_m": 967.6428380316803,
+      "pendiente_este": 0.00021678997226817694,
+      "pendiente_norte": 0.00024289677976268453,
+      "inclinacion_regional_grados": 0.018653866596423735
+     },
+     "celdas_interiores_validas": 2704,
+     "fraccion_plana": 0.0036982248520710057,
+     "curvatura_indefinida_por_gradiente_nulo": 0
+    },
+    "variograma": {
+     "r_m": [
+      3704.4613373579646,
+      5238.899464578407,
+      7408.922674715929,
+      10477.798929156814,
+      14817.845349431858,
+      20955.597858313628,
+      29635.690698863717,
+      41911.195716627255,
+      59271.38139772743,
+      83822.39143325451
+     ],
+     "gamma_m2": [
+      67.86036115619308,
+      111.36034238200794,
+      200.46893103321608,
+      304.6677863412051,
+      423.94084370093043,
+      617.3214652704626,
+      851.4429411073706,
+      1086.3397307112211,
+      1335.3088245206864,
+      1364.7820691969712
+     ]
+    }
+   },
+   "explicacion": "At cell size h = 3.70 km and window L = 200 km: median slope 0.13° versus 0.11° in the target (W₁ = 0.019°); standard deviation of relief 35 m versus 37 m; median roughness 3.2 m versus 3.3 m; variograms differ by a typical factor of ×1.13. Very close or indistinguishable in: relative elevation distribution, slope distribution, roughness distribution, profile curvature distribution, plan curvature distribution, variogram (structure across scales), spatial clustering of slopes (Moran’s I). This is a geomorphological resemblance at this scale: it does not imply the same geological origin, equivalent environmental conditions or suitability for a mission.",
+   "huella": [
+    [
+     41.68357,
+     24.01608
+    ],
+    [
+     41.93025,
+     24.01743
+    ],
+    [
+     42.17693,
+     24.0184
+    ],
+    [
+     42.42361,
+     24.01898
+    ],
+    [
+     42.6703,
+     24.01917
+    ],
+    [
+     42.91699,
+     24.01898
+    ],
+    [
+     43.16367,
+     24.0184
+    ],
+    [
+     43.41035,
+     24.01743
+    ],
+    [
+     43.65703,
+     24.01608
+    ],
+    [
+     43.65533,
+     23.79076
+    ],
+    [
+     43.65364,
+     23.56544
+    ],
+    [
+     43.65197,
+     23.34012
+    ],
+    [
+     43.65032,
+     23.1148
+    ],
+    [
+     43.64868,
+     22.88948
+    ],
+    [
+     43.64706,
+     22.66416
+    ],
+    [
+     43.64545,
+     22.43884
+    ],
+    [
+     43.64386,
+     22.21352
+    ],
+    [
+     41.69674,
+     22.21352
+    ],
+    [
+     41.94012,
+     22.21482
+    ],
+    [
+     42.18351,
+     22.21575
+    ],
+    [
+     42.42691,
+     22.21631
+    ],
+    [
+     42.6703,
+     22.21649
+    ],
+    [
+     42.91369,
+     22.21631
+    ],
+    [
+     43.15709,
+     22.21575
+    ],
+    [
+     43.40048,
+     22.21482
+    ],
+    [
+     43.64386,
+     22.21352
+    ],
+    [
+     41.69515,
+     22.43884
+    ],
+    [
+     41.69354,
+     22.66416
+    ],
+    [
+     41.69192,
+     22.88948
+    ],
+    [
+     41.69028,
+     23.1148
+    ],
+    [
+     41.68863,
+     23.34012
+    ],
+    [
+     41.68696,
+     23.56544
+    ],
+    [
+     41.68527,
+     23.79076
+    ],
+    [
+     41.68357,
+     24.01608
+    ],
+    [
+     41.68357,
+     24.01608
+    ]
+   ]
+  }
+ ],
+ "variables_no_comparadas": [
+  {
+   "variable": "crater density and sizes",
+   "motivo": "no crater catalog among the verified official resources"
+  },
+  {
+   "variable": "composition (Lunar Prospector, Odyssey GRS)",
+   "motivo": "no equivalent Earth map among the official resources"
+  },
+  {
+   "variable": "surface temperature (Diviner, TES)",
+   "motivo": "an environmental, not geomorphological, resemblance; no Earth temperature grid loaded; the ranges barely overlap"
+  },
+  {
+   "variable": "ice stability depth (Diviner PRP)",
+   "motivo": "no Earth equivalent"
+  },
+  {
+   "variable": "LOLA slope and roughness (LDSM, LDRM)",
+   "motivo": "30–240 m baseline, a different scale: they are recomputed with the same algorithm on every body"
+  },
+  {
+   "variable": "radar backscatter (RADARSAT, Mini-RF)",
+   "motivo": "needs calibration for wavelength and incidence angle; outside this version"
+  }
+ ],
+ "limitaciones": [
+  "The finest comparable scale is h: nothing smaller is described (rocks, boulders, regolith, caves).",
+  "A resemblance in relief does not imply the same process (impact, volcanism, erosion) or the same material.",
+  "Earth does not reproduce lunar or Martian gravity, vacuum or atmosphere, radiation or temperatures.",
+  "SRTMGL30 does not cover south of 60°S (Antarctica) and does not say which cells are measured or filled; ice counts as surface. Water is excluded only with the SRTMSWBD mask (when on disk) or, where there is none, by its value of 0 m: see criterio_validez.",
+  "The percentile is relative to the Earth catalog evaluated: it changes if L, h or the minimum coverage change.",
+  "The leximax ordering treats all criteria equally in rank space (the only aggregation assumption).",
+  "The criteria are correlated (e.g. slope and variogram); they are not independent pieces of evidence."
+ ],
+ "tipo_de_semejanza": "geomorphological (not environmental, not suitability for a mission)",
+ "recurso_oficial": "https://www.spaceappschallenge.org/2026/challenges/permanent-moon-base-locations-and-mars/?tab=resources",
+ "referencias": {
+  "datos": [
+   "Smith, D. E. et al. (2003). MGS MOLA Mission Experiment Gridded Data Record, MGS-M-MOLA-5-MEGDR-L3-V1.0, product MEGT90N000EB v2.0. NASA Planetary Data System, PDS Geosciences Node. https://pds-geosciences.wustl.edu/missions/mgs/mola.html",
+   "Smith, D. E. et al. (2001). Mars Orbiter Laser Altimeter: Experiment summary after the first year of global mapping of Mars. Journal of Geophysical Research, 106(E10), 23689–23722. https://doi.org/10.1029/2000JE001364",
+   "NASA JPL (2013). NASA Shuttle Radar Topography Mission Global 30 arc second V002 [data set]. NASA Land Processes Distributed Active Archive Center. https://doi.org/10.5067/MEASURES/SRTM/SRTMGL30.002",
+   "NASA JPL (2013). NASA Shuttle Radar Topography Mission Water Body Data Shapefiles & Raster Files V003 [data set]. NASA Land Processes Distributed Active Archive Center. https://doi.org/10.5067/MEaSUREs/SRTM/SRTMSWBD.003"
+  ],
+  "metodos": [
+   {
+    "clave": "snyder1987",
+    "cita": "Snyder, J. P. (1987). Map Projections — A Working Manual. U.S. Geological Survey Professional Paper 1395.",
+    "url": "https://doi.org/10.3133/pp1395",
+    "uso": "azimuthal equidistant projection of each window and LOLA polar stereographic projection"
+   },
+   {
+    "clave": "ehrgott2005",
+    "cita": "Ehrgott, M. (2005). Multicriteria Optimization, 2nd ed. Springer.",
+    "url": "https://doi.org/10.1007/3-540-27659-9",
+    "uso": "Pareto dominance and lexicographic orderings without weights"
+   },
+   {
+    "clave": "bretherton1999",
+    "cita": "Bretherton, C. S. et al. (1999). The effective number of spatial degrees of freedom of a time-varying field. Journal of Climate, 12(7), 1990–2009.",
+    "url": "https://doi.org/10.1175/1520-0442(1999)012<1990:TENOSD>2.0.CO;2",
+    "uso": "effective sample size of autocorrelated fields"
+   },
+   {
+    "clave": "stephens1970",
+    "cita": "Stephens, M. A. (1970). Use of the Kolmogorov–Smirnov, Cramér–von Mises and related statistics without extensive tables. Journal of the Royal Statistical Society B, 32(1), 115–122.",
+    "url": "https://doi.org/10.1111/j.2517-6161.1970.tb00821.x",
+    "uso": "asymptotic Kolmogorov–Smirnov p-value"
+   },
+   {
+    "clave": "kunsch1989",
+    "cita": "Künsch, H. R. (1989). The jackknife and the bootstrap for general stationary observations. The Annals of Statistics, 17(3), 1217–1241.",
+    "url": "https://doi.org/10.1214/aos/1176347265",
+    "uso": "block bootstrap for dependent data"
+   },
+   {
+    "clave": "kendall1938",
+    "cita": "Kendall, M. G. (1938). A new measure of rank correlation. Biometrika, 30(1/2), 81–93.",
+    "url": "https://doi.org/10.2307/2332226",
+    "uso": "stability of the ordering across sensitivity tests"
+   },
+   {
+    "clave": "szekely2013",
+    "cita": "Székely, G. J. and Rizzo, M. L. (2013). Energy statistics: A class of statistics based on distances. Journal of Statistical Planning and Inference, 143(8), 1249–1272.",
+    "url": "https://doi.org/10.1016/j.jspi.2013.03.018",
+    "uso": "energy distance (bivariate curvatures and metric test)"
+   },
+   {
+    "clave": "shepard2001",
+    "cita": "Shepard, M. K. et al. (2001). The roughness of natural terrain: A planetary and remote sensing perspective. Journal of Geophysical Research, 106(E12), 32777–32795.",
+    "url": "https://doi.org/10.1029/2000JE001429",
+    "uso": "Hurst exponent from the variogram (self-affine roughness)"
+   },
+   {
+    "clave": "vallender1974",
+    "cita": "Vallender, S. S. (1974). Calculation of the Wasserstein distance between probability distributions on the line. Theory of Probability and Its Applications, 18(4), 784–786.",
+    "url": "https://doi.org/10.1137/1118101",
+    "uso": "one-dimensional W₁ as the integral of the difference between quantile functions"
+   },
+   {
+    "clave": "evans1979",
+    "cita": "Evans, I. S. (1979). An integrated system of terrain analysis and slope mapping. Final report on grant DA-ERO-591-73-G0040, University of Durham.",
+    "uso": "derivatives p, q, r, s, t from the quadratic polynomial on the 3×3 neighborhood"
+   },
+   {
+    "clave": "florinsky2016",
+    "cita": "Florinsky, I. V. (2016). Digital Terrain Analysis in Soil Science and Geology, 2nd ed. Academic Press.",
+    "uso": "definitions of slope and of profile, plan and mean curvature"
+   },
+   {
+    "clave": "marcotte1996",
+    "cita": "Marcotte, D. (1996). Fast variogram computation with FFT. Computers & Geosciences, 22(10), 1175–1186.",
+    "url": "https://doi.org/10.1016/S0098-3004(96)00026-X",
+    "uso": "experimental semivariogram with a mask for missing data"
+   },
+   {
+    "clave": "moran1950",
+    "cita": "Moran, P. A. P. (1950). Notes on continuous stochastic phenomena. Biometrika, 37(1/2), 17–23.",
+    "url": "https://doi.org/10.2307/2332142",
+    "uso": "Moran’s I: spatial clustering of slopes"
+   }
+  ],
+  "por_paso": {
+   "ventana": [
+    "snyder1987"
+   ],
+   "ordenacion": [
+    "ehrgott2005"
+   ],
+   "dependencia_espacial": [
+    "bretherton1999",
+    "stephens1970"
+   ],
+   "validacion": [
+    "kunsch1989",
+    "kendall1938",
+    "szekely2013"
+   ],
+   "descriptores": [
+    "shepard2001"
+   ]
+  }
+ },
+ "validacion": {
+  "pruebas": [
+   {
+    "prueba": "cell size h×2",
+    "tau_kendall": 0.40229885057471265,
+    "top_k_conservado": 0.6
+   },
+   {
+    "prueba": "window L×0.75",
+    "tau_kendall": 0.29195402298850576,
+    "top_k_conservado": 0.2
+   },
+   {
+    "prueba": "window L×1.25",
+    "tau_kendall": 0.48965517241379314,
+    "top_k_conservado": 0.4
+   },
+   {
+    "prueba": "vertical noise σ = 1 m",
+    "tau_kendall": 0.8344827586206897,
+    "top_k_conservado": 0.8
+   },
+   {
+    "prueba": "vertical noise σ = 5 m",
+    "tau_kendall": 0.45287356321839084,
+    "top_k_conservado": 0.6
+   },
+   {
+    "prueba": "vertical noise σ = 20 m",
+    "tau_kendall": 0.4298850574712643,
+    "top_k_conservado": 0.4
+   },
+   {
+    "prueba": "10% gaps in the target",
+    "tau_kendall": 0.6919540229885057,
+    "top_k_conservado": 0.8
+   },
+   {
+    "prueba": "25% gaps in the target",
+    "tau_kendall": 0.5632183908045977,
+    "top_k_conservado": 0.8
+   },
+   {
+    "prueba": "vertical reference: 3396 km sphere instead of areoid",
+    "tau_kendall": 0.37931034482758624,
+    "top_k_conservado": 0.2,
+    "distancia_objetivo_areoide_vs_esfera": {
+     "elev_rel": 0.4179499816279031,
+     "pendiente": 0.20266019734153218,
+     "rugosidad": 0.10372087811867389,
+     "curv_perfil": 7.873003827351797e-05,
+     "curv_planta": 6.979873740892903e-05,
+     "variograma": 0.016781438270240336,
+     "moran_pendiente": 0.006534526839124477
+    }
+   },
+   {
+    "prueba": "normalization: standardized distributions (shape only)",
+    "tau_kendall": 0.17701149425287357,
+    "top_k_conservado": 0.4
+   },
+   {
+    "prueba": "metric: KS instead of W₁",
+    "tau_kendall": 0.5632183908045977,
+    "top_k_conservado": 1.0
+   },
+   {
+    "prueba": "metric: 1-D energy instead of W₁",
+    "tau_kendall": 0.6,
+    "top_k_conservado": 0.8
+   }
+  ],
+  "bootstrap_bloques": {
+   "replicas": 50,
+   "bloque_celdas": 25,
+   "semilla": 20261114,
+   "frecuencia_en_top_k_por_rango_original": [
+    0.94,
+    0.64,
+    0.5,
+    0.5,
+    0.4,
+    0.28,
+    0.24,
+    0.2,
+    0.18,
+    0.4,
+    0.0,
+    0.0,
+    0.28,
+    0.0,
+    0.22,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.02,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.2,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "nota": "block resampling of the target (block = radius of positive autocorrelation of slope)"
+  },
+  "dependencia_espacial_objetivo": {
+   "elev_rel": {
+    "n_pixeles": 2916,
+    "n_efectivo": 15.8
+   },
+   "pendiente": {
+    "n_pixeles": 2704,
+    "n_efectivo": 34.1
+   },
+   "rugosidad": {
+    "n_pixeles": 2704,
+    "n_efectivo": 38.4
+   },
+   "curv_perfil": {
+    "n_pixeles": 2704,
+    "n_efectivo": 1357.5
+   },
+   "curv_planta": {
+    "n_pixeles": 2704,
+    "n_efectivo": 759.4
+   }
+  },
+  "longitud_correlacion_objetivo": {
+   "longitud_m": 33988.30382948752,
+   "censurada": false
+  },
+  "resumen": {
+   "tau_kendall_min": 0.17701149425287357,
+   "tau_kendall_mediana": 0.471264367816092
+  },
+  "ambito": "short list of 30 candidates; top-k = 5"
+ },
+ "geojson": {
+  "type": "FeatureCollection",
+  "features": [
+   {
+    "type": "Feature",
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        22.49893,
+        11.39909
+       ],
+       [
+        22.72879,
+        11.39968
+       ],
+       [
+        22.95865,
+        11.40011
+       ],
+       [
+        23.18851,
+        11.40036
+       ],
+       [
+        23.41837,
+        11.40045
+       ],
+       [
+        23.64823,
+        11.40036
+       ],
+       [
+        23.87809,
+        11.40011
+       ],
+       [
+        24.10795,
+        11.39968
+       ],
+       [
+        24.33781,
+        11.39909
+       ],
+       [
+        24.3371,
+        11.17377
+       ],
+       [
+        24.33641,
+        10.94844
+       ],
+       [
+        24.33572,
+        10.72312
+       ],
+       [
+        24.33505,
+        10.49779
+       ],
+       [
+        24.33439,
+        10.27247
+       ],
+       [
+        24.33373,
+        10.04715
+       ],
+       [
+        24.33309,
+        9.82182
+       ],
+       [
+        24.33246,
+        9.5965
+       ],
+       [
+        22.50427,
+        9.5965
+       ],
+       [
+        22.7328,
+        9.59706
+       ],
+       [
+        22.96132,
+        9.59745
+       ],
+       [
+        23.18984,
+        9.59769
+       ],
+       [
+        23.41837,
+        9.59777
+       ],
+       [
+        23.64689,
+        9.59769
+       ],
+       [
+        23.87541,
+        9.59745
+       ],
+       [
+        24.10394,
+        9.59706
+       ],
+       [
+        24.33246,
+        9.5965
+       ],
+       [
+        22.50364,
+        9.82182
+       ],
+       [
+        22.503,
+        10.04715
+       ],
+       [
+        22.50235,
+        10.27247
+       ],
+       [
+        22.50169,
+        10.49779
+       ],
+       [
+        22.50101,
+        10.72312
+       ],
+       [
+        22.50033,
+        10.94844
+       ],
+       [
+        22.49963,
+        11.17377
+       ],
+       [
+        22.49893,
+        11.39909
+       ],
+       [
+        22.49893,
+        11.39909
+       ]
+      ]
+     ]
+    },
+    "properties": {
+     "rango": 1,
+     "peor_percentil": 0.04856564694679205,
+     "ventanas_que_la_dominan": 0,
+     "lat": 10.499108662648384,
+     "lon": 23.418367346938766,
+     "cuerpo": "earth"
+    }
+   },
+   {
+    "type": "Feature",
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        28.77612,
+        23.11488
+       ],
+       [
+        29.02111,
+        23.11617
+       ],
+       [
+        29.2661,
+        23.11709
+       ],
+       [
+        29.5111,
+        23.11765
+       ],
+       [
+        29.7561,
+        23.11783
+       ],
+       [
+        30.0011,
+        23.11765
+       ],
+       [
+        30.24609,
+        23.11709
+       ],
+       [
+        30.49109,
+        23.11617
+       ],
+       [
+        30.73608,
+        23.11488
+       ],
+       [
+        30.73446,
+        22.88956
+       ],
+       [
+        30.73286,
+        22.66424
+       ],
+       [
+        30.73127,
+        22.43892
+       ],
+       [
+        30.7297,
+        22.2136
+       ],
+       [
+        30.72814,
+        21.98828
+       ],
+       [
+        30.7266,
+        21.76296
+       ],
+       [
+        30.72508,
+        21.53764
+       ],
+       [
+        30.72357,
+        21.31232
+       ],
+       [
+        28.78863,
+        21.31232
+       ],
+       [
+        29.03049,
+        21.31356
+       ],
+       [
+        29.27236,
+        21.31445
+       ],
+       [
+        29.51423,
+        21.31498
+       ],
+       [
+        29.7561,
+        21.31516
+       ],
+       [
+        29.99797,
+        21.31498
+       ],
+       [
+        30.23984,
+        21.31445
+       ],
+       [
+        30.4817,
+        21.31356
+       ],
+       [
+        30.72357,
+        21.31232
+       ],
+       [
+        28.78712,
+        21.53764
+       ],
+       [
+        28.78559,
+        21.76296
+       ],
+       [
+        28.78405,
+        21.98828
+       ],
+       [
+        28.78249,
+        22.2136
+       ],
+       [
+        28.78092,
+        22.43892
+       ],
+       [
+        28.77934,
+        22.66424
+       ],
+       [
+        28.77773,
+        22.88956
+       ],
+       [
+        28.77612,
+        23.11488
+       ],
+       [
+        28.77612,
+        23.11488
+       ]
+      ]
+     ]
+    },
+    "properties": {
+     "rango": 2,
+     "peor_percentil": 0.05356505177955005,
+     "ventanas_que_la_dominan": 0,
+     "lat": 22.216493529145502,
+     "lon": 29.756097560975604,
+     "cuerpo": "earth"
+    }
+   },
+   {
+    "type": "Feature",
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        134.76401,
+        -21.04489
+       ],
+       [
+        135.00544,
+        -21.04612
+       ],
+       [
+        135.24687,
+        -21.047
+       ],
+       [
+        135.4883,
+        -21.04752
+       ],
+       [
+        135.72973,
+        -21.0477
+       ],
+       [
+        135.97116,
+        -21.04752
+       ],
+       [
+        136.21259,
+        -21.047
+       ],
+       [
+        136.45402,
+        -21.04612
+       ],
+       [
+        136.69545,
+        -21.04489
+       ],
+       [
+        136.69694,
+        -21.27022
+       ],
+       [
+        136.69844,
+        -21.49554
+       ],
+       [
+        136.69996,
+        -21.72086
+       ],
+       [
+        136.70149,
+        -21.94618
+       ],
+       [
+        136.70304,
+        -22.1715
+       ],
+       [
+        136.7046,
+        -22.39682
+       ],
+       [
+        136.70618,
+        -22.62214
+       ],
+       [
+        136.70777,
+        -22.84746
+       ],
+       [
+        134.75169,
+        -22.84746
+       ],
+       [
+        134.99619,
+        -22.84873
+       ],
+       [
+        135.2407,
+        -22.84964
+       ],
+       [
+        135.48522,
+        -22.85019
+       ],
+       [
+        135.72973,
+        -22.85037
+       ],
+       [
+        135.97424,
+        -22.85019
+       ],
+       [
+        136.21876,
+        -22.84964
+       ],
+       [
+        136.46327,
+        -22.84873
+       ],
+       [
+        136.70777,
+        -22.84746
+       ],
+       [
+        134.75328,
+        -22.62214
+       ],
+       [
+        134.75486,
+        -22.39682
+       ],
+       [
+        134.75642,
+        -22.1715
+       ],
+       [
+        134.75797,
+        -21.94618
+       ],
+       [
+        134.7595,
+        -21.72086
+       ],
+       [
+        134.76102,
+        -21.49554
+       ],
+       [
+        134.76252,
+        -21.27022
+       ],
+       [
+        134.76401,
+        -21.04489
+       ],
+       [
+        134.76401,
+        -21.04489
+       ]
+      ]
+     ]
+    },
+    "properties": {
+     "rango": 3,
+     "peor_percentil": 0.06011189144149506,
+     "ventanas_que_la_dominan": 0,
+     "lat": -21.94903404457441,
+     "lon": 135.72972972972974,
+     "cuerpo": "earth"
+    }
+   },
+   {
+    "type": "Feature",
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        129.83884,
+        -28.25451
+       ],
+       [
+        130.09464,
+        -28.25621
+       ],
+       [
+        130.35045,
+        -28.25742
+       ],
+       [
+        130.60626,
+        -28.25815
+       ],
+       [
+        130.86207,
+        -28.2584
+       ],
+       [
+        131.11788,
+        -28.25815
+       ],
+       [
+        131.37369,
+        -28.25742
+       ],
+       [
+        131.6295,
+        -28.25621
+       ],
+       [
+        131.88529,
+        -28.25451
+       ],
+       [
+        131.88749,
+        -28.47983
+       ],
+       [
+        131.8897,
+        -28.70514
+       ],
+       [
+        131.89193,
+        -28.93046
+       ],
+       [
+        131.89419,
+        -29.15578
+       ],
+       [
+        131.89646,
+        -29.38109
+       ],
+       [
+        131.89876,
+        -29.60641
+       ],
+       [
+        131.90108,
+        -29.83173
+       ],
+       [
+        131.90341,
+        -30.05704
+       ],
+       [
+        129.82072,
+        -30.05704
+       ],
+       [
+        130.08105,
+        -30.0588
+       ],
+       [
+        130.34139,
+        -30.06006
+       ],
+       [
+        130.60173,
+        -30.06082
+       ],
+       [
+        130.86207,
+        -30.06107
+       ],
+       [
+        131.12241,
+        -30.06082
+       ],
+       [
+        131.38275,
+        -30.06006
+       ],
+       [
+        131.64309,
+        -30.0588
+       ],
+       [
+        131.90341,
+        -30.05704
+       ],
+       [
+        129.82306,
+        -29.83173
+       ],
+       [
+        129.82538,
+        -29.60641
+       ],
+       [
+        129.82767,
+        -29.38109
+       ],
+       [
+        129.82995,
+        -29.15578
+       ],
+       [
+        129.8322,
+        -28.93046
+       ],
+       [
+        129.83444,
+        -28.70514
+       ],
+       [
+        129.83665,
+        -28.47983
+       ],
+       [
+        129.83884,
+        -28.25451
+       ],
+       [
+        129.83884,
+        -28.25451
+       ]
+      ]
+     ]
+    },
+    "properties": {
+     "rango": 4,
+     "peor_percentil": 0.06058802523509106,
+     "ventanas_que_la_dominan": 0,
+     "lat": -29.159732423957255,
+     "lon": 130.8620689655172,
+     "cuerpo": "earth"
+    }
+   },
+   {
+    "type": "Feature",
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        41.68357,
+        24.01608
+       ],
+       [
+        41.93025,
+        24.01743
+       ],
+       [
+        42.17693,
+        24.0184
+       ],
+       [
+        42.42361,
+        24.01898
+       ],
+       [
+        42.6703,
+        24.01917
+       ],
+       [
+        42.91699,
+        24.01898
+       ],
+       [
+        43.16367,
+        24.0184
+       ],
+       [
+        43.41035,
+        24.01743
+       ],
+       [
+        43.65703,
+        24.01608
+       ],
+       [
+        43.65533,
+        23.79076
+       ],
+       [
+        43.65364,
+        23.56544
+       ],
+       [
+        43.65197,
+        23.34012
+       ],
+       [
+        43.65032,
+        23.1148
+       ],
+       [
+        43.64868,
+        22.88948
+       ],
+       [
+        43.64706,
+        22.66416
+       ],
+       [
+        43.64545,
+        22.43884
+       ],
+       [
+        43.64386,
+        22.21352
+       ],
+       [
+        41.69674,
+        22.21352
+       ],
+       [
+        41.94012,
+        22.21482
+       ],
+       [
+        42.18351,
+        22.21575
+       ],
+       [
+        42.42691,
+        22.21631
+       ],
+       [
+        42.6703,
+        22.21649
+       ],
+       [
+        42.91369,
+        22.21631
+       ],
+       [
+        43.15709,
+        22.21575
+       ],
+       [
+        43.40048,
+        22.21482
+       ],
+       [
+        43.64386,
+        22.21352
+       ],
+       [
+        41.69515,
+        22.43884
+       ],
+       [
+        41.69354,
+        22.66416
+       ],
+       [
+        41.69192,
+        22.88948
+       ],
+       [
+        41.69028,
+        23.1148
+       ],
+       [
+        41.68863,
+        23.34012
+       ],
+       [
+        41.68696,
+        23.56544
+       ],
+       [
+        41.68527,
+        23.79076
+       ],
+       [
+        41.68357,
+        24.01608
+       ],
+       [
+        41.68357,
+        24.01608
+       ]
+      ]
+     ]
+    },
+    "properties": {
+     "rango": 5,
+     "peor_percentil": 0.06273062730627306,
+     "ventanas_que_la_dominan": 0,
+     "lat": 23.11783082656836,
+     "lon": 42.670299727520444,
+     "cuerpo": "earth"
+    }
+   }
+  ]
+ },
+ "segundos": 3.4
+}

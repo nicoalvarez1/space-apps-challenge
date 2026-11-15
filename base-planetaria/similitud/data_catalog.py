@@ -16,7 +16,7 @@ MOLA = f"{PDS_GEO}/mgs/urn-nasa-pds-mgs_mola_topography_derived"
 FUENTES: dict[str, dict] = {
     "lola_gdr_16ppd": {
         "citas": [
-            "Smith, D. E. (productor) (2019). LRO LOLA Gridded Data Record, LRO-L-LOLA-4-GDR-V1.0, producto LDEM_16 V3.1. "
+            "Smith, D. E. (producer) (2019). LRO LOLA Gridded Data Record, LRO-L-LOLA-4-GDR-V1.0, product LDEM_16 V3.1. "
             "NASA Planetary Data System, PDS Geosciences Node. https://pds-geosciences.wustl.edu/missions/lro/lola.htm",
             "Smith, D. E. et al. (2010). The Lunar Orbiter Laser Altimeter investigation on the Lunar Reconnaissance "
             "Orbiter mission. Space Science Reviews, 150, 209–241. https://doi.org/10.1007/s11214-009-9512-y",
@@ -39,7 +39,7 @@ FUENTES: dict[str, dict] = {
     },
     "lola_gdr_polar": {
         "citas": [
-            "Smith, D. E. (productor) (2017). LRO LOLA Gridded Data Record, LRO-L-LOLA-4-GDR-V1.0, producto LDEM_75S_240M / LDEM_75N_240M. "
+            "Smith, D. E. (producer) (2017). LRO LOLA Gridded Data Record, LRO-L-LOLA-4-GDR-V1.0, product LDEM_75S_240M / LDEM_75N_240M. "
             "NASA Planetary Data System, PDS Geosciences Node. https://pds-geosciences.wustl.edu/missions/lro/lola.htm",
             "Smith, D. E. et al. (2010). The Lunar Orbiter Laser Altimeter investigation on the Lunar Reconnaissance "
             "Orbiter mission. Space Science Reviews, 150, 209–241. https://doi.org/10.1007/s11214-009-9512-y",
@@ -65,7 +65,7 @@ FUENTES: dict[str, dict] = {
     "mola_megdr_16ppd": {
         "citas": [
             "Smith, D. E. et al. (2003). MGS MOLA Mission Experiment Gridded Data Record, MGS-M-MOLA-5-MEGDR-L3-V1.0, "
-            "producto MEGT90N000EB v2.0. NASA Planetary Data System, PDS Geosciences Node. "
+            "product MEGT90N000EB v2.0. NASA Planetary Data System, PDS Geosciences Node. "
             "https://pds-geosciences.wustl.edu/missions/mgs/mola.html",
             "Smith, D. E. et al. (2001). Mars Orbiter Laser Altimeter: Experiment summary after the first year of global "
             "mapping of Mars. Journal of Geophysical Research, 106(E10), 23689–23722. https://doi.org/10.1029/2000JE001364",
@@ -89,7 +89,7 @@ FUENTES: dict[str, dict] = {
     },
     "srtmgl30": {
         "citas": [
-            "NASA JPL (2013). NASA Shuttle Radar Topography Mission Global 30 arc second V002 [conjunto de datos]. "
+            "NASA JPL (2013). NASA Shuttle Radar Topography Mission Global 30 arc second V002 [data set]. "
             "NASA Land Processes Distributed Active Archive Center. https://doi.org/10.5067/MEASURES/SRTM/SRTMGL30.002",
         ],
         "nombre": "NASA Shuttle Radar Topography Mission Global 30 arc second V002 (SRTMGL30)",
@@ -115,7 +115,7 @@ FUENTES: dict[str, dict] = {
     "srtmswbd": {
         "citas": [
             "NASA JPL (2013). NASA Shuttle Radar Topography Mission Water Body Data Shapefiles & Raster Files V003 "
-            "[conjunto de datos]. NASA Land Processes Distributed Active Archive Center. "
+            "[data set]. NASA Land Processes Distributed Active Archive Center. "
             "https://doi.org/10.5067/MEaSUREs/SRTM/SRTMSWBD.003",
         ],
         "nombre": "NASA Shuttle Radar Topography Mission Water Body Data Shapefiles & Raster Files V003 (SRTMSWBD)",
@@ -141,9 +141,12 @@ FUENTES: dict[str, dict] = {
                    "FUERA del repositorio, en $SRTMSWBD_DIR (por defecto ~/.cache/landfall/srtmswbd), porque sus "
                    "12 229 archivos harían recargar sin parar el servidor de desarrollo de la web"),
         "version": "V003; publicación 2013-11-20; adquisición SRTM 2000-02-11 → 2000-02-21",
-        "verificacion": ("V (colección, DOI, nº de gránulos, cajas CMR, acceso; formato: tamaño y valores de todas las "
-                         "teselas, bordes compartidos entre vecinas, alineación con SRTMGL30); D (que 3601×3601 sea el "
-                         "tamaño: guía de usuario, tabla 1; la guía no describe el .raw con más detalle)"),
+        "verificacion": ("V (colección, DOI, 12 229 gránulos, cajas CMR, acceso; formato en las 12 229 teselas: "
+                         "3601×3601 bytes y solo valores 0/255; registro por nodo: 0 píxeles distintos en las líneas "
+                         "compartidas de 20 918 pares de vecinas, frente a 63 035 en la línea adyacente; 255 = agua y "
+                         "orientación: el 95 % de las celdas de 30″ con agua plena valen 0 m en SRTMGL30 frente al "
+                         "0,1 % de las celdas sin agua, y el índice de Jaccard agua/0 m es máximo sin desplazar). La guía "
+                         "de usuario solo da el tamaño 3601/3601 (tabla 1): el resto se comprueba con los datos"),
     },
     "srtmgl3": {
         "nombre": "NASA Shuttle Radar Topography Mission Global 3 arc second V003 (SRTMGL3)",
@@ -152,7 +155,7 @@ FUENTES: dict[str, dict] = {
         "cuerpo": "earth",
         "doi": "10.5067/MEaSUREs/SRTM/SRTMGL3.003",
         "citas": [
-            "NASA JPL (2013). NASA Shuttle Radar Topography Mission Global 3 arc second V003 [conjunto de datos]. "
+            "NASA JPL (2013). NASA Shuttle Radar Topography Mission Global 3 arc second V003 [data set]. "
             "NASA Land Processes Distributed Active Archive Center. https://doi.org/10.5067/MEaSUREs/SRTM/SRTMGL3.003",
         ],
         "resolucion": "3″ (≈ 93 m)",
@@ -163,7 +166,7 @@ FUENTES: dict[str, dict] = {
     },
     "nasadem_hgt": {
         "citas": [
-            "Buckley, S. (2020). NASADEM Merged DEM Global 1 arc second V001 [conjunto de datos]. NASA Land Processes "
+            "Buckley, S. (2020). NASADEM Merged DEM Global 1 arc second V001 [data set]. NASA Land Processes "
             "Distributed Active Archive Center. https://doi.org/10.5067/MEASURES/NASADEM/NASADEM_HGT.001",
         ],
         "nombre": "NASADEM Merged DEM Global 1 arc second V001",

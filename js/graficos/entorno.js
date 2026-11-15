@@ -104,7 +104,7 @@ export function pintar(el, ctx) {
   const ley = `<div class="g-en-ley">
     <i class="g-en-barra" style="background: linear-gradient(90deg, ${esc(degradado)})" aria-hidden="true"></i>
     <div class="g-en-ext">${hayDato ? `<span>${esc(k.def.fmt(vTinte.min))}</span><span>${esc(k.def.fmt(vTinte.max))}</span>` : '<span>no data in these surroundings</span>'}</div>
-    <div class="g-en-nota"><span>${esc(k.def.corto)}: scale of this map${inv ? ' (inverted: light = low value)' : ''}</span>${
+    <div class="g-en-nota"><span>${esc(k.def.corto)}${inv ? ' (light = low)' : ''}</span>${
       vTinte.huecos ? '<span><i class="g-en-hueco" aria-hidden="true"></i>no data</span>' : ''}</div>
   </div>`;
   const cuerpo = `${selector}
@@ -131,8 +131,8 @@ export function pintar(el, ctx) {
   });
 
   el.innerHTML = figura({
-    titulo: `Surroundings of the site: ${nf(lado)} × ${nf(lado)} km`,
-    sub: `Real relief around the site; the circle is the measured area (${nf(RADIO_ZONA, 1)}° of arc).`,
+    titulo: `The area around the site (${nf(lado)} × ${nf(lado)} km)`,
+    sub: 'Real terrain, north up. The circle is the area we measured. Point at the map to read a value.',
     cuerpo, pie, tablaHtml, clase: 'g-en',
   });
 

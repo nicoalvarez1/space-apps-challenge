@@ -211,7 +211,7 @@ export const ANALOGS = [
     season: 'Year-round', access: 'Direct flight from Europe',
   },
   {
-    id: 'teide', name: 'Teide · Las Cañadas', country: 'Tenerife, Spain', lat: 28.27, lon: -16.64,
+    id: 'teide', name: 'Teide, Tenerife', country: 'Canary Islands, Spain', lat: 28.27, lon: -16.64,
     traits: ['volcanic', 'basalt', 'dust', 'highland', 'mountain', 'mineral'],
     desc: 'A 3,700 m volcano with arid soils and rocks similar to lunar ones; used for rover and tool tests.',
     activities: ['Rover and vehicle tests', 'Field geology', 'Altitude and physical performance', 'Handling abrasive dust'],

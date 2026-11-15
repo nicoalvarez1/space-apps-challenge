@@ -7,6 +7,7 @@
     python -m similitud buscar --cuerpo mars --lat 18.4 --lon 77.7 --lado-km 200 --salida jezero.json
     python -m similitud comparar --cuerpo mars --lat 18.4 --lon 77.7 --lat-candidato 38.4 --lon-candidato -110.8
     python -m similitud descargar-detalle --lat 38.4 --lon -110.8 --producto srtmgl3   # 90 m, Earthdata Login
+    python -m similitud precalcular-web --trabajos 4                 # análogos para la web sin servidor
     python -m similitud servidor --puerto 8000
 """
 from __future__ import annotations
@@ -58,6 +59,9 @@ def main(argv: list[str] | None = None) -> int:
     dd.add_argument("--lon", type=float, required=True)
     dd.add_argument("--lado-km", type=float, default=config.LADO_KM)
     dd.add_argument("--producto", default="srtmgl3", choices=["srtmgl3", "nasadem"])
+    pw = sub.add_parser("precalcular-web", help="análogos y comparaciones precalculados para la web estática")
+    pw.add_argument("--trabajos", type=int, default=4, help="procesos en paralelo")
+    pw.add_argument("--solo", help="ids de emplazamientos separados por comas (por defecto, todos los de js/data.js)")
     s = sub.add_parser("servidor")
     s.add_argument("--puerto", type=int, default=8000)
     a = ap.parse_args(argv)
@@ -121,6 +125,10 @@ def main(argv: list[str] | None = None) -> int:
         elif a.orden == "descargar-detalle":
             from .data_loader import descargar_hgt
             print(json.dumps(descargar_hgt(a.producto, a.lat, a.lon, a.lado_km), ensure_ascii=False, indent=1))
+        elif a.orden == "precalcular-web":
+            from .precalcular_web import precalcular
+            ind = precalcular(a.trabajos, a.solo.split(",") if a.solo else None)
+            print(json.dumps({k: ind[k] for k in ("generado", "segundos", "bytes_total")}, ensure_ascii=False))
         elif a.orden == "servidor":
             from .servidor import servir
             servir(a.puerto)

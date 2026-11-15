@@ -17,7 +17,7 @@
 // ============================================================================
 import { medirTodo } from '../analitica.js';
 import { RADIO_KM } from '../capas.js';
-import { esc, tip, nombreCorto, CUERPO } from './base.js';
+import { esc, tip, nombreCorto, CUERPO, masInfo } from './base.js';
 import * as matriz from './matriz.js';
 import * as distribucion from './distribucion.js';
 import * as latitud from './latitud.js';
@@ -69,7 +69,8 @@ function pintarControles() {
   const ficha = $('[data-an-ficha]', caja());
   if (ficha) { ficha.hidden = !s; if (s) ficha.textContent = `Open the ${nombreCorto(s.name)} site sheet →`; }
   const por = $('#an-capa-por', caja());
-  if (por) por.textContent = k ? `${k.capa.meta.nombre} (${k.def.unidad}). ${k.def.por}` : '';
+  // Visible: qué se mide; la explicación larga de la capa, tras «Learn more»
+  if (por) por.innerHTML = k ? `${esc(k.capa.meta.nombre)} (${esc(k.def.unidad)}).${masInfo(k.def.por ? `<p class="g-pie">${esc(k.def.por)}</p>` : '')}` : '';
 }
 
 function pintarTodo() {
@@ -78,8 +79,9 @@ function pintarTodo() {
     <button type="button" class="close" data-an-cerrar aria-label="Close">✕</button>
     <span class="tag">MEASURED DATA · NASA PDS</span>
     <h2 id="analisis-tit" tabindex="-1">Sites ${esc(c.en)}, compared with measured data</h2>
-    <p class="an-intro">Every number comes from the NASA PDS grids the site already uses: the mean of the cells within 0.5° of arc of each
-      site, with the whole surface ${esc(c.de)} as reference. Neither the score nor any estimate is involved here.</p>
+    <p class="an-intro">How each site compares with the rest ${esc(c.de)}, using real NASA measurements. Pick a site to highlight it.</p>
+    ${masInfo(`<p class="g-pie">Every number comes from the NASA PDS grids the site already uses: the area-weighted mean of the cells within 0.5° of arc of each
+      site, with the whole surface ${esc(c.de)} as reference. Neither the score nor any estimate is involved here.</p>`)}
     <div class="g-ctl an-sitios" role="group" aria-label="Highlighted site">
       <span class="an-rot">Highlight</span>
       <div class="g-seg">${sitios.map((s) => `<button type="button" data-an-sitio="${esc(s.id)}" aria-pressed="false" title="${esc(s.name)}"><b>${s.rank}</b> ${esc(nombreCorto(s.name))}</button>`).join('')}</div>
@@ -88,10 +90,10 @@ function pintarTodo() {
     <section class="an-sec" aria-label="Measurement matrix"><div data-g="matriz"></div></section>
     <section class="an-sec" aria-label="One layer in detail">
       <div class="g-ctl" role="group" aria-label="Layer in detail">
-        <span class="an-rot">Layer in detail</span>
+        <span class="an-rot">Look closer at</span>
         <div class="g-seg">${datos.cols.map((k) => `<button type="button" data-an-capa="${esc(k.def.id)}" aria-pressed="false">${esc(k.def.corto)}</button>`).join('')}</div>
       </div>
-      <p class="an-por" id="an-capa-por"></p>
+      <div class="an-por" id="an-capa-por"></div>
       <div class="an-dos"><div data-g="distribucion"></div><div data-g="latitud"></div></div>
       <div data-g="dispersion"></div>
     </section>

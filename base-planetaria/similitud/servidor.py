@@ -44,17 +44,17 @@ def limpiar(x):
 
 def _parametros(d: dict) -> dict:
     if d.get("cuerpo") not in ("moon", "mars"):
-        raise ValueError("`cuerpo` debe ser 'moon' o 'mars'")
+        raise ValueError("`cuerpo` must be 'moon' or 'mars'")
     lat, lon = float(d["lat"]), float(d["lon"])
     if not (-90 <= lat <= 90):
-        raise ValueError("latitud fuera de [-90, 90]")
+        raise ValueError("latitude outside [-90, 90]")
     p = {"cuerpo": d["cuerpo"], "lat": lat, "lon": lon,
          "lado_km": float(d.get("lado_km", config.LADO_KM)), "k": int(d.get("k", 10)),
          "buscar_en": d.get("buscar_en", "earth"), "validar": bool(d.get("validar", True))}
     if p["buscar_en"] not in ("earth", "moon", "mars"):
-        raise ValueError("`buscar_en` inválido")
+        raise ValueError("invalid `buscar_en`")
     if not (1 <= p["k"] <= 50):
-        raise ValueError("`k` debe estar entre 1 y 50")
+        raise ValueError("`k` must be between 1 and 50")
     if d.get("producto"):
         p["producto"] = str(d["producto"])
     if d.get("h_m"):
@@ -66,7 +66,7 @@ def _parametros_comparar(d: dict) -> dict:
     base = _parametros({**d, "k": 1})
     lat_t, lon_t = float(d["lat_candidato"]), float(d["lon_candidato"])
     if not (-90 <= lat_t <= 90):
-        raise ValueError("latitud del candidato fuera de [-90, 90]")
+        raise ValueError("candidate latitude outside [-90, 90]")
     p = {"cuerpo": base["cuerpo"], "lat": base["lat"], "lon": base["lon"], "lat_t": lat_t, "lon_t": lon_t,
          "lado_km": base["lado_km"], "buscar_en": base["buscar_en"]}
     if base.get("producto"):
@@ -95,27 +95,32 @@ class Manejador(BaseHTTPRequestHandler):
         if self.path.rstrip("/") == "/api/similitud/estado":
             cats = sorted(p.name for p in config.CACHE.glob("catalogo_*.npz")) if config.CACHE.exists() else []
             return self._responder(200, {"datos": disponibilidad(), "catalogos_en_cache": cats})
-        self._responder(404, {"error": "ruta desconocida"})
+        self._responder(404, {"error": "unknown route"})
 
     def do_POST(self):  # noqa: N802
         ruta = self.path.rstrip("/")
         if ruta not in ("/api/similitud/analogos", "/api/similitud/comparar"):
-            return self._responder(404, {"error": "ruta desconocida"})
+            return self._responder(404, {"error": "unknown route"})
         try:
             n = int(self.headers.get("Content-Length", "0"))
             datos = json.loads(self.rfile.read(n) or b"{}")
             p = _parametros(datos) if ruta.endswith("analogos") else _parametros_comparar(datos)
         except (ValueError, KeyError, json.JSONDecodeError) as e:
-            return self._responder(400, {"error": f"petición inválida: {e}"})
+            return self._responder(400, {"error": f"invalid request: {e}"})
         try:
             with _bloqueo:
                 if ruta.endswith("comparar"):
                     return self._responder(200, comparar(**p))
                 return self._responder(200, buscar_analogos(**p))
         except DatosNoDisponibles as e:
-            return self._responder(503, {"error": "faltan datos", "detalle": str(e), "datos": disponibilidad()})
-        except (VentanaInvalida, MetadatosInconsistentes) as e:
+            return self._responder(503, {"error": "missing data", "detalle": str(e), "datos": disponibilidad()})
+        except VentanaInvalida as e:
             return self._responder(422, {"error": str(e)})
+        except MetadatosInconsistentes as e:
+            # Comprobaciones de integridad de los productos (solo saltan si un archivo está dañado o no es el esperado):
+            # la web muestra `error`, en inglés; el detalle técnico va aparte, sin traducir.
+            return self._responder(422, {"error": "the product metadata do not match the file (integrity check failed)",
+                                         "diagnostico": str(e)})
 
 
 def servir(puerto: int = 8000, anfitrion: str = "127.0.0.1") -> None:

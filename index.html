@@ -14,7 +14,10 @@
   <link rel="stylesheet" href="css/g-especifico.css">
   <link rel="stylesheet" href="css/g-entorno.css">
   <link rel="stylesheet" href="css/g-corte.css">
+  <link rel="stylesheet" href="css/g-analogo.css">
+  <link rel="stylesheet" href="css/g-tierra.css">
   <link rel="stylesheet" href="css/estetica.css">
+  <link rel="stylesheet" href="css/entreno.css">
   <script type="importmap">
     { "imports": { "three": "./vendor/three.module.js", "three/addons/": "./vendor/addons/" } }
   </script>
@@ -58,7 +61,7 @@
         <span class="eyebrow">Real data · NASA</span>
       </div>
       <h1>Where do we build the <em>first base</em>?</h1>
-      <p class="lead">On the Moon or on Mars, with NASA data. And where to train first on Earth.</p>
+      <p class="lead">On the Moon or on Mars, with NASA data. And the places on Earth whose terrain matches it, to train first.</p>
       <div class="stats" id="stats"></div>
       <div class="inicio-opciones">
         <button id="btn-empezar" class="btn primary">Start mission</button>
@@ -139,9 +142,11 @@
       <h3>Best sites</h3>
       <small id="res-sub"></small>
     </div>
+    <!-- Llamada principal: entrenamiento en la Tierra del emplazamiento elegido o del n.º 1 (js/main.js → ctaResultados) -->
+    <div id="res-entreno" hidden></div>
     <!-- Panel de gráficos con las mediciones reales de todos los emplazamientos (js/graficos/panel.js) -->
     <div class="res-acciones"><button type="button" id="btn-comparar" class="btn ghost small-btn" aria-controls="analisis">📊 Compare with measured data</button>
-      <p class="res-ley" id="res-leyenda" hidden><span><i class="med" aria-hidden="true"></i>points with NASA PDS measurements</span><span><i class="est" aria-hidden="true"></i>with estimates</span></p></div>
+      <p class="res-ley" id="res-leyenda" hidden><span><i class="med" aria-hidden="true"></i>measured by NASA</span><span><i class="est" aria-hidden="true"></i>estimated</span></p></div>
     <!-- Propósito y criterios activos (js/proposito.js) -->
     <div class="panel-foot crit-res" id="res-criterios" hidden></div>
     <ol id="res-list"></ol>
