@@ -269,16 +269,24 @@ async def main():
         marca('cierre')
         # a la vez: el panel sale, el globo se desplaza a la derecha (deja sitio al título; la propia web suaviza
         # el cambio de encuadre) y se aleja un poco; luego gira solo, hacia el este, con la rotación de OrbitControls
-        await pg.evaluate("""() => { const tr = document.querySelector('#training'), v = window.landfall.viewer;
-          tr.style.transition = 'transform .6s cubic-bezier(.5,0,.75,0), opacity .6s'; tr.style.transform = 'translateX(110%)'; tr.style.opacity = '0';
-          setTimeout(() => { tr.hidden = true; dispatchEvent(new Event('resize')); }, 620);
+        # Todo con curvas suaves y sin eventos que provoquen tirones: antes el alejamiento eran 22 golpes de rueda
+        # (escalones cada 4 fotogramas) y un `resize` a mitad del movimiento.
+        await pg.evaluate("""([giro]) => { const tr = document.querySelector('#training'), v = window.landfall.viewer, c = v.controls;
+          tr.style.transition = 'transform .9s cubic-bezier(.45,0,.55,1), opacity .7s ease'; tr.style.transform = 'translateX(110%)'; tr.style.opacity = '0';
+          setTimeout(() => { tr.hidden = true; }, 950);
           const h = document.documentElement; h.style.transition = 'transform .9s cubic-bezier(.45,0,.55,1)'; h.style.transform = 'none';   // deshace el zoom lento sin salto
-          const fija = () => { v.shiftX = 0.2; requestAnimationFrame(fija); }; fija(); }""")
-        for _ in range(22):
-            await pg.mouse.wheel(0, 55); await asyncio.sleep(0.05)
-        await pg.evaluate("() => { const c = window.landfall.viewer.controls; c.autoRotate = true; c.autoRotateSpeed = -%s; }" % os.environ.get('GIRO', '2.2'))
+          const fija = () => { v.shiftX = 0.2; requestAnimationFrame(fija); }; fija();
+          // alejamiento suave de la cámara (2,4 s, ease in-out) y el giro arranca poco a poco a la vez
+          const T = c.target, d0 = v.camera.position.distanceTo(T), d1 = Math.min(c.maxDistance, d0 * 1.55), t0 = performance.now(), D = 2400;
+          c.autoRotate = true; c.autoRotateSpeed = 0;
+          const paso = () => { const u = Math.min(1, (performance.now() - t0) / D), e = u < .5 ? 4*u*u*u : 1 - (-2*u + 2) ** 3 / 2;
+            const dir = v.camera.position.clone().sub(T).normalize(); v.camera.position.copy(T).addScaledVector(dir, d0 + (d1 - d0) * e);
+            c.autoRotateSpeed = -giro * Math.min(1, u * 1.4);
+            if (u < 1) requestAnimationFrame(paso); };
+          paso(); }""", [float(os.environ.get('GIRO', '2.2'))])
+        await asyncio.sleep(2.4)
         marca('giro')
-        await asyncio.sleep(10.0)
+        await asyncio.sleep(9.0)
         marca('fin')
 
         await cdp.send('Page.stopScreencast')

@@ -67,6 +67,7 @@ T_TITULO, T_LEMA, T_WEB = F[8][0], F[9][0], F[10][0]   # «Landfall.» «Real NA
 
 # (nombre, ancla en la grabación, 'ini' | 'fin' (el ancla es el principio o el final del tramo), velocidad[, fuente])
 # fuente 'web' (grabar.py, por defecto) o 'planeta' (planeta.py: el ancla es el tiempo de la escena)
+GLOBO_FIJO = 58.0                 # s de la grabación del fotograma fijo del cierre (globo con los lugares, sin movimiento brusco)
 PLANETA_T0 = 0.2                   # s de la escena en que entra el plano (deja fotogramas antes para el fundido)
 CAPAS_T = [0.75 + 0.36 * i for i in range(4)]   # s de la escena en que llega cada par de capas (planeta.js: T0, PASO)
 PLANOS = [
@@ -79,7 +80,7 @@ PLANOS = [
     ('suelo',      ev('mismo_suelo') - 0.3,      'ini', 1.0),    # Marte y la Tierra a la misma escala
     ('clima',      ev('clima') - 0.1,            'ini', 1.0),    # «When to go» (NASA POWER)
     ('motor',      ev('cierre') - 0.1,           'fin', 1.0),    # lugares hallados por el motor de similitud (sigue sin corte en el cierre)
-    ('globo',      ev('cierre') - 0.1,           'ini', 1.0),    # el panel se retira; globo con los lugares; título
+    ('globo',      ev('cierre') - 0.1,           'ini', 1.0),    # el panel se retira; el globo se aleja y gira con los lugares; título
 ]
 
 # Rótulos: (desde, hasta, texto). Solo datos que la voz no dice.
@@ -108,6 +109,8 @@ def linea_tiempo(planos):
     """Fotogramas de salida: [ruta_A, ruta_B | None, alfa, plano]."""
     n_planeta = len(list(PLANETA.glob('*.jpg')))
     def frame_at(t, fuente='web'):
+        if fuente == 'fija':   # plano quieto: el globo con los lugares, sin giros ni saltos de cámara
+            t = GLOBO_FIJO
         if fuente == 'planeta':
             k = round(t * FPS)
             if not 0 <= k < n_planeta: raise RuntimeError(f'planeta: falta el fotograma {k} (hay {n_planeta}): ejecuta planeta.py')
