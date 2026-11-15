@@ -185,6 +185,7 @@
 .res-scroll > #res-list { overflow: visible; }
 .res-barrido { margin: .3rem .7rem .7rem; }
 .bar-lista { list-style: none; margin: .6rem 0 0; padding: 0; display: grid; gap: .5rem; }
+.bar-mas { margin: .6rem 0 0; display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
 .bar-c { padding: .55rem .6rem; border: 1px solid var(--line); border-radius: 10px; }
 .bar-c.sel { border-color: rgba(93, 255, 208, .5); background: rgba(255, 255, 255, .04); }
 .bar-cab { display: flex; gap: .6rem; align-items: center; }

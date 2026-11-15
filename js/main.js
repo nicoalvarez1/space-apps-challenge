@@ -4,7 +4,7 @@ import { Viewer } from './scene.js';
 import { earthSiteData } from './cmr.js';
 import { abrirComparacion, fechaCorta } from './comparacion.js';
 import { CAPAS_GLOBO, RAMPAS, RADIO_KM, RADIO_ZONA, LIMITES_NASA, capa, pintarCapa, catalogo } from './capas.js';
-import { buscarCandidatos, PASO as PASO_BARRIDO } from './barrido.js';   // más puntos, buscados en toda la superficie
+import { buscarCandidatos, detallar, PASO as PASO_BARRIDO } from './barrido.js';   // más puntos, buscados en toda la superficie
 import * as flujo from './proposito.js';   // pasos 2-4 (propósito, subapartado, criterios) y panel de criterios
 import { plegar as plegarPerfil, desplegar as desplegarPerfil } from './perfil.js';   // gráfico de propósitos (#perfil)
 // Gráficos de los resultados con las capas reales del PDS (js/analitica.js, js/graficos/). El panel de comparación y los
@@ -233,6 +233,7 @@ async function pintarBarrido() {
   if (run !== barridoRun || mission.body !== body) return;
   barrido = r;
   const ks = r.factores, R = RADIO_KM[body], lim = LIMITES_NASA[body];
+  const porPagina = SITES[body].length;                          // tamaño de página = el de la lista principal
   const pesos = ks.map((k) => `${METRICS[k].short.toLowerCase()} ${Math.round(r.pesos[k] * 100)} %`).join(', ');
   box.innerHTML = `
     <p class="g-pie">Points from a scan of the whole surface ${esc(CUERPO[body].de)} where the factors computed from NASA measurements (${FACTOR_TXT(ks)}) score highest with the weights of your objective. They are shown by their coordinates only.</p>
@@ -241,10 +242,35 @@ async function pintarBarrido() {
       Each point is measured like the sites of the list, with the same layers. Each factor is scored by percentile in the NASA data: the share of the surface ${esc(CUERPO[body].de)} whose value is worse than or equal to the point’s (area-weighted, among published cells), the same scoring as the list.
       ${lim ? `Points outside NASA’s PRELIMINARY limits for human landing sites are skipped (${r.fuera.toLocaleString('en-US')} points): latitude “${esc(lim.textoLat)}” and elevation “${esc(lim.textoElev)}”, compared with the mean MOLA elevation within ≈ ${zonaKm()} km. Source: ${enlazar(`${lim.cita} ${lim.url}`)}` : ''}
       Points where one of these factors has no data are skipped too (${r.validos.toLocaleString('en-US')} of ${r.puntos.toLocaleString('en-US')} points kept).</p>
-      <p class="g-pie">Score = weighted mean of the ${ks.length} measured factors with the weights of your objective (${pesos}). A point is a candidate when its score is at least that of its 8 neighbours on the grid (a local maximum: ${r.maximos.toLocaleString('en-US')} found); the ${r.candidatos.length} highest are shown, as many as the sites written for the list.</p>
+      <p class="g-pie">Score = weighted mean of the ${ks.length} measured factors with the weights of your objective (${pesos}). A point is a candidate when its score is at least that of its 8 neighbours on the grid (a local maximum: ${r.maximos.toLocaleString('en-US')} found); all ${r.candidatos.length.toLocaleString('en-US')} are listed, highest first, ${porPagina} at a time (as many as the sites written for the list).</p>
       <p class="g-pie">Solar, radiation, link and science are not included: they are estimates written for each site of the list and do not exist for an arbitrary point. The nearest listed site and its distance are measured along the surface (great circle on a sphere of ${R.toLocaleString('en-US')} km).
       Scan time in this browser: ${(r.ms / 1000).toFixed(1)} s.</p>`)}
-    <ol class="bar-lista">${r.candidatos.map((c, i) => `
+    <ol class="bar-lista"></ol>
+    <p class="bar-mas"><button type="button" class="btn ghost small-btn" data-barrido-mas></button> <small class="muted" data-barrido-cuenta></small></p>`;
+  const lista = $('.bar-lista', box), mas = $('[data-barrido-mas]', box), cuenta = $('[data-barrido-cuenta]', box), total = r.candidatos.length;
+  let mostrados = 0;
+  // Página siguiente: mide sus candidatos (medirSitios) y los añade a la lista
+  const pagina = async () => {
+    const desde = mostrados, hasta = Math.min(total, desde + porPagina);
+    mas.disabled = true;
+    try { await detallar(body, r.candidatos.slice(desde, hasta)); }
+    catch (e) { console.warn('Mediciones del barrido', e); mas.disabled = false; return; }
+    if (run !== barridoRun) return;
+    lista.insertAdjacentHTML('beforeend', r.candidatos.slice(desde, hasta).map((c, k) => itemBarrido(c, desde + k, ks)).join(''));
+    lista.querySelectorAll('[data-barrido-ver]:not([data-listo])').forEach((b) => { b.dataset.listo = '1'; b.onclick = () => verCandidato(+b.dataset.barridoVer); });
+    mostrados = hasta;
+    const quedan = total - mostrados;
+    mas.hidden = !quedan; mas.disabled = false;
+    mas.textContent = `Show ${Math.min(porPagina, quedan)} more`;
+    cuenta.textContent = `${mostrados.toLocaleString('en-US')} of ${total.toLocaleString('en-US')} shown`;
+  };
+  mas.onclick = pagina;
+  await pagina();
+}
+
+// Un candidato del barrido en la lista (i = posición en r.candidatos)
+function itemBarrido(c, i, ks) {
+  return `
       <li class="bar-c" data-barrido="${i}">
         <div class="bar-cab"><span class="rk">${c.rank}</span>
           <div class="nm"><b>Scan candidate · ${coord(c.lat, c.lon)}</b><small>Nearest listed site: ${esc(c.cercano.name)}, ${Math.round(c.cercano.km).toLocaleString('en-US')} km</small></div>
@@ -253,8 +279,7 @@ async function pintarBarrido() {
         <button type="button" class="btn ghost small-btn" data-barrido-ver="${i}">Show on the globe</button>
         ${c.medidas.length ? masInfo(`<h4>All NASA PDS measurements <span class="muted">(mean within a ≈ ${zonaKm()} km radius)</span></h4>
           <div class="facts">${c.medidas.map((m) => `<div class="fact"><small>${esc(m.nombre)} · ${esc(m.fuente)}</small><b>${esc(m.texto)}</b>${m.rango ? `<small class="rg">${esc(m.rango)}</small>` : ''}</div>`).join('')}</div>`) : ''}
-      </li>`).join('')}</ol>`;
-  box.querySelectorAll('[data-barrido-ver]').forEach((b) => (b.onclick = () => verCandidato(+b.dataset.barridoVer)));
+      </li>`;
 }
 
 function verCandidato(i) {

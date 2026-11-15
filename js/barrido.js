@@ -16,7 +16,8 @@
 //    misión (effectiveWeights, js/data.js). No es comparable con la nota de la lista principal (que suma estimaciones).
 //  - Candidatos = máximos locales de esa nota en la rejilla (≥ que sus 8 vecinos, con la longitud cíclica y, en la
 //    fila polar, los vecinos del otro lado del polo; empates resueltos por el orden de la rejilla), los mejores
-//    primero. Se devuelven tantos como emplazamientos escritos a mano tiene el cuerpo (SITES[body].length).
+//    primero. Se devuelven TODOS; la interfaz los enseña por páginas de SITES[body].length (tantos como la lista) y
+//    las mediciones completas de cada página se piden con detallar().
 // ============================================================================
 import { SITES, effectiveWeights } from './data.js';
 import { RADIO_ZONA, RADIO_KM, FACTORES_MEDIDOS, capasAnalisis, distribucionesDe, medirPunto, metricasDe, limitesDe, medirSitios } from './capas.js';
@@ -118,18 +119,24 @@ export function buscarCandidatos(body, objectiveId, params, { alAvanzar } = {}) 
         if (vecinos(i, j).every((o) => nota[o] !== nota[o] || gana(q, o))) maximos.push(q);
       }
       maximos.sort((a, b) => (gana(a, b) ? -1 : 1));
-      const elegidos = maximos.slice(0, SITES[body].length).map((q, k) => {
+      const elegidos = maximos.map((q, k) => {
         const lat = latDe(Math.floor(q / NLON)), lon = lonDe(q % NLON);
         const cerca = SITES[body].map((s) => ({ name: s.name, id: s.id, km: distanciaKm(body, { lat, lon }, s) })).sort((a, b) => a.km - b.km)[0];
         return { id: `scan-${body}-${k + 1}`, rank: k + 1, lat, lon, score: Math.round(nota[q]), cercano: cerca };
       });
-      // las mediciones completas de cada candidato, con la misma función que los emplazamientos de la lista
-      const med = await medirSitios(body, elegidos);
-      for (const c of elegidos) { c.medidas = med[c.id]?.medidas ?? []; c.metricas = med[c.id]?.metricas ?? {}; }
       return { candidatos: elegidos, factores: ks, pesos: Object.fromEntries(ks.map((k) => [k, w[k] / sw])), ms: r.ms, calculo: r.calculo, puntos: r.puntos, fuera: r.fuera, validos, maximos: maximos.length };
     })();
     resultados.set(clave, p);
     p.catch(() => resultados.delete(clave));
   } else if (alAvanzar) rejilla(body, alAvanzar);                     // si la rejilla aún se está midiendo, que avise también
   return resultados.get(clave);
+}
+
+// Mediciones completas (las mismas que los emplazamientos de la lista, medirSitios) de los candidatos que aún no las
+// tienen: se piden por páginas, cuando la interfaz las va a enseñar.
+export async function detallar(body, candidatos) {
+  const faltan = candidatos.filter((c) => !c.medidas);
+  if (!faltan.length) return;
+  const med = await medirSitios(body, faltan);
+  for (const c of faltan) { c.medidas = med[c.id]?.medidas ?? []; c.metricas = med[c.id]?.metricas ?? {}; }
 }
