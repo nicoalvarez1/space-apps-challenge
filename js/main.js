@@ -11,7 +11,7 @@ import { plegar as plegarPerfil, desplegar as desplegarPerfil } from './perfil.j
 import { medirTodo, exageracionRelieve, pendienteCeldas, percentil } from './analitica.js';
 import { miniatura, RADIO_MINIATURA_KM } from './graficos/relieve.js';
 import { chispa } from './graficos/chispa.js';
-import { CUERPO, tip as tipGrafico, nombreCorto, masInfo, pctTxt } from './graficos/base.js';
+import { CUERPO, tip as tipGrafico, nombreCorto, masInfo, pctTxt, fichaCapa } from './graficos/base.js';
 // Panel de la Tierra: análogos del motor de similitud dichos en llano y sus gráficos
 import { listaCandidatos, cercania, cercaniaTecnica, frase, mapasHtml, pintarMapas, graficoCriterios, tipCriterios, graficoDistribuciones, tipDistribuciones,
   sostieneFalla, CRIT } from './graficos/analogo.js';
@@ -303,6 +303,15 @@ function ctaResultados() {
   };
 }
 
+// Ficha técnica de cada capa medida en la ficha (campos de capas.json, ver fichaCapa), plegada en «Data behind these
+// measurements». Una por capa: la pendiente regional de Marte sale de la misma capa que la elevación.
+function fichasMedidas(s) {
+  if (!capasPortada) return '';
+  const ids = [...new Set((s.medidas ?? []).map((m) => m.capa).filter((id) => capasPortada[id]))];
+  const nombres = (id) => s.medidas.filter((m) => m.capa === id).map((m) => m.nombre).join(' · ');
+  return ids.length ? `<details class="citas"><summary>Data behind these measurements (${ids.length})</summary>${ids.map((id) => fichaCapa(capasPortada[id], nombres(id))).join('')}</details>` : '';
+}
+
 function renderDetail(s) {
   const bars = Object.entries(s.metrics).map(([k, v]) => [k, v, s.weights?.[k] ?? 0]).sort((a, b) => b[2] - a[2])
     .map(([k, v, w]) => `<div class="row"><span>${METRICS[k].icon} ${METRICS[k].short} <small>${Math.round(w * 100)}%</small>${s.real?.[k] ? ` <abbr class="pds" title="${esc(s.real[k])}">PDS</abbr>` : ''}</span>
@@ -319,7 +328,8 @@ function renderDetail(s) {
     ${s.medidas?.length ? `<h4>All NASA PDS measurements <span class="muted">(mean within a ≈ ${zonaKm()} km radius)</span></h4>
       <div class="facts">${s.medidas.map((m, i) => `<div class="fact"><small>${esc(m.nombre)} · ${esc(m.fuente)}</small><b>${esc(m.texto)}</b>${m.rango ? `<small class="rg">${esc(m.rango)}</small>` : ''}<span data-chispa="${i}"></span></div>`).join('')}</div>
       <p class="small muted">The histogram of each measurement covers the whole surface ${esc(CUERPO[mission.body].de)} with ${s.medidas.some((m) => m.derivada) ? 'data (the regional slope is not a published grid: it is derived from the MOLA elevation cell by cell)' : 'published data'}, and the mark is this site: “higher than 90 %” (the 90th percentile) means that 90 % of that surface has an equal or lower value. It tells whether the value is low or high for that body, not whether it is good or bad.</p>
-      ${citas([...new Set(s.medidas.map((m) => m.cita).filter(Boolean))])}` : ''}
+      ${citas([...new Set(s.medidas.map((m) => m.cita).filter(Boolean))])}
+      ${fichasMedidas(s)}` : ''}
     <h4>Reference data <span class="muted">(estimate)</span></h4><div class="facts">${(s.facts || []).map(([l, v]) => `<div class="fact"><small>${esc(l)}</small><b>${esc(v)}</b></div>`).join('')}</div>
     ${s.pros?.length ? `<h4>Advantages</h4><ul class="pc">${s.pros.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>` : ''}
     ${s.cons?.length ? `<h4>Risks</h4><ul class="pc con">${s.cons.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>` : ''}

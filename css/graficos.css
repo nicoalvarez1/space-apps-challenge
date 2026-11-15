@@ -168,3 +168,13 @@
 .cmp-simples { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 1.2rem; margin: 1.2rem 0 .6rem; }
 .cmp-rfila:focus { outline: none; }
 .cmp-rfila:focus-visible rect.g-hit { stroke: #fff; stroke-width: 1; }
+
+/* Ficha técnica de una capa en los «Learn more» (fichaCapa, base.js) */
+.g-ficha { margin: .6rem 0 0; font-size: .66rem; line-height: 1.45; color: var(--mute); }
+.g-ficha + .g-ficha { margin-top: .8rem; padding-top: .6rem; border-top: 1px solid var(--line, rgba(255,255,255,.08)); }
+.g-ficha-tit { display: block; margin-bottom: .25rem; color: #c6cde4; font-weight: 600; }
+.g-ficha dl { display: grid; grid-template-columns: max-content 1fr; gap: .15rem .7rem; margin: 0; }
+.g-ficha dt { color: #c6cde4; font-weight: 600; }
+.g-ficha dd { margin: 0; overflow-wrap: anywhere; }
+.g-ficha a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+@media (max-width: 480px) { .g-ficha dl { grid-template-columns: 1fr; } .g-ficha dd { margin-bottom: .3rem; } }

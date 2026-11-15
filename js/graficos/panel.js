@@ -17,7 +17,7 @@
 // ============================================================================
 import { medirTodo } from '../analitica.js';
 import { RADIO_KM } from '../capas.js';
-import { esc, tip, nombreCorto, CUERPO, masInfo } from './base.js';
+import { esc, tip, nombreCorto, CUERPO, masInfo, fichaCapa } from './base.js';
 import * as matriz from './matriz.js';
 import * as distribucion from './distribucion.js';
 import * as latitud from './latitud.js';
@@ -79,7 +79,7 @@ function pintarControles() {
   // Visible: qué se mide; la explicación larga de la capa, tras «Learn more». La frase «Inverted scale…» de def.por
   // habla del globo: en estos gráficos el color y los ejes siguen al valor medido, sin invertir, y no se copia.
   const porTxt = (d) => String(d.por ?? '').replace(/\s*Inverted scale:[^.]*\./, '');
-  if (por) por.innerHTML = k ? `${esc(k.capa.meta.nombre)} · ${esc(k.def.unidad)}.${masInfo(k.def.por ? `<p class="g-pie">${esc(porTxt(k.def))}</p>` : '')}` : '';
+  if (por) por.innerHTML = k ? `${esc(k.capa.meta.nombre)} · ${esc(k.def.unidad)}.${masInfo(`${k.def.por ? `<p class="g-pie">${esc(porTxt(k.def))}</p>` : ''}${fichaCapa(k.capa.meta)}`)}` : '';
 }
 
 function pintarTodo() {

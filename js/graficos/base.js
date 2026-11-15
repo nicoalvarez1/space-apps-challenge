@@ -199,3 +199,27 @@ export const CUERPO = { moon: { nombre: 'the Moon', en: 'on the Moon', de: 'of t
 
 // Fuente de una capa en una línea: «LRO · LOLA, 0,125° (≈3,8 km en el ecuador)»
 export const fuenteDe = (c) => `${c.meta.fuente?.mision ?? ''}${c.meta.resolucion ? `, ${c.meta.resolucion}` : ''}`;
+
+// Ficha técnica de una capa para los «Learn more»: SOLO campos que ya trae capas.json (meta), sin calcular ni redactar
+// datos nuevos. Las estadísticas son las del archivo publicado (cuentan celdas, no área). La media no se muestra porque
+// los metadatos no dicen si está ponderada por área. Los productos se nombran por el archivo de su URL (los textos de
+// «productos» están en español). Un campo que falta no se pinta.
+const numMeta = (v) => (typeof v === 'number' ? v.toLocaleString('en-US', { maximumFractionDigits: 3 }) : '');
+export function fichaCapa(meta, titulo = '') {
+  if (!meta) return '';
+  const f = meta.fuente ?? {}, e = meta.estadisticas, u = meta.unidades ? ` ${meta.unidades}` : '';
+  const archivos = [...new Set(f.urls ?? [])].map((url) => `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(url.split('/').pop())}</a>`);
+  const filas = [
+    ['Instrument', f.mision && esc(f.mision)],
+    ['Dataset', f.dataset && esc(f.dataset)],
+    ['Grid', meta.resolucion && `${esc(meta.resolucion)}${meta.filas && meta.columnas ? ` · ${numMeta(meta.filas)} × ${numMeta(meta.columnas)} cells` : ''}`],
+    ['Cells with data', e?.total ? `${numMeta(e.validos)} of ${numMeta(e.total)} (${nf((e.validos / e.total) * 100, 1)} %)` : ''],
+    ['Range in the grid', e && typeof e.min === 'number' ? `${numMeta(e.min)} … ${numMeta(e.max)}${esc(u)}` : ''],
+    ['Processing', meta.procesado && esc(meta.procesado)],
+    ['Note', meta.nota && esc(meta.nota)],
+    ['Original files', archivos.join(' · ')],
+    ['Citation', f.cita && esc(f.cita)],
+    ['Prepared', meta.generado && esc(String(meta.generado).slice(0, 10))],
+  ].filter(([, v]) => v);
+  return filas.length ? `<div class="g-ficha">${titulo ? `<b class="g-ficha-tit">${esc(titulo)}</b>` : ''}<dl>${filas.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl></div>` : '';
+}
