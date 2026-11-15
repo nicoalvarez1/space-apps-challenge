@@ -4,10 +4,8 @@ Uso:  .venv/bin/python tools/video/locucion.py [locucion.mp3]   → imprime las 
 
 La voz se prepara igual que en voz.py (sin silencio inicial, INICIO s de margen, pausas acortadas si no cabe) y se
 buscan las pausas con el filtro silencedetect de ffmpeg:
-- pausas ≥ 0,25 s a −38 dB → las 10 frases del guion (video/guion_locucion.md);
-- la frase 2 («Landfall ranks ten candidate sites, scored with real NASA orbiter data.») se parte en su pausa interna
-  más larga (silencedetect −32 dB, ≥ 0,08 s): «…sites,» | «scored…».
-Devuelve 11 tramos (inicio, fin) en segundos del vídeo, en el orden de FRASES. Si la detección no cuadra con el guion
+- pausas ≥ 0,12 s a −38 dB (tras acortarlas) → los 17 tramos del guion v2 (video/guion_v2_estructura.md).
+Devuelve 17 tramos (inicio, fin) en segundos del vídeo, en el orden de FRASES. Si la detección no cuadra con el guion
 se usan los tiempos medidos en la locución aprobada (RESERVA).
 """
 import os, re, subprocess, sys
@@ -18,24 +16,32 @@ sys.path.insert(0, str(Path(__file__).parent))
 import voz  # noqa: E402
 
 FF = imageio_ffmpeg.get_ffmpeg_exe()
-MP3 = Path('/Users/martiquimmargot/Downloads/ElevenLabs_2026-11-15T06_12_36_Hale - Smooth, Confident and Persuasive_pvc_s50_sim75_v4.mp3')
+MP3 = Path('/Users/martiquimmargot/Downloads/ElevenLabs_2026-11-15T11_45_19_Hale - Smooth, Confident and Persuasive_pvc_s55_sim75_v4.mp3')
 
+# Guion v2 (video/guion_v2_estructura.md): un tramo por cada pausa de la toma (la v1 está en video/copia_2026-11-15_30s_v1/)
 FRASES = [
-    'Where should the first crew land on Mars?',
-    'Landfall ranks ten candidate sites,',
-    'scored with real NASA orbiter data.',
-    "Here's Jezero Crater, mapped by Mars Global Surveyor.",
-    'Before launch, the crew trains on Earth.',
-    'Tabernas, in Spain, has similar ground…',
-    'and NASA climate data picks the season.',
-    'And it maps more terrain twins across the globe.',
-    'Landfall.',
-    'Real NASA data on where to land — and where to train.',
-    'topgit dot earth.',
+    "We're Team Top Git.",                                              # 0  preséntate
+    "Astronauts can't rehearse on Mars.",                               # 1  desafío
+    'So where on Earth should they train?',                             # 2
+    "For NASA's analog challenge,",                                     # 3  nombre y eslogan
+    'we built',                                                         # 4
+    'Landfall:',                                                        # 5
+    'where to land, where to train.',                                   # 6
+    'Pick Mars or the Moon.',                                           # 7  cómo funciona
+    'NASA orbiter data ranks the landing sites.',                       # 8
+    'Then NASA elevation maps find the closest terrain on Earth.',      # 9
+    'Jezero Crater?',                                                   # 10
+    'Tabernas, Spain.',                                                 # 11
+    'Picture every crew rehearsing here,',                              # 12 futuro
+    "on the same kind of ground they'll walk on Mars.",                 # 13
+    'Landfall.',                                                        # 14
+    'topgit dot',                                                       # 15
+    'earth.',                                                           # 16
 ]
-# medidos en la toma aprobada (28,7 s), ya en tiempo de vídeo
-RESERVA = [(0.25, 2.42), (2.93, 5.11), (5.24, 7.42), (7.89, 11.09), (11.57, 13.84), (14.29, 16.68), (17.03, 19.14),
-           (19.58, 22.29), (22.78, 23.47), (23.83, 27.08), (27.49, 28.65)]
+# medidos en la toma v2 (31,6 s; 28,5 s con las pausas acortadas), ya en tiempo de vídeo
+RESERVA = [(0.25, 1.71), (1.94, 4.04), (4.20, 6.25), (6.42, 8.06), (8.18, 8.70), (8.85, 9.57), (9.71, 11.37),
+           (11.53, 12.91), (13.06, 15.51), (15.66, 19.41), (19.57, 20.30), (20.47, 21.49), (21.65, 23.78),
+           (23.92, 26.46), (26.66, 27.35), (27.49, 27.99), (28.11, 28.51)]
 
 
 def ruta():
@@ -56,17 +62,12 @@ def frases(mp3=None):
         print(f'[locucion] no está {mp3}: tiempos de reserva'); return RESERVA
     wav, tempo = voz.preparar(mp3)
     dur = voz.leer(wav).size / voz.SR
-    sil = [(a, b) for a, b in _silencios(wav, -38, 0.25) if a > voz.INICIO + 0.05 and b < dur - 0.05]
+    # las pausas ya vienen acortadas por voz.preparar (mín. 0,12 s): se buscan las de ≥ 0,12 s a −38 dB
+    sil = [(a, b) for a, b in _silencios(wav, -38, 0.12) if a > voz.INICIO + 0.05 and b < dur - 0.05]
     bordes = [voz.INICIO] + [x for a, b in sil for x in (a, b)] + [dur]
     tramos = [(bordes[i], bordes[i + 1]) for i in range(0, len(bordes) - 1, 2)]
-    if len(tramos) != 10:
-        print(f'[locucion] {len(tramos)} frases detectadas (se esperaban 10): tiempos de reserva'); return RESERVA
-    a, b = tramos[1]
-    dentro = [(s, e) for s, e in _silencios(wav, -32, 0.08) if a + 0.3 < s and e < b - 0.3]
-    if not dentro:
-        print('[locucion] sin pausa interna en la frase 2: tiempos de reserva'); return RESERVA
-    s, e = max(dentro, key=lambda p: p[1] - p[0])
-    tramos[1:2] = [(a, s), (e, b)]
+    if len(tramos) != len(FRASES):
+        print(f'[locucion] {len(tramos)} tramos detectados (se esperaban {len(FRASES)}): tiempos de reserva'); return RESERVA
     return [(round(a / tempo, 3), round(b / tempo, 3)) for a, b in tramos]
 
 

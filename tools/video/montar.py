@@ -4,7 +4,7 @@ Uso:  .venv/bin/python tools/video/montar.py   →  video/landfall_30s.mp4  (384
       después: .venv/bin/python tools/video/voz.py  →  video/landfall_30s_voz.mp4
 
 1. Sincronía: locucion.frases() detecta las frases de la locución (silencedetect) y cada plano empieza LEAD s antes de
-   la frase que lo describe (video/guion_locucion.md). Cada plano es un tramo de la grabación anclado a una marca de
+   la frase que lo describe (video/guion_v2_estructura.md). Cada plano es un tramo de la grabación anclado a una marca de
    video/tmp/eventos.json (por su inicio o por su final, p. ej. el clic que lleva al plano siguiente) y con una
    velocidad casi real (1,0–1,3×): nada de movimientos frenéticos. El plano «planeta» (mitad Marte, mitad Luna, con
    las capas de datos apilándose) sale de otra fuente: video/tmp/planeta/, grabada por planeta.py en tiempo de escena.
@@ -51,44 +51,55 @@ def ev(nombre, n=1):
 
 
 # ---------------------------------------------------------------- planos sincronizados con la voz
-F = locucion.frases()
+# Guion v2 con la estructura oficial de Space Apps (video/guion_v2_estructura.md; la v1 en video/copia_2026-11-15_30s_v1/)
+F = locucion.frases()   # 17 tramos, en el orden de locucion.FRASES
 CORTES = {
-    'despegue':   F[1][0] - LEAD,             # «Landfall ranks ten candidate sites,»
-    'resultados': F[1][0] - LEAD + 1.2,       #   … la lista de los 10 emplazamientos
-    'planeta':    F[2][0] - LEAD,             # «scored with real NASA orbiter data.»
-    'jezero':     F[3][0] - LEAD,             # «Here's Jezero Crater, mapped by Mars Global Surveyor.»
-    'tierra':     F[4][0] - LEAD,             # «Before launch, the crew trains on Earth.»
-    'suelo':      F[5][0] - LEAD,             # «Tabernas, in Spain, has similar ground…»
-    'clima':      F[6][0] - LEAD,             # «and NASA climate data picks the season.»
-    'motor':      F[7][0] - LEAD,             # «And it maps more terrain twins…
-    'globo':      F[7][1] - 1.0,              #   … across the globe.»  (y el cierre)
+    'planeta':    F[1][0] - LEAD,             # «Astronauts can't rehearse on Mars.»       (desafío: Marte y Luna)
+    'jezero':     F[2][0] - LEAD,             # «So where on Earth should they train?»    (clic en «Where to train on Earth?»)
+    'nombre':     F[3][0] - LEAD,             # «For NASA's analog challenge, we built Landfall: where to land, where to train.»
+    'destino':    F[7][0] - LEAD,             # «Pick Mars or the Moon.»
+    'resultados': F[8][0] - LEAD,             # «NASA orbiter data ranks the landing sites.»
+    'tierra':     F[9][0] - LEAD,             # «Then NASA elevation maps find the closest terrain on Earth.»
+    'suelo':      F[10][0] - LEAD,            # «Jezero Crater? Tabernas, Spain.»
+    'clima':      F[12][0] - LEAD,            # «Picture every crew rehearsing here,»
+    'motor':      F[13][0] - LEAD,            # «on the same kind of ground they'll walk on Mars.»
+    'globo':      F[13][0] - LEAD + 1.45,     #   … el panel se retira y el globo queda para el cierre
 }
-T_TITULO, T_LEMA, T_WEB = F[8][0], F[9][0], F[10][0]   # «Landfall.» «Real NASA data…» «topgit dot earth.»
+# Bloques de título: (título, «Where to land.», «Where to train.», web | None, hasta)
+TITULOS = [
+    (F[5][0], F[6][0], F[6][0] + 0.8, None, CORTES['destino']),     # «Landfall: where to land, where to train.»
+    (F[14][0], F[14][0] + 0.35, F[14][0] + 0.7, F[15][0], DUR + 1),  # cierre: «Landfall. topgit dot earth.»
+]
+T_TITULO = F[14][0]
 
 # (nombre, ancla en la grabación, 'ini' | 'fin' (el ancla es el principio o el final del tramo), velocidad[, fuente])
-# fuente 'web' (grabar.py, por defecto) o 'planeta' (planeta.py: el ancla es el tiempo de la escena)
-GLOBO_FIJO = 58.0                 # s de la grabación del fotograma fijo del cierre (globo con los lugares, sin movimiento brusco)
+# fuente 'web' (grabar.py, por defecto), 'planeta' (planeta.py: el ancla es el tiempo de la escena) o 'fija' (un fotograma)
+GLOBO_FIJO = 58.0                 # s de la grabación del fotograma de la fuente 'fija' (sin uso en la v2)
 PLANETA_T0 = 0.2                   # s de la escena en que entra el plano (deja fotogramas antes para el fundido)
 CAPAS_T = [0.75 + 0.36 * i for i in range(4)]   # s de la escena en que llega cada par de capas (planeta.js: T0, PASO)
 PLANOS = [
-    ('portada',    ev('Mars') + 0.55,            'fin', 1.25),   # portada → «Start mission» → Marte
-    ('despegue',   ev('lanzamiento') + 3.6,      'ini', 1.3),    # el Saturno V despega
-    ('resultados', ev('Compare with') + 0.12,    'fin', 1.15),   # Marte y los 10 emplazamientos → clic en comparar
+    ('portada',    ev('Start mission') - 0.15,   'fin', 1.0),    # portada de Landfall (antes del clic)
     ('planeta',    PLANETA_T0,                   'ini', 1.0, 'planeta'),   # mitad Marte / mitad Luna + capas de datos
-    ('jezero',     ev('Where to train') + 0.12,  'fin', 1.05),   # ficha de Jezero con el relieve → clic en entrenar
-    ('tierra',     ev('mismo_suelo') - 0.3,      'fin', 1.0),    # el globo llega a la Tierra: Tabernas
-    ('suelo',      ev('mismo_suelo') - 0.3,      'ini', 1.0),    # Marte y la Tierra a la misma escala
-    ('clima',      ev('clima') - 0.1,            'ini', 1.0),    # «When to go» (NASA POWER)
+    ('jezero',     ev('Where to train') + 0.12,  'fin', 1.05),   # ficha de Jezero → clic en «Where to train on Earth?»
+    ('nombre',     ev('giro') + 3.0,             'ini', 1.0),    # el globo gira con los lugares; título y eslogan a la izquierda
+    ('destino',    ev('Mars') + 0.55,            'fin', 1.0),    # elegir destino → clic en Marte
+    ('resultados', ev('Compare with') + 0.12,    'fin', 1.15),   # Marte y los 10 emplazamientos puntuados
+    ('tierra',     ev('mismo_suelo') - 0.3,      'fin', 1.3),    # el globo vuela de Marte a la Tierra: Tabernas
+    ('suelo',      ev('mismo_suelo') - 0.3,      'ini', 1.0),    # Jezero y Tabernas a la misma escala
+    ('clima',      ev('clima') + 0.9,            'ini', 1.0),    # «When to go» (NASA POWER) y lo que se entrenaría
     ('motor',      ev('cierre') - 0.1,           'fin', 1.0),    # lugares hallados por el motor de similitud (sigue sin corte en el cierre)
-    ('globo',      ev('cierre') - 0.1,           'ini', 1.0),    # el panel se retira; el globo se aleja y gira con los lugares; título
+    ('globo',      ev('cierre') - 0.1,           'ini', 1.0),    # el panel se retira; el globo se aleja y gira; título
 ]
 
 # Rótulos: (desde, hasta, texto). Solo datos que la voz no dice.
 ROTULOS = [
-    (CORTES['jezero'] + 0.6,  CORTES['tierra'] - 0.25, 'Jezero Crater · 18.4°N 77.7°E'),
-    (CORTES['tierra'] + 0.6,  CORTES['clima'] - 0.25,  'Tabernas Desert, Spain'),
-    (CORTES['clima'] + 0.5,   CORTES['motor'] - 0.25,  'NASA POWER climate data'),
-    (CORTES['motor'] + 0.3,   CORTES['globo'] - 0.2,   'Found in NASA elevation data'),
+    (0.35,                        CORTES['planeta'] - 0.15,   'Team Top Git'),
+    (CORTES['planeta'] + 0.3,     CORTES['jezero'] - 0.2,     'NASA Space Apps 2026 · Moon & Mars analogs'),
+    (CORTES['jezero'] + 0.35,     CORTES['nombre'] - 0.2,     'Jezero Crater · 18.4°N 77.7°E'),
+    (CORTES['resultados'] + 0.4,  CORTES['tierra'] - 0.2,     'MOLA · TES · Odyssey GRS'),
+    (CORTES['tierra'] + 0.6,      CORTES['suelo'] - 0.2,      'SRTM elevation · 8,401 places compared'),
+    (CORTES['clima'] + 0.4,       CORTES['motor'] - 0.2,      'NASA POWER climate data'),
+    (CORTES['motor'] + 0.2,       CORTES['globo'] - 0.15,     'Found in NASA elevation data'),
 ]
 
 
@@ -148,7 +159,7 @@ def efectos(planos):
     llegadas = [pl[1] + (t - pl[3]) / pl[4] for t in CAPAS_T]
     sfx.append({'t': llegadas[0], 'tipo': 'capas', 'pulsos': [round(t - llegadas[0], 3) for t in llegadas]})
     sfx.append({'t': CORTES['tierra'], 'tipo': 'whoosh'})     # de Marte a la Tierra
-    sfx.append({'t': CORTES['globo'] + 0.15, 'tipo': 'whoosh'})   # el panel se retira
+    sfx.append({'t': CORTES['globo'] + 0.05, 'tipo': 'whoosh'})   # el panel se retira
     sfx.append({'t': T_TITULO, 'tipo': 'golpe'})
     sfx.append({'t': T_TITULO, 'tipo': 'logo'})
     return sorted(sfx, key=lambda x: x['t'])
@@ -203,13 +214,14 @@ def capas():
     for k, (desde, hasta, _) in enumerate(ROTULOS):
         rgb, a = pngs[k]
         out.append(dict(rgb=rgb, a=a, x=MARGEN, y=H - MARGEN - rgb.shape[0], desde=desde, hasta=hasta, sube=10 * ESC))
-    # título: bloque a la izquierda del globo, centrado en vertical
+    # título: bloque a la izquierda del globo, centrado en vertical (mismo sitio en cada aparición)
     tit, l1, l2, web = pngs[len(ROTULOS):]
     alto = tit[0].shape[0] + 34 * ESC + l1[0].shape[0] + l2[0].shape[0] + 44 * ESC + web[0].shape[0]
-    y = (H - alto) // 2 - 10 * ESC; x = 150 * ESC
-    for (rgb, a), t, extra in [(tit, T_TITULO, 34 * ESC), (l1, T_LEMA + 0.9, 0), (l2, T_LEMA + 2.05, 44 * ESC), (web, T_WEB, 0)]:
-        out.append(dict(rgb=rgb, a=a, x=x, y=y, desde=t, hasta=DUR + 1, sube=12 * ESC))
-        y += rgb.shape[0] + extra
+    for t_tit, t_l1, t_l2, t_web, hasta in TITULOS:
+        y = (H - alto) // 2 - 10 * ESC; x = 150 * ESC
+        for (rgb, a), t, extra in [(tit, t_tit, 34 * ESC), (l1, t_l1, 0), (l2, t_l2, 44 * ESC), (web, t_web, 0)]:
+            if t is not None: out.append(dict(rgb=rgb, a=a, x=x, y=y, desde=t, hasta=hasta, sube=12 * ESC))
+            y += rgb.shape[0] + extra
     return out
 
 
@@ -267,7 +279,7 @@ def main():
     for nom, a, b, g, v, fu in planos:
         print(f'  {a:6.2f}–{b:6.2f}  ({b - a:4.2f} s)  {nom:11s}  {"grabación" if fu == "web" else "escena   "} {g:6.2f}–{g + (b - a) * v:6.2f}  ×{v:.2f}')
     print('rótulos:'); [print(f'  {a:6.2f}–{b:6.2f}  {t}') for a, b, t in ROTULOS]
-    print(f'  título {T_TITULO:.2f} · lema {T_LEMA:.2f} · web {T_WEB:.2f}')
+    for t in TITULOS: print('  título', ' · '.join('—' if x is None else f'{x:.2f}' for x in t))
     print(SALIDA)
 
 
