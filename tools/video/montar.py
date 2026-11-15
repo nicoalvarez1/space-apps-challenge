@@ -1,6 +1,6 @@
 """Monta el vídeo de 30 s a partir de la grabación de grabar.py, sincronizado con la locución.
 
-Uso:  .venv/bin/python tools/video/montar.py   →  video/landfall_30s.mp4  (1920×1080, 30 fps, H.264 yuv420p + AAC)
+Uso:  .venv/bin/python tools/video/montar.py   →  video/landfall_30s.mp4  (3840×2160 «4K», 30 fps, H.264 yuv420p + AAC)
       después: .venv/bin/python tools/video/voz.py  →  video/landfall_30s_voz.mp4
 
 1. Sincronía: locucion.frases() detecta las frases de la locución (silencedetect) y cada plano empieza LEAD s antes de
@@ -29,12 +29,14 @@ TMP = RAIZ / 'video' / 'tmp'
 PLANETA = TMP / 'planeta'          # fotogramas de planeta.py (k ↔ t = k / FPS de la escena)
 SALIDA = RAIZ / 'video' / 'landfall_30s.mp4'
 FF = imageio_ffmpeg.get_ffmpeg_exe()
-W, H, FPS, DUR = 1920, 1080, 30, 30.0
+W, H, FPS, DUR = 3840, 2160, 30, 30.0     # salida 4K; la grabación (1920×1080) se escala con lanczos
+W0 = W // 2                        # ancho en px CSS de los rótulos (se dibujan a 2× para 4K)
+ESC = W // W0                      # factor de escala de los rótulos
 N_TOTAL = round(DUR * FPS)
 LEAD = 0.15        # s: el corte llega un poco antes que la frase
 FUNDIDO = 4        # fotogramas del fundido entre planos (0,13 s)
 ENTRADA = 8        # fotogramas del fundido desde negro inicial
-MARGEN = 96        # margen seguro (px) de los rótulos
+MARGEN = 96 * ESC  # margen seguro (px) de los rótulos
 
 idx = json.loads((TMP / 'frames.json').read_text())
 ts = [t for _, t in idx]
@@ -188,7 +190,7 @@ def capas():
     pngs = []
     with sync_playwright() as p:
         b = p.chromium.launch()
-        pg = b.new_page(viewport={'width': W, 'height': 160 * len(elems)}, device_scale_factor=1)
+        pg = b.new_page(viewport={'width': W0, 'height': 160 * len(elems)}, device_scale_factor=ESC)
         pg.set_content(html); pg.wait_for_timeout(300)
         for k in range(len(elems)):
             ruta = d / f'e{k}.png'; pg.locator(f'#e{k}').screenshot(path=str(ruta), omit_background=True); pngs.append(_png_rgba(ruta))
@@ -197,13 +199,13 @@ def capas():
     out = []
     for k, (desde, hasta, _) in enumerate(ROTULOS):
         rgb, a = pngs[k]
-        out.append(dict(rgb=rgb, a=a, x=MARGEN, y=H - MARGEN - rgb.shape[0], desde=desde, hasta=hasta, sube=10))
+        out.append(dict(rgb=rgb, a=a, x=MARGEN, y=H - MARGEN - rgb.shape[0], desde=desde, hasta=hasta, sube=10 * ESC))
     # título: bloque a la izquierda del globo, centrado en vertical
     tit, l1, l2, web = pngs[len(ROTULOS):]
-    alto = tit[0].shape[0] + 34 + l1[0].shape[0] + l2[0].shape[0] + 44 + web[0].shape[0]
-    y = (H - alto) // 2 - 10; x = 150
-    for (rgb, a), t, extra in [(tit, T_TITULO, 34), (l1, T_LEMA + 0.9, 0), (l2, T_LEMA + 2.05, 44), (web, T_WEB, 0)]:
-        out.append(dict(rgb=rgb, a=a, x=x, y=y, desde=t, hasta=DUR + 1, sube=12))
+    alto = tit[0].shape[0] + 34 * ESC + l1[0].shape[0] + l2[0].shape[0] + 44 * ESC + web[0].shape[0]
+    y = (H - alto) // 2 - 10 * ESC; x = 150 * ESC
+    for (rgb, a), t, extra in [(tit, T_TITULO, 34 * ESC), (l1, T_LEMA + 0.9, 0), (l2, T_LEMA + 2.05, 44 * ESC), (web, T_WEB, 0)]:
+        out.append(dict(rgb=rgb, a=a, x=x, y=y, desde=t, hasta=DUR + 1, sube=12 * ESC))
         y += rgb.shape[0] + extra
     return out
 
