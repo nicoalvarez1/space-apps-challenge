@@ -18,6 +18,8 @@ Pick Mars or the Moon. NASA orbiter data ranks the landing sites. Then NASA elev
 Picture every crew rehearsing here, on the same kind of ground they'll walk on Mars. Landfall. topgit dot earth.
 ```
 
+**Cambio:** «topgit dot earth.» se corta del audio en `tools/video/voz.py` (`ULTIMA_FRASE`) y la web no aparece en el título final: el vídeo termina con «Landfall.».
+
 ## Plano a plano
 
 | Tiempo | Bloque de la estructura | Locución | Imagen (grabación actual) | Rótulo |
@@ -26,7 +28,7 @@ Picture every crew rehearsing here, on the same kind of ground they'll walk on M
 | 0:02–0:05 | Desafío e inspiración | Astronauts can't rehearse on Mars. So where on Earth should they train? | Despegue del Saturno V → Marte con los 10 sitios | NASA Space Apps 2026 · Earth analogs of Moon & Mars |
 | 0:05–0:10 | Nombre y eslogan | For NASA's analog challenge, we built Landfall: where to land, where to train. | Mitad Marte / mitad Luna con las capas de datos | Título **LANDFALL** · *Where to land. Where to train.* |
 | 0:10–0:20 | Cómo funciona + datos NASA | Pick Mars or the Moon. NASA orbiter data ranks the landing sites. Then NASA elevation maps find the closest terrain on Earth. Jezero Crater? Tabernas, Spain. | Lista de sitios → ficha de Jezero (MOLA) → el globo vuela a la Tierra → Marte y Tabernas a la misma escala | MOLA · LOLA · Diviner · Odyssey GRS → SRTM · 8,401 places compared · Tabernas Desert, Spain |
-| 0:20–0:30 | Mirar al futuro | Picture every crew rehearsing here, on the same kind of ground they'll walk on Mars. Landfall. topgit dot earth. | «When to go» (NASA POWER) → lugares hallados por el motor → globo girando con los lugares | NASA POWER climate data · cierre: LANDFALL + topgit.earth |
+| 0:20–0:30 | Mirar al futuro | Picture every crew rehearsing here, on the same kind of ground they'll walk on Mars. Landfall. | «When to go» (NASA POWER) → lugares hallados por el motor → globo girando con los lugares | NASA POWER climate data · cierre: LANDFALL + *Where to land. Where to train.* |
 
 ## Comprobación de lo que dice la voz
 

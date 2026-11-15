@@ -73,8 +73,26 @@ def preparar(mp3):
     return voz, tempo
 
 
+ULTIMA_FRASE = 14       # índice en locucion.FRASES de la última frase que suena («Landfall.»): «topgit dot earth.» se corta
+
+
+def cortar_tras(voz, fin, fundido=0.06):
+    """Silencia la voz a partir de `fin` s (con un fundido corto) y la guarda en video/tmp/voz_cortada.wav."""
+    x = leer(voz).copy()
+    a, n = int(fin * SR), int(fundido * SR)
+    x[a:a + n] *= np.linspace(1, 0, len(x[a:a + n]), dtype=np.float32)
+    x[a + n:] = 0
+    sal = TMP / 'voz_cortada.wav'
+    escribir(sal, x)
+    return sal
+
+
 def main(mp3):
+    import locucion
+    fin = locucion.frases(mp3)[ULTIMA_FRASE][1] + 0.08     # termina con «Landfall.»
     voz, tempo = preparar(mp3)
+    voz = cortar_tras(voz, fin * tempo)
+    print(f'voz cortada a los {fin:.2f} s (después de «{locucion.FRASES[ULTIMA_FRASE]}»)')
     # música+efectos (pista del vídeo) atenuados por la voz; voz normalizada; todo a 30 s
     filtro = (f'[1:a]atempo={tempo:.4f},loudnorm=I=-16:TP=-1.5:LRA=7,aresample={SR},aformat=channel_layouts=stereo,asplit=2[v][vsc];'
               f'[0:a]aresample={SR},aformat=channel_layouts=stereo,volume=0.8[m];'
